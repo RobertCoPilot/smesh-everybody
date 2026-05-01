@@ -251,7 +251,7 @@ function SortPills<T>({
           onClick={() => setKey(col.key)}
           className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-300 ${
             activeKey === col.key
-              ? 'bg-gradient-to-r from-violet-600 to-violet-500 text-white shadow-[0_0_16px_rgba(139,92,246,0.25)]'
+              ? 'bg-[#1f1f1f] text-white shadow-[0_0_16px_rgba(138,74,23,0.18)]'
               : 'glass-card-static text-white/40 hover:text-white/70'
           }`}
         >

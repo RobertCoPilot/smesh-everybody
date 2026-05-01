@@ -92,7 +92,7 @@ export default function Setup1vs1Page() {
                   onClick={() => setSetsToWin(n)}
                   className={`flex-1 py-3 rounded-xl text-sm font-semibold transition-all ${
                     setsToWin === n
-                      ? 'bg-gradient-to-r from-violet-600 to-violet-500 text-white shadow-lg shadow-violet-500/20'
+                      ? 'bg-[#1f1f1f] text-white shadow-lg shadow-[#8a4a17]/20'
                       : 'glass-card-static text-white/60 hover:text-white/80'
                   }`}
                 >

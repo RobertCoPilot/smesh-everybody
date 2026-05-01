@@ -338,7 +338,7 @@ export default function TournamentPage() {
         {/* Winner celebration */}
         {tournament.status === 'completed' && tournament.winner && (
           <div className="glass-card-static rounded-3xl p-6 mb-6 text-center animate-fade-in-scale relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-violet-500/10 via-transparent to-cyan-500/10" />
+            <div className="absolute inset-0 bg-[#fa520f]/8" />
             <div className="relative">
               <div className="text-5xl mb-3">🏆</div>
               <p className="text-xs text-white/40 mb-2 uppercase tracking-wider font-medium">Champions</p>
@@ -481,7 +481,7 @@ function ScoringModal({
   }, [match.status, onClose]);
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xl flex items-end sm:items-center justify-center animate-fade-in">
+    <div className="fixed inset-0 z-50 bg-[#081226]/75 backdrop-blur-xl flex items-end sm:items-center justify-center animate-fade-in">
       <div className="glass w-full max-w-lg rounded-t-3xl sm:rounded-3xl p-6 max-h-[85vh] overflow-y-auto animate-slide-up sm:animate-fade-in-scale">
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
@@ -497,7 +497,7 @@ function ScoringModal({
         {/* Match completed overlay */}
         {matchWinner && (
           <div className="glass-card-static rounded-2xl p-5 mb-5 text-center relative overflow-hidden animate-fade-in-scale">
-            <div className="absolute inset-0 bg-gradient-to-br from-violet-500/10 via-transparent to-cyan-500/10" />
+            <div className="absolute inset-0 bg-[#fa520f]/8" />
             <p className="relative gradient-text-accent font-bold text-base">
               🎉 {getTeamName(matchWinner === 1 ? match.team1Id : match.team2Id)} gewinnt!
             </p>

@@ -1,9 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useGameStore } from '@/store/gameStore';
-import type { GameRecord, Match2vs2, Tournament, AmericanoTournament } from '@/types';
+import type { AmericanoTournament, GameRecord, Tournament } from '@/types';
 import { getAmericanoLeaderboard } from '@/lib/americano';
 
 function getGameLink(game: GameRecord): string {
@@ -107,25 +106,9 @@ function getGameWinner(game: GameRecord, getPlayer: (id: string) => { name: stri
 }
 
 export default function Home() {
-  const [hydrated, setHydrated] = useState(false);
   const players = useGameStore((s) => s.players);
   const games = useGameStore((s) => s.games);
   const getPlayer = useGameStore((s) => s.getPlayer);
-
-  useEffect(() => {
-    setHydrated(true);
-  }, []);
-
-  if (!hydrated) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-10 h-10 border-2 border-violet-500/30 border-t-violet-400 rounded-full animate-spin" />
-          <p className="text-[rgba(255,255,255,0.4)] text-sm">Laden...</p>
-        </div>
-      </div>
-    );
-  }
 
   const activeGames = games.filter((g) => g.status === 'in_progress');
   const completedGames = games
@@ -144,16 +127,35 @@ export default function Home() {
   return (
     <div className="px-5 pt-8 pb-10 space-y-8">
       {/* Hero Section */}
-      <div className="text-center space-y-3 py-8 animate-fade-in">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl glass-card-static mb-3">
-          <svg className="w-8 h-8 text-violet-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z" />
-          </svg>
+      <div className="text-center space-y-5 py-10 animate-fade-in">
+        <div className="mx-auto w-24 space-y-1">
+          <div className="league-blocks" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+            <span />
+            <span />
+            <span />
+          </div>
+          <div className="league-blocks opacity-70" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+            <span />
+            <span />
+            <span />
+          </div>
         </div>
-        <h1 className="text-4xl font-bold tracking-tight">
-          <span className="gradient-text">Smesh </span>
-          <span className="gradient-text-accent">Everybody</span>
-        </h1>
+        <div className="space-y-3">
+          <h1 className="text-5xl leading-none sm:text-6xl">
+            <span className="gradient-text">Smesh</span>
+            <br />
+            <span className="gradient-text-accent">Everybody</span>
+          </h1>
+          <p className="mx-auto max-w-xs text-sm uppercase tracking-[0.22em] text-[rgba(31,31,31,0.48)]">
+            Padel Matches · Turniere · Americano
+          </p>
+        </div>
       </div>
 
       {/* Quick Stats */}

@@ -5,9 +5,11 @@ import { useRouter } from 'next/navigation';
 import { v4 as uuidv4 } from 'uuid';
 import { useGameStore } from '@/store/gameStore';
 import PlayerSelector from '@/components/PlayerSelector';
+import { PadelBuilder } from '@/components/padel-builder/PadelBuilder';
+import { createPadelPlayer } from '@/components/padel-builder/playerFactory';
+import type { PlacedPadelPlayers } from '@/components/padel-builder/types';
 import { generateTeams, generateBracket, getRoundName } from '@/lib/tournament';
-import type { TournamentTeam, Tournament } from '@/types';
-import CourtCard from '@/components/CourtCard';
+import type { Tournament, TournamentMatch, TournamentTeam } from '@/types';
 
 function getRoundNameDE(round: number, totalRounds: number): string {
   const name = getRoundName(round, totalRounds);
@@ -109,6 +111,27 @@ export default function TournamentSetupPage() {
     if (teams.length < 2) return [];
     return generateBracket(teams, setsPerRound);
   }, [teams, setsPerRound]);
+
+  const getReadOnlyLineup = useCallback(
+    (match: TournamentMatch): PlacedPadelPlayers => {
+      const team1 = teams.find((team) => team.id === match.team1Id);
+      const team2 = teams.find((team) => team.id === match.team2Id);
+      const placements: PlacedPadelPlayers = {};
+
+      if (team1) {
+        placements.left = createPadelPlayer(team1.players[0], getPlayer(team1.players[0])?.name ?? 'Offen', 'left', `${match.id}-${team1.players[0]}-left`);
+        placements.right = createPadelPlayer(team1.players[1], getPlayer(team1.players[1])?.name ?? 'Offen', 'right', `${match.id}-${team1.players[1]}-right`);
+      }
+
+      if (team2) {
+        placements.left2 = createPadelPlayer(team2.players[0], getPlayer(team2.players[0])?.name ?? 'Offen', 'left2', `${match.id}-${team2.players[0]}-left2`);
+        placements.right2 = createPadelPlayer(team2.players[1], getPlayer(team2.players[1])?.name ?? 'Offen', 'right2', `${match.id}-${team2.players[1]}-right2`);
+      }
+
+      return placements;
+    },
+    [getPlayer, teams],
+  );
 
   // Manual team builder helpers
   const assignedPlayers = useMemo(
@@ -493,19 +516,19 @@ export default function TournamentSetupPage() {
                     return (
                       <div key={round}>
                         <p className="gradient-text-accent text-xs font-semibold mb-2 uppercase tracking-wider">{roundName}</p>
-                        <div className="space-y-2">
-                          {roundMatches.map((match) => {
-                            const t1 = teams.find((t) => t.id === match.team1Id);
-                            const t2 = teams.find((t) => t.id === match.team2Id);
+                        <div className="space-y-5">
+                          {roundMatches.map((match, matchIndex) => {
+                            const lineup = getReadOnlyLineup(match);
+                            const playerCards = Object.values(lineup).filter((player) => player !== undefined);
                             return (
-                              <CourtCard
+                              <PadelBuilder
                                 key={match.id}
-                                compact
-                                team1Players={[t1 ? getTeamPlayerNames(t1) : 'Offen']}
-                                team2Players={[t2 ? getTeamPlayerNames(t2) : 'Offen']}
-                                statusBadge={match.status === 'completed' ? (
-                                  <span className="pill bg-violet-500/10 text-violet-400 border border-violet-500/20">BYE</span>
-                                ) : undefined}
+                                title={`${roundName} · Match ${matchIndex + 1}`}
+                                initialFormation="2-2"
+                                players={playerCards}
+                                initialPlacements={lineup}
+                                scoreLabel={match.status === 'completed' ? 'BYE' : '0 - 0'}
+                                readOnly
                               />
                             );
                           })}

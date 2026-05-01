@@ -13,7 +13,8 @@ import {
   getSetsScore,
   formatSetScore,
 } from '@/lib/scoring';
-import { CourtSurface } from '@/components/CourtCard';
+import { PadelBuilder } from '@/components/padel-builder/PadelBuilder';
+import { createPadelPlayer } from '@/components/padel-builder/playerFactory';
 import type { Match1vs1, SetScore } from '@/types';
 
 export default function Match1vs1Page() {
@@ -38,6 +39,12 @@ export default function Match1vs1Page() {
       setShowCompletionModal(true);
     }
   }, [match?.status, match?.winner]);
+
+  useEffect(() => {
+    if (!showCompletionModal) return;
+    const timeout = window.setTimeout(() => setShowCompletionModal(false), 1500);
+    return () => window.clearTimeout(timeout);
+  }, [showCompletionModal]);
 
   const currentSet: SetScore | null =
     match && match.sets.length > 0 ? match.sets[match.sets.length - 1] : null;
@@ -171,6 +178,8 @@ export default function Match1vs1Page() {
   const showTiebreak = activeSet && needsTiebreak(activeSet) && !isSetComplete(activeSet);
 
   const winnerName = match.winner === 1 ? playerName(match.player1) : playerName(match.player2);
+  const team1Player = createPadelPlayer(match.player1, playerName(match.player1), 'left', `${match.player1}-left`);
+  const team2Player = createPadelPlayer(match.player2, playerName(match.player2), 'right2', `${match.player2}-right2`);
 
   return (
     <div className="min-h-screen text-white px-4 py-6 pb-24 animate-fade-in">
@@ -191,34 +200,15 @@ export default function Match1vs1Page() {
         )}
       </div>
 
-      {/* Court with players + sets score */}
-      <div className="mb-4 animate-fade-in-up stagger-2">
-        <CourtSurface accentColor="blue">
-          <div className="px-6 py-6">
-            <div className="text-center mb-4">
-              <p className="text-xs text-blue-400 font-semibold uppercase tracking-wider mb-1">Spieler 1</p>
-              <p className="text-lg font-semibold text-white/90">{playerName(match.player1)}</p>
-            </div>
-
-            <div className="py-4">
-              <p className="text-xs text-white/25 text-center uppercase tracking-widest mb-3">Sätze</p>
-              <div className="flex items-center justify-center gap-8">
-                <span className={`text-6xl font-black tabular-nums ${
-                  isMatchComplete && match.winner === 1 ? 'gradient-text-accent' : 'text-white/90'
-                }`}>{team1SetsWon}</span>
-                <span className="text-2xl text-white/15 font-bold">–</span>
-                <span className={`text-6xl font-black tabular-nums ${
-                  isMatchComplete && match.winner === 2 ? 'gradient-text-accent' : 'text-white/90'
-                }`}>{team2SetsWon}</span>
-              </div>
-            </div>
-
-            <div className="text-center mt-4">
-              <p className="text-xs text-amber-400 font-semibold uppercase tracking-wider mb-1">Spieler 2</p>
-              <p className="text-lg font-semibold text-white/90">{playerName(match.player2)}</p>
-            </div>
-          </div>
-        </CourtSurface>
+      {/* FUT-style padel lineup editor */}
+      <div className="mb-5 animate-fade-in-up stagger-2">
+        <PadelBuilder
+          title="Match Lineup"
+          initialFormation="1-1"
+          players={[team1Player, team2Player]}
+          initialPlacements={{ left: team1Player, right2: team2Player }}
+          scoreLabel={`${team1SetsWon} - ${team2SetsWon}`}
+        />
       </div>
 
       {/* Current set */}
@@ -351,24 +341,18 @@ export default function Match1vs1Page() {
         </div>
       )}
 
-      {/* Completion modal */}
+      {/* Completion toast */}
       {showCompletionModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md px-6">
-          <div className="glass rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl animate-fade-in-scale">
-            <div className="text-6xl mb-4">🏆</div>
-            <h2 className="text-2xl font-black gradient-text-accent mb-2">{winnerName} gewinnt!</h2>
-            <div className="flex items-center justify-center gap-2 mt-4 mb-6">
-              {match.sets.filter((s) => isSetComplete(s)).map((set, i) => (
-                <span key={i} className="glass-card-static text-white/60 px-3 py-1 rounded-full text-xs font-bold">
-                  {formatSetScore(set)}
-                </span>
-              ))}
-            </div>
-            <div className="space-y-2.5">
-              <Link href="/" className="block w-full btn-primary py-3.5 text-sm text-center">Zurück zur Startseite</Link>
-              <button onClick={() => setShowCompletionModal(false)} className="block w-full btn-secondary py-3.5 text-sm">
-                Ergebnis ansehen
-              </button>
+        <div className="fixed inset-x-0 bottom-24 z-50 mx-auto flex max-w-lg justify-center px-4 pointer-events-none">
+          <div className="glass border-[#fa520f]/30 bg-[#1f1f1f]/90 px-4 py-3 text-white shadow-2xl animate-slide-up">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">🏆</span>
+              <div>
+                <p className="text-sm font-black uppercase tracking-wide">{winnerName} gewinnt!</p>
+                <p className="text-xs text-white/55">
+                  {match.sets.filter((s) => isSetComplete(s)).map(formatSetScore).join(' · ')}
+                </p>
+              </div>
             </div>
           </div>
         </div>

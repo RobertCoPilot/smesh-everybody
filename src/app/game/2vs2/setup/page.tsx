@@ -170,9 +170,9 @@ export default function Setup2vs2Page() {
               <div
                 className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold transition-all ${
                   i < step
-                    ? 'bg-gradient-to-br from-violet-500 to-teal-500 text-white shadow-lg shadow-violet-500/20'
+                    ? 'bg-[#1f1f1f] text-white shadow-lg shadow-[#8a4a17]/20'
                     : i === step
-                      ? 'bg-gradient-to-br from-violet-500 to-teal-500 text-white ring-2 ring-violet-400/30 shadow-lg shadow-violet-500/20'
+                      ? 'bg-[#1f1f1f] text-white ring-2 ring-[#fa520f]/30 shadow-lg shadow-[#8a4a17]/20'
                       : 'glass-card-static text-white/25'
                 }`}
               >
@@ -251,7 +251,7 @@ export default function Setup2vs2Page() {
                   onClick={() => setTeamMode(mode)}
                   className={`py-3 px-3 rounded-2xl text-sm font-medium transition-all ${
                     teamMode === mode
-                      ? 'bg-gradient-to-br from-violet-500 to-teal-500 text-white shadow-lg shadow-violet-500/20'
+                      ? 'bg-[#1f1f1f] text-white shadow-lg shadow-[#8a4a17]/20'
                       : 'glass-card-static text-white/40 hover:text-white/70 hover:border-white/12'
                   }`}
                 >
@@ -402,7 +402,7 @@ export default function Setup2vs2Page() {
                   onClick={() => setSetsToWin(n)}
                   className={`py-3.5 rounded-2xl text-lg font-bold transition-all ${
                     setsToWin === n
-                      ? 'bg-gradient-to-br from-violet-500 to-teal-500 text-white shadow-lg shadow-violet-500/20'
+                      ? 'bg-[#1f1f1f] text-white shadow-lg shadow-[#8a4a17]/20'
                       : 'glass-card-static text-white/40 hover:text-white/70 hover:border-white/12'
                   }`}
                 >

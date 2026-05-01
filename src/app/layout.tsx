@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import BottomNav from "@/components/BottomNav";
+import DesignThemeToggle from "@/components/DesignThemeToggle";
 import FirestoreProvider from "@/components/FirestoreProvider";
 
 const geistSans = Geist({
@@ -29,7 +30,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: "#050505",
+  themeColor: "#fffaeb",
 };
 
 export default function RootLayout({
@@ -38,15 +39,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="de" className="dark">
+    <html lang="de">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#050505] text-[#f5f5f7] min-h-screen noise-overlay`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#fffaeb] text-[#1f1f1f] min-h-screen noise-overlay`}
       >
-        {/* Ambient gradient background */}
+        {/* Warm Clay League ambient background */}
         <div className="ambient-bg">
-          <div className="ambient-orb w-[600px] h-[600px] bg-indigo-500 -top-[200px] -left-[200px] animate-float" />
-          <div className="ambient-orb w-[500px] h-[500px] bg-violet-500 top-[40%] -right-[250px] animate-float" style={{ animationDelay: '-3s' }} />
-          <div className="ambient-orb w-[400px] h-[400px] bg-blue-500 -bottom-[100px] left-[20%] animate-float" style={{ animationDelay: '-5s' }} />
+          <div className="ambient-orb w-[640px] h-[640px] bg-[#ffd900] -top-[220px] -left-[220px] animate-float" />
+          <div className="ambient-orb w-[540px] h-[540px] bg-[#ffa110] top-[35%] -right-[260px] animate-float" style={{ animationDelay: '-3s' }} />
+          <div className="ambient-orb w-[420px] h-[420px] bg-[#fa520f] -bottom-[120px] left-[18%] animate-float" style={{ animationDelay: '-5s' }} />
         </div>
 
         <main className="relative z-10 max-w-lg mx-auto pb-24 min-h-screen">
@@ -54,6 +55,7 @@ export default function RootLayout({
             {children}
           </FirestoreProvider>
         </main>
+        <DesignThemeToggle />
         <BottomNav />
       </body>
     </html>
