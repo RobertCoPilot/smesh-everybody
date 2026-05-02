@@ -35,7 +35,7 @@ function getInitials(name: string): string {
 export function PadelPlayerCard({ player, selected = false, emptyLabel = 'Slot', compact = false }: PadelPlayerCardProps) {
   if (!player) {
     return (
-      <div className="flex h-full min-h-[8.5rem] w-full flex-col items-center justify-center border border-dashed border-white/35 bg-white/10 px-3 text-center text-white/70 backdrop-blur-sm">
+      <div className="flex h-full min-h-[8.5rem] w-full flex-col items-center justify-center border border-dashed border-white/35 bg-theme-soft px-3 text-center app-text-secondary backdrop-blur-sm">
         <div className="mb-2 flex h-9 w-9 items-center justify-center rounded-full border border-white/35 text-lg">+</div>
         <p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em]">{emptyLabel}</p>
       </div>
@@ -57,7 +57,7 @@ export function PadelPlayerCard({ player, selected = false, emptyLabel = 'Slot',
       )}
 
       <div className={`relative h-full min-h-[9rem] overflow-hidden bg-gradient-to-br ${cardVariantClass[variant]} p-2 shadow-[0_18px_35px_rgba(0,0,0,0.38)]`}>
-        <div className="absolute inset-[3px] border border-white/30" />
+        <div className="absolute inset-[3px] border border-theme" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_10%,rgba(255,255,255,0.5),transparent_38%),linear-gradient(135deg,rgba(255,255,255,0.18),transparent_42%)]" />
 
         <div className="relative z-10 grid h-full grid-rows-[auto_1fr_auto] gap-1">

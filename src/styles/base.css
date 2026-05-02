@@ -1,0 +1,69 @@
+/* ===== Scrollbar ===== */
+::-webkit-scrollbar { width: 3px; height: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(250,82,15,0.24); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(250,82,15,0.4); }
+
+/* ===== Safe area ===== */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .pb-safe {
+    padding-bottom: calc(5rem + env(safe-area-inset-bottom));
+  }
+}
+
+/* ===== Ambient Background ===== */
+.ambient-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.ambient-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,217,0,0.2), rgba(255,161,16,0.12) 38%, rgba(250,82,15,0.1));
+}
+.ambient-bg::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 34vh;
+  background: linear-gradient(180deg, transparent, rgba(255,161,16,0.14));
+}
+.ambient-orb {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(90px);
+  opacity: 0.28;
+}
+
+/* ===== Noise Texture Overlay ===== */
+.noise-overlay::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.018;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 256px 256px;
+}
+
+/* Clay League block identity helper */
+.league-blocks {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  height: 0.45rem;
+  overflow: hidden;
+  border-radius: 0.12rem;
+}
+.league-blocks span:nth-child(1) { background: #ffd900; }
+.league-blocks span:nth-child(2) { background: #ffe295; }
+.league-blocks span:nth-child(3) { background: #ffa110; }
+.league-blocks span:nth-child(4) { background: #ff8105; }
+.league-blocks span:nth-child(5) { background: #fb6424; }
+.league-blocks span:nth-child(6) { background: #fa520f; }

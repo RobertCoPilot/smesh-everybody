@@ -17,7 +17,7 @@ export default function BottomNav() {
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50">
       <div className="max-w-lg mx-auto px-4 pb-[env(safe-area-inset-bottom)]">
-        <div className="glass rounded-2xl mb-2 shadow-lg shadow-black/20">
+        <div className="glass nav-shell">
           <div className="flex items-center justify-around h-16 px-1">
             {navItems.map((item) => {
               const isActive =
@@ -28,14 +28,9 @@ export default function BottomNav() {
                   key={item.href}
                   href={item.href}
                   className={`relative flex flex-col items-center justify-center gap-0.5 px-3 py-1.5 rounded-xl transition-all duration-300 ${
-                    isActive
-                      ? 'text-violet-400'
-                      : 'text-white/40 hover:text-white/70'
+                    isActive ? 'nav-item-active' : 'nav-item'
                   }`}
                 >
-                  {isActive && (
-                    <div className="absolute inset-0 rounded-xl bg-violet-400/10" />
-                  )}
                   <item.icon className="w-5 h-5 relative z-10" filled={isActive} />
                   <span className="text-[10px] font-semibold tracking-wide relative z-10">{item.label}</span>
                 </Link>

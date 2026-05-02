@@ -22,11 +22,11 @@ function getGameLink(game: GameRecord): string {
 
 function getGameTypeBadge(type: GameRecord['type']) {
   const config: Record<GameRecord['type'], { label: string; color: string }> = {
-    '1vs1': { label: '1vs1', color: 'bg-emerald-500/15 text-emerald-400' },
-    '2vs2': { label: '2vs2', color: 'bg-indigo-500/15 text-indigo-400' },
-    '2vs2-tournament': { label: 'Turnier', color: 'bg-blue-500/15 text-blue-400' },
-    'americano-klein': { label: 'Americano Klein', color: 'bg-amber-500/15 text-amber-400' },
-    'americano-gross': { label: 'Americano Groß', color: 'bg-rose-500/15 text-rose-400' },
+    '1vs1': { label: '1vs1', color: 'bg-emerald-500/15 app-text-accent' },
+    '2vs2': { label: '2vs2', color: 'bg-indigo-500/15 app-text-accent' },
+    '2vs2-tournament': { label: 'Turnier', color: 'bg-blue-500/15 app-text-accent' },
+    'americano-klein': { label: 'Americano Klein', color: 'bg-amber-500/15 app-text-accent' },
+    'americano-gross': { label: 'Americano Groß', color: 'bg-rose-500/15 app-text-accent' },
   };
   const { label, color } = config[type];
   return (
@@ -191,7 +191,7 @@ export default function Home() {
       {activeGames.length > 0 && (
         <section className="space-y-4 animate-fade-in-up stagger-3">
           <div className="flex items-center gap-2.5">
-            <div className="w-2 h-2 rounded-full bg-violet-400 animate-pulse shadow-[0_0_8px_rgba(139,92,246,0.6)]" />
+            <div className="w-2 h-2 rounded-full bg-[var(--league-accent)] animate-pulse shadow-[0_0_8px_rgba(139,92,246,0.6)]" />
             <h2 className="text-lg font-semibold text-[rgba(255,255,255,0.9)]">Aktive Spiele</h2>
           </div>
           <div className="space-y-3">
@@ -203,7 +203,7 @@ export default function Home() {
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-[var(--league-accent)] animate-pulse" />
                     {getGameTypeBadge(game.type)}
                   </div>
                   <span className="text-xs text-[rgba(255,255,255,0.25)]">{formatDate(game.date)}</span>
@@ -211,7 +211,7 @@ export default function Home() {
                 <p className="text-sm text-[rgba(255,255,255,0.6)] truncate">
                   {getPlayerNames(game, getPlayer)}
                 </p>
-                <div className="flex items-center gap-1.5 mt-3 text-violet-400 text-xs font-medium">
+                <div className="flex items-center gap-1.5 mt-3 app-text-accent text-xs font-medium">
                   <span>Fortsetzen</span>
                   <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
@@ -244,7 +244,7 @@ export default function Home() {
                 {(() => {
                   const winner = getGameWinner(game, getPlayer);
                   return winner ? (
-                    <p className="text-sm text-violet-400 font-semibold mt-2">
+                    <p className="text-sm app-text-accent font-semibold mt-2">
                       🏆 {winner}
                     </p>
                   ) : null;

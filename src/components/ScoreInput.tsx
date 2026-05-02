@@ -11,7 +11,7 @@ interface ScoreInputProps {
 }
 
 export default function ScoreInput({
-  score, maxScore, disabled = false, accentColor = 'text-white/90', onScoreChange,
+  score, maxScore, disabled = false, accentColor = 'app-text-primary', onScoreChange,
 }: ScoreInputProps) {
   const [editing, setEditing] = useState(false);
   const [inputValue, setInputValue] = useState('');
@@ -47,7 +47,7 @@ export default function ScoreInput({
       <button
         onClick={() => onScoreChange(Math.max(0, score - 1))}
         disabled={score <= 0}
-        className="w-8 h-8 flex items-center justify-center rounded-xl bg-white/[0.04] border border-white/[0.06] text-white/60 hover:bg-white/[0.08] disabled:opacity-30 disabled:cursor-not-allowed transition-all text-lg font-bold"
+        className="score-button w-8 h-8 flex items-center justify-center rounded-xl text-lg font-bold"
       >
         −
       </button>
@@ -65,15 +65,15 @@ export default function ScoreInput({
             if (e.key === 'Enter') commitValue();
             if (e.key === 'Escape') setEditing(false);
           }}
-          className="w-12 h-8 text-center text-lg font-bold tabular-nums bg-white/[0.08] border border-violet-500/30 rounded-lg text-white/90 outline-none appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]"
+          className="score-input w-12 h-8 text-center text-lg font-bold tabular-nums rounded-lg appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]"
         />
       ) : (
         <button
           onClick={() => { setInputValue(String(score)); setEditing(true); }}
-          className="w-12 h-8 flex items-center justify-center rounded-lg bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] hover:border-white/[0.12] transition-all cursor-text"
+          className="score-display w-12 h-8 flex items-center justify-center rounded-lg cursor-text"
           title="Tippen zum Eingeben"
         >
-          <span className="text-xl font-bold tabular-nums text-white/90">
+          <span className="text-xl font-bold tabular-nums app-text-primary">
             {score}
           </span>
         </button>
@@ -82,7 +82,7 @@ export default function ScoreInput({
       <button
         onClick={() => onScoreChange(Math.min(maxScore, score + 1))}
         disabled={score >= maxScore}
-        className="w-8 h-8 flex items-center justify-center rounded-xl bg-white/[0.04] border border-white/[0.06] text-white/60 hover:bg-white/[0.08] disabled:opacity-30 disabled:cursor-not-allowed transition-all text-lg font-bold"
+        className="score-button w-8 h-8 flex items-center justify-center rounded-xl text-lg font-bold"
       >
         +
       </button>

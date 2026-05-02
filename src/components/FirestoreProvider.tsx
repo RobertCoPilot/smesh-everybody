@@ -54,7 +54,7 @@ export default function FirestoreProvider({ children }: { children: ReactNode })
         <div className="text-center">
           <div className="text-4xl mb-4">⚡</div>
           <p className="text-red-400 text-sm font-medium mb-2">Verbindungsfehler</p>
-          <p className="text-white/30 text-xs max-w-xs">{error}</p>
+          <p className="app-text-subtle text-xs max-w-xs">{error}</p>
         </div>
       </div>
     );
@@ -64,8 +64,8 @@ export default function FirestoreProvider({ children }: { children: ReactNode })
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="w-10 h-10 border-2 border-violet-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-white/40 text-sm">Daten werden geladen...</p>
+          <div className="w-10 h-10 border-2 border-[var(--league-accent)] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="app-text-muted text-sm">Daten werden geladen...</p>
         </div>
       </div>
     );

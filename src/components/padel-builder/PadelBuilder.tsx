@@ -82,7 +82,7 @@ export function PadelBuilder({
   };
 
   return (
-    <section className="space-y-4 text-white">
+    <section className="space-y-4 app-text-primary">
       <div className="flex items-end justify-between gap-3">
         <div>
           <p className="text-[0.65rem] font-black uppercase tracking-[0.22em] text-[#fa520f]">FUT-style Padel</p>
@@ -108,8 +108,8 @@ export function PadelBuilder({
         <div className="border border-black/10 bg-[#1f1f1f] p-3 shadow-[0_18px_45px_rgba(0,0,0,0.25)]">
           <div className="mb-3 flex items-center justify-between gap-3">
             <div>
-              <p className="text-xs font-black uppercase tracking-[0.2em] text-white/55">Player Pool</p>
-              <p className="text-[0.7rem] text-white/35">Select a slot, then tap a card to place it.</p>
+              <p className="text-xs font-black uppercase tracking-[0.2em] app-text-secondary">Player Pool</p>
+              <p className="text-[0.7rem] app-text-subtle">Select a slot, then tap a card to place it.</p>
             </div>
             {selectedSlot && (
               <span className="border border-red-500/40 bg-red-500/15 px-2 py-1 text-[0.62rem] font-black uppercase tracking-widest text-red-200">
@@ -127,7 +127,7 @@ export function PadelBuilder({
               ))}
             </div>
           ) : (
-            <div className="border border-dashed border-white/20 py-6 text-center text-xs uppercase tracking-[0.18em] text-white/35">
+            <div className="border border-dashed border-theme py-6 text-center text-xs uppercase tracking-[0.18em] app-text-subtle">
               All cards are on court
             </div>
           )}

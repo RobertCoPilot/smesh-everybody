@@ -227,19 +227,19 @@ export default function TournamentSetupPage() {
   if (!isHydrated) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-pulse text-white/25">Laden...</div>
+        <div className="animate-pulse app-text-faint">Laden...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen text-white pb-20 animate-fade-in">
+    <div className="min-h-screen app-text-primary pb-20 animate-fade-in">
       <div className="max-w-lg mx-auto px-4 pt-6">
         {/* Header */}
         <div className="flex items-center gap-3 mb-6 animate-fade-in-up stagger-1">
           <button
             onClick={() => router.back()}
-            className="glass w-10 h-10 rounded-2xl flex items-center justify-center text-white/60 hover:text-white transition-colors"
+            className="glass w-10 h-10 rounded-2xl flex items-center justify-center app-text-secondary hover-text-primary transition-colors"
           >
             ←
           </button>
@@ -254,10 +254,10 @@ export default function TournamentSetupPage() {
                 onClick={() => i < step && setStep(i)}
                 className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-300 ${
                   i < step
-                    ? 'bg-violet-500/20 text-violet-400 border border-violet-500/30 cursor-pointer'
+                    ? 'bg-accent-soft app-text-accent border border-theme cursor-pointer'
                     : i === step
-                      ? 'bg-violet-500 text-white shadow-[0_0_20px_rgba(139,92,246,0.3)] ring-2 ring-violet-400/40'
-                      : 'glass-card-static text-white/25'
+                      ? 'bg-[var(--league-accent)] text-white shadow-[0_0_20px_rgba(139,92,246,0.3)] ring-2 ring-[var(--league-accent)]/30'
+                      : 'glass-card-static app-text-faint'
                 }`}
               >
                 {i < step ? '✓' : i + 1}
@@ -265,14 +265,14 @@ export default function TournamentSetupPage() {
               {i < STEPS.length - 1 && (
                 <div
                   className={`flex-1 h-[2px] mx-2 rounded-full transition-colors duration-300 ${
-                    i < step ? 'bg-violet-500/40' : 'bg-white/[0.06]'
+                    i < step ? 'bg-accent-soft' : 'bg-theme-soft'
                   }`}
                 />
               )}
             </div>
           ))}
         </div>
-        <p className="text-sm text-white/40 mb-5 font-medium tracking-wide uppercase animate-fade-in-up stagger-2">
+        <p className="text-sm app-text-muted mb-5 font-medium tracking-wide uppercase animate-fade-in-up stagger-2">
           {STEPS[step]}
         </p>
 
@@ -285,17 +285,17 @@ export default function TournamentSetupPage() {
               minPlayers={4}
             />
             <div className="glass-card-static rounded-2xl px-4 py-3 flex items-center justify-between">
-              <span className="text-sm text-white/60">
-                <span className="text-white/90 font-semibold">{selectedPlayers.length}</span> Spieler ausgewählt
+              <span className="text-sm app-text-secondary">
+                <span className="app-text-primary font-semibold">{selectedPlayers.length}</span> Spieler ausgewählt
               </span>
               {selectedPlayers.length >= 4 && (
-                <span className="text-sm text-white/40">
-                  → <span className="text-violet-400 font-semibold">{numTeams}</span> Teams
+                <span className="text-sm app-text-muted">
+                  → <span className="app-text-accent font-semibold">{numTeams}</span> Teams
                 </span>
               )}
             </div>
             {isOdd && selectedPlayers.length >= 4 && (
-              <div className="pill bg-rose-500/10 text-rose-400 border border-rose-500/20 inline-flex items-center gap-1.5 !px-3 !py-1.5 rounded-xl">
+              <div className="pill bg-rose-500/10 app-text-accent border border-rose-500/20 inline-flex items-center gap-1.5 !px-3 !py-1.5 rounded-xl">
                 <span className="text-xs">⚠️ Wähle eine gerade Anzahl an Spielern für 2vs2 Teams</span>
               </div>
             )}
@@ -316,8 +316,8 @@ export default function TournamentSetupPage() {
                   }}
                   className={`glass-card-static py-2.5 px-3 rounded-2xl text-sm font-medium transition-all duration-300 ${
                     teamMode === mode
-                      ? 'bg-violet-500/15 !border-violet-500/40 text-violet-400 shadow-[0_0_16px_rgba(139,92,246,0.1)]'
-                      : 'text-white/60 hover:text-white/90 hover:bg-white/[0.06]'
+                      ? 'bg-accent-soft border-theme app-text-accent shadow-[0_0_16px_rgba(139,92,246,0.1)]'
+                      : 'app-text-secondary hover-text-primary hover-surface'
                   }`}
                 >
                   {mode === 'skill-based' ? 'Ausgeglichen' : mode === 'random' ? 'Zufällig' : 'Manuell'}
@@ -330,7 +330,7 @@ export default function TournamentSetupPage() {
               <div className="space-y-3">
                 {manualSlots.map((slot, teamIdx) => (
                   <div key={teamIdx} className="glass-card-static rounded-2xl p-4">
-                    <p className="text-xs text-white/40 mb-2 font-medium">Team {teamIdx + 1}</p>
+                    <p className="text-xs app-text-muted mb-2 font-medium">Team {teamIdx + 1}</p>
                     <div className="flex gap-2">
                       {([0, 1] as const).map((pos) => {
                         const pid = slot[pos];
@@ -349,10 +349,10 @@ export default function TournamentSetupPage() {
                             }}
                             className={`flex-1 py-2.5 px-3 rounded-xl text-sm transition-all duration-300 ${
                               pid
-                                ? 'bg-violet-500/10 text-violet-400 border border-violet-500/30'
+                                ? 'bg-accent-soft app-text-accent border border-theme'
                                 : isActive
-                                  ? 'bg-blue-500/10 border-2 border-blue-500/50 text-blue-400'
-                                  : 'glass-card-static text-white/25'
+                                  ? 'bg-accent-soft border-2 border-blue-500/50 app-text-accent'
+                                  : 'glass-card-static app-text-faint'
                             }`}
                           >
                             {player?.name || (isActive ? 'Auswählen...' : 'Tippen zum Füllen')}
@@ -366,7 +366,7 @@ export default function TournamentSetupPage() {
                 {/* Unassigned players */}
                 {unassignedPlayers.length > 0 && activeSlot && (
                   <div className="space-y-2">
-                    <p className="text-xs text-white/40 font-medium">Spieler antippen zum Zuweisen:</p>
+                    <p className="text-xs app-text-muted font-medium">Spieler antippen zum Zuweisen:</p>
                     <div className="grid grid-cols-2 gap-2">
                       {unassignedPlayers.map((pid) => {
                         const player = getPlayer(pid);
@@ -374,7 +374,7 @@ export default function TournamentSetupPage() {
                           <button
                             key={pid}
                             onClick={() => handleAssignPlayer(pid)}
-                            className="glass-card text-white/90 py-2.5 px-3 rounded-xl text-sm"
+                            className="glass-card app-text-primary py-2.5 px-3 rounded-xl text-sm"
                           >
                             {player?.name || pid}
                           </button>
@@ -409,14 +409,14 @@ export default function TournamentSetupPage() {
             {teams.length > 0 && (
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm text-white/40 font-medium">Teams ({teams.length})</p>
+                  <p className="text-sm app-text-muted font-medium">Teams ({teams.length})</p>
                   {teamMode !== 'manual' && (
                     <button
                       onClick={() => {
                         setTeams([]);
                         handleGenerateTeams();
                       }}
-                      className="text-xs text-violet-400 hover:text-violet-300 transition-colors"
+                      className="text-xs app-text-accent hover-text-primary transition-colors"
                     >
                       Mischen ↻
                     </button>
@@ -427,8 +427,8 @@ export default function TournamentSetupPage() {
                     key={team.id}
                     className={`glass-card-static rounded-2xl p-3.5 flex items-center gap-3 animate-fade-in-up stagger-${Math.min(i + 1, 6)}`}
                   >
-                    <span className="text-xs text-white/25 w-5 font-mono">#{i + 1}</span>
-                    <span className="text-sm text-white/90">{getTeamPlayerNames(team)}</span>
+                    <span className="text-xs app-text-faint w-5 font-mono">#{i + 1}</span>
+                    <span className="text-sm app-text-primary">{getTeamPlayerNames(team)}</span>
                   </div>
                 ))}
               </div>
@@ -441,7 +441,7 @@ export default function TournamentSetupPage() {
           <div className="space-y-6 animate-fade-in-up">
             {/* Courts */}
             <div>
-              <label className="text-sm text-white/40 block mb-3 font-medium">
+              <label className="text-sm app-text-muted block mb-3 font-medium">
                 Anzahl der Plätze
               </label>
               <div className="flex gap-2">
@@ -451,8 +451,8 @@ export default function TournamentSetupPage() {
                     onClick={() => setCourts(n)}
                     className={`glass-card-static flex-1 py-2.5 rounded-2xl text-sm font-semibold transition-all duration-300 ${
                       courts === n
-                        ? 'bg-violet-500/15 !border-violet-500/40 text-violet-400 shadow-[0_0_16px_rgba(139,92,246,0.1)]'
-                        : 'text-white/60 hover:text-white/90'
+                        ? 'bg-accent-soft border-theme app-text-accent shadow-[0_0_16px_rgba(139,92,246,0.1)]'
+                        : 'app-text-secondary hover-text-primary'
                     }`}
                   >
                     {n}
@@ -463,7 +463,7 @@ export default function TournamentSetupPage() {
 
             {/* Sets per round */}
             <div className="space-y-3">
-              <label className="text-sm text-white/40 block font-medium">
+              <label className="text-sm app-text-muted block font-medium">
                 Sätze zum Gewinnen pro Runde
               </label>
               {Array.from({ length: totalRounds }, (_, r) => r).map((round) => {
@@ -473,7 +473,7 @@ export default function TournamentSetupPage() {
                     key={round}
                     className="glass-card-static rounded-2xl p-4 flex items-center justify-between"
                   >
-                    <span className="text-sm text-white/90 font-medium">{name}</span>
+                    <span className="text-sm app-text-primary font-medium">{name}</span>
                     <div className="flex gap-1.5">
                       {[1, 2, 3].map((n) => (
                         <button
@@ -483,8 +483,8 @@ export default function TournamentSetupPage() {
                           }
                           className={`w-10 h-10 rounded-xl text-sm font-semibold transition-all duration-300 ${
                             setsPerRound[round] === n
-                              ? 'bg-violet-500/15 text-violet-400 border border-violet-500/40'
-                              : 'glass-card-static text-white/40 hover:text-white/60'
+                              ? 'bg-accent-soft app-text-accent border border-theme'
+                              : 'glass-card-static app-text-muted hover-text-primary/60'
                           }`}
                         >
                           {n}
@@ -501,7 +501,7 @@ export default function TournamentSetupPage() {
         {/* Step 4: Bracket Preview & Start */}
         {step === 3 && (
           <div className="space-y-5 animate-fade-in-up">
-            <p className="text-sm text-white/40 font-medium">Turnierbaum Vorschau</p>
+            <p className="text-sm app-text-muted font-medium">Turnierbaum Vorschau</p>
 
             {/* Simple bracket visualization */}
             {(() => {
@@ -542,10 +542,10 @@ export default function TournamentSetupPage() {
 
             {/* Summary */}
             <div className="glass-card-static rounded-2xl p-4 space-y-1.5">
-              <p className="text-sm text-white/60">
-                <span className="text-white/90 font-semibold">{teams.length}</span> Teams · <span className="text-white/90 font-semibold">{totalRounds}</span> Runden · <span className="text-white/90 font-semibold">{courts}</span> {courts > 1 ? 'Plätze' : 'Platz'}
+              <p className="text-sm app-text-secondary">
+                <span className="app-text-primary font-semibold">{teams.length}</span> Teams · <span className="app-text-primary font-semibold">{totalRounds}</span> Runden · <span className="app-text-primary font-semibold">{courts}</span> {courts > 1 ? 'Plätze' : 'Platz'}
               </p>
-              <p className="text-xs text-white/40">
+              <p className="text-xs app-text-muted">
                 Sätze:{' '}
                 {Array.from({ length: totalRounds }, (_, r) =>
                   `${getRoundNameDE(r, totalRounds)}: Bo${(setsPerRound[r] || 1) * 2 - 1}`,

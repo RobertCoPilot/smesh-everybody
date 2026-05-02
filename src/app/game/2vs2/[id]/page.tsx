@@ -178,15 +178,15 @@ export default function Match2vs2Page() {
   if (!hydrated) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[var(--league-accent)] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   if (!match) {
     return (
-      <div className="min-h-screen text-white flex flex-col items-center justify-center gap-4 px-4">
-        <p className="text-white/40 text-lg">Match nicht gefunden</p>
+      <div className="min-h-screen app-text-primary flex flex-col items-center justify-center gap-4 px-4">
+        <p className="app-text-muted text-lg">Match nicht gefunden</p>
         <Link
           href="/"
           className="btn-primary px-6 py-3 text-sm"
@@ -208,19 +208,19 @@ export default function Match2vs2Page() {
   const team2Right = createPadelPlayer(match.team2[1], playerName(match.team2[1]), 'right2', `${match.team2[1]}-right2`);
 
   return (
-    <div className="min-h-screen text-white px-4 py-6 pb-24 animate-fade-in">
+    <div className="min-h-screen app-text-primary px-4 py-6 pb-24 animate-fade-in">
       {/* Header */}
       <div className="flex items-center justify-between mb-6 animate-fade-in-up stagger-1">
         <button
           onClick={() => router.back()}
-          className="glass-card-static w-10 h-10 rounded-full flex items-center justify-center hover:border-white/20 transition-all active:scale-95"
+          className="glass-card-static w-10 h-10 rounded-full flex items-center justify-center hover-border-theme transition-all active:scale-95"
         >
-          <svg className="w-5 h-5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5 app-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
         {isMatchComplete && (
-          <span className="bg-violet-500/10 text-violet-400 px-4 py-1.5 rounded-full text-xs font-semibold border border-violet-500/20">
+          <span className="bg-accent-soft app-text-accent px-4 py-1.5 rounded-full text-xs font-semibold border border-theme">
             Abgeschlossen
           </span>
         )}
@@ -245,32 +245,32 @@ export default function Match2vs2Page() {
       {/* Current set scoreboard */}
       {!isMatchComplete && activeSet && (
         <div className="glass-card-static rounded-2xl p-6 mb-4 animate-fade-in-up stagger-4">
-          <p className="text-xs text-white/25 text-center uppercase tracking-widest mb-3">
+          <p className="text-xs app-text-faint text-center uppercase tracking-widest mb-3">
             Satz {match.sets.length} – Spiele
           </p>
           <div className="flex items-center justify-center gap-10">
-            <span className="text-5xl font-black tabular-nums text-white/90">
+            <span className="text-5xl font-black tabular-nums app-text-primary">
               {activeSet.team1Games}
             </span>
-            <span className="text-xl text-white/15 font-bold">–</span>
-            <span className="text-5xl font-black tabular-nums text-white/90">
+            <span className="text-xl app-text-faint font-bold">–</span>
+            <span className="text-5xl font-black tabular-nums app-text-primary">
               {activeSet.team2Games}
             </span>
           </div>
 
           {/* Tiebreak score */}
           {showTiebreak && activeSet.tiebreak && (
-            <div className="mt-4 pt-4 border-t border-white/6">
+            <div className="mt-4 pt-4 border-t border-theme-weak">
               <div className="glass-card-static rounded-xl p-4 !border-amber-500/15 bg-amber-500/5">
-                <p className="text-xs text-amber-400 text-center font-semibold uppercase tracking-widest mb-2">
+                <p className="text-xs app-text-accent text-center font-semibold uppercase tracking-widest mb-2">
                   Tiebreak
                 </p>
                 <div className="flex items-center justify-center gap-6">
-                  <span className="text-3xl font-bold tabular-nums text-amber-400">
+                  <span className="text-3xl font-bold tabular-nums app-text-accent">
                     {activeSet.tiebreak.team1Points}
                   </span>
-                  <span className="text-lg text-white/15 font-bold">–</span>
-                  <span className="text-3xl font-bold tabular-nums text-amber-400">
+                  <span className="text-lg app-text-faint font-bold">–</span>
+                  <span className="text-3xl font-bold tabular-nums app-text-accent">
                     {activeSet.tiebreak.team2Points}
                   </span>
                 </div>
@@ -290,11 +290,11 @@ export default function Match2vs2Page() {
                 key={i}
                 className={`px-3.5 py-1.5 rounded-full text-xs font-bold ${
                   winner === 1
-                    ? 'bg-blue-500/10 text-blue-300 border border-blue-500/20'
+                    ? 'bg-accent-soft app-text-accent border border-blue-500/20'
                     : 'bg-amber-500/10 text-amber-300 border border-amber-500/20'
                 }`}
               >
-                <span className="text-white/25 mr-1">S{i + 1}</span>
+                <span className="app-text-faint mr-1">S{i + 1}</span>
                 {formatSetScore(set)}
               </div>
             );
@@ -307,7 +307,7 @@ export default function Match2vs2Page() {
         <div className="space-y-3 mt-6 animate-fade-in-up stagger-6">
           {showTiebreak ? (
             <>
-              <p className="text-xs text-amber-400 text-center font-semibold uppercase tracking-widest">
+              <p className="text-xs app-text-accent text-center font-semibold uppercase tracking-widest">
                 Tiebreak – Tippe um Punkt hinzuzufügen
               </p>
               <div className="grid grid-cols-2 gap-3">
@@ -380,7 +380,7 @@ export default function Match2vs2Page() {
           {/* Finish match early button */}
           <button
             onClick={handleFinishEarly}
-            className="w-full py-3 mt-4 text-sm font-semibold rounded-2xl border border-white/10 text-white/50 bg-white/[0.03] hover:bg-white/[0.06] hover:text-white/70 transition-all"
+            className="w-full py-3 mt-4 text-sm font-semibold rounded-2xl border border-theme app-text-muted bg-theme-softer hover-surface hover-text-secondary transition-all"
           >
             ⏱ Match vorzeitig beenden
           </button>
@@ -394,7 +394,7 @@ export default function Match2vs2Page() {
           <p className="gradient-text-accent font-bold text-xl mb-2">
             Team {match.winner} gewinnt!
           </p>
-          <p className="text-sm text-white/40">
+          <p className="text-sm app-text-muted">
             {match.winner === 1
               ? [...new Set(match.team1)].map((id) => playerName(id)).join(' & ')
               : [...new Set(match.team2)].map((id) => playerName(id)).join(' & ')}
@@ -416,7 +416,7 @@ export default function Match2vs2Page() {
               <span className="text-2xl">🏆</span>
               <div>
                 <p className="text-sm font-black uppercase tracking-wide">Team {match.winner} gewinnt!</p>
-                <p className="text-xs text-white/55">
+                <p className="text-xs app-text-secondary">
                   {(match.winner === 1
                     ? [...new Set(match.team1)].map((id) => playerName(id)).join(' & ')
                     : [...new Set(match.team2)].map((id) => playerName(id)).join(' & '))}
