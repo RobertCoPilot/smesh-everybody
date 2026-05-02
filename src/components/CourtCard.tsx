@@ -7,7 +7,7 @@ import type { FormationId } from '@/config/padelFormations';
 import type { PadelPlayer, PlacedPadelPlayers } from '@/components/padel-builder/types';
 
 const ACCENTS = {
-  violet: 'border-violet-500/25',
+  violet: 'border-theme',
   amber: 'border-amber-500/25',
   rose: 'border-rose-500/25',
   blue: 'border-blue-500/25',
@@ -144,14 +144,14 @@ export default function CourtCard({
         />
 
         {hasScoreControls && !scoreLabel && (
-          <div className="grid grid-cols-2 gap-3 border-x border-b border-white/10 bg-[#07152f] p-3 text-white">
+          <div className="grid grid-cols-2 gap-3 border-x border-b border-theme bg-[#07152f] p-3 text-white">
             <div className="flex justify-center">{team1Score}</div>
             <div className="flex justify-center">{team2Score}</div>
           </div>
         )}
 
         {footer && (
-          <div className="border-x border-b border-white/10 bg-[#1f1f1f] px-4 py-3 text-white">
+          <div className="border-x border-b border-theme bg-[#1f1f1f] px-4 py-3 text-white">
             {footer}
           </div>
         )}
@@ -167,7 +167,7 @@ interface CourtSurfaceProps {
 
 export function CourtSurface({ className = '', children }: CourtSurfaceProps) {
   return (
-    <div className={`relative overflow-hidden border border-white/15 bg-[#07152f] p-4 text-white ${className}`}>
+    <div className={`relative overflow-hidden border border-theme bg-[#07152f] p-4 text-white ${className}`}>
       {children}
     </div>
   );

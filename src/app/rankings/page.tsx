@@ -166,7 +166,7 @@ export default function RankingsPage() {
       <div className="p-4 pt-6">
         <h1 className="text-3xl font-bold gradient-text mb-6">Ranglisten</h1>
         <div className="flex items-center justify-center h-40">
-          <div className="w-8 h-8 border-2 border-violet-400 border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-[var(--league-accent)] border-t-transparent rounded-full animate-spin" />
         </div>
       </div>
     );
@@ -184,8 +184,8 @@ export default function RankingsPage() {
             onClick={() => setCategory(tab.key)}
             className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${
               category === tab.key
-                ? 'bg-violet-500/15 text-violet-400 shadow-[0_0_12px_rgba(139,92,246,0.15)]'
-                : 'text-white/40 hover:text-white/70'
+                ? 'tab-option-active'
+                : 'tab-option'
             }`}
           >
             {tab.label}
@@ -251,8 +251,8 @@ function SortPills<T>({
           onClick={() => setKey(col.key)}
           className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-300 ${
             activeKey === col.key
-              ? 'bg-[#1f1f1f] text-white shadow-[0_0_16px_rgba(138,74,23,0.18)]'
-              : 'glass-card-static text-white/40 hover:text-white/70'
+              ? 'sort-pill-active'
+              : 'glass-card-static sort-pill-idle'
           }`}
         >
           {col.label}
@@ -287,18 +287,18 @@ function RankTable<T extends { playerId: string; name: string }>({
     <div className="glass-card-static rounded-2xl overflow-x-auto">
       <table className="w-full text-left border-collapse" style={{ minWidth: '340px' }}>
         <thead>
-          <tr className="border-b border-white/[0.06]">
-            <th className="px-2.5 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-white/25 w-8 text-center">
+          <tr className="border-b table-divider">
+            <th className="px-2.5 py-2.5 text-[10px] font-semibold uppercase tracking-wider app-text-faint w-8 text-center">
               #
             </th>
-            <th className="py-2.5 text-[10px] font-semibold uppercase tracking-wider text-white/25">
+            <th className="py-2.5 text-[10px] font-semibold uppercase tracking-wider app-text-faint">
               Spieler
             </th>
             {cols.map((col) => (
               <th
                 key={String(col.key)}
                 className={`px-1.5 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-center w-10 ${
-                  activeKey === col.key ? 'text-violet-400' : 'text-white/25'
+                  activeKey === col.key ? 'app-text-accent' : 'app-text-faint'
                 }`}
               >
                 {col.short}
@@ -313,25 +313,25 @@ function RankTable<T extends { playerId: string; name: string }>({
             const medalColor = isTop3 ? MEDAL_COLORS[rank - 1] : undefined;
             const rowBg =
               rank === 1
-                ? 'bg-amber-500/[0.06]'
+                ? 'table-row-gold'
                 : rank === 2
-                ? 'bg-white/[0.02]'
+                ? 'table-row-silver'
                 : rank === 3
-                ? 'bg-orange-500/[0.04]'
+                ? 'table-row-bronze'
                 : '';
 
             return (
-              <tr key={row.playerId} className={`border-t border-white/[0.04] ${rowBg}`}>
+              <tr key={row.playerId} className={`border-t table-divider ${rowBg}`}>
                 <td className="px-2.5 py-2.5 text-center">
                   <span
-                    className="text-xs font-bold"
-                    style={medalColor ? { color: medalColor } : { color: 'rgba(255,255,255,0.25)' }}
+                    className="text-xs font-bold app-text-faint"
+                    style={medalColor ? { color: medalColor } : undefined}
                   >
                     {rank}
                   </span>
                 </td>
                 <td className="py-2.5 pr-2 max-w-0">
-                  <span className="text-sm font-medium text-white/90 truncate block">
+                  <span className="text-sm font-medium app-text-primary truncate block">
                     {row.name}
                   </span>
                 </td>
@@ -343,7 +343,7 @@ function RankTable<T extends { playerId: string; name: string }>({
                     <td key={String(col.key)} className="px-1.5 py-2.5 text-center">
                       <span
                         className={`text-xs tabular-nums ${
-                          isActive ? 'font-bold text-violet-400' : 'text-white/40'
+                          isActive ? 'font-bold app-text-accent' : 'app-text-muted'
                         }`}
                       >
                         {display}
@@ -356,7 +356,7 @@ function RankTable<T extends { playerId: string; name: string }>({
           })}
           {rows.length === 0 && (
             <tr>
-              <td colSpan={cols.length + 2} className="px-4 py-8 text-center text-white/25 text-sm">
+              <td colSpan={cols.length + 2} className="px-4 py-8 text-center app-text-faint text-sm">
                 Noch keine Spieler
               </td>
             </tr>

@@ -16,10 +16,10 @@ export function PadelCourt({ formation, players, selectedSlot, onSelectSlot, onR
   const config = PADEL_FORMATIONS[formation];
 
   return (
-    <div className="relative overflow-hidden border border-white/15 bg-[#07152f] p-3 shadow-[0_28px_80px_rgba(0,0,0,0.45)]">
+    <div className="relative overflow-hidden border border-theme bg-[#07152f] p-3 shadow-[0_28px_80px_rgba(0,0,0,0.45)]">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,rgba(29,78,216,0.45),transparent_34%),linear-gradient(180deg,#0b2d66_0%,#092554_47%,#061a3a_100%)]" />
       <div className="absolute inset-0 opacity-25 [background-image:linear-gradient(90deg,rgba(255,255,255,.2)_1px,transparent_1px),linear-gradient(0deg,rgba(255,255,255,.14)_1px,transparent_1px)] [background-size:22px_22px]" />
-      <div className="absolute inset-2 border border-white/20 shadow-[inset_0_0_34px_rgba(255,255,255,0.12)]" />
+      <div className="absolute inset-2 border border-theme shadow-[inset_0_0_34px_rgba(255,255,255,0.12)]" />
       <div className="absolute inset-x-5 top-4 z-10 h-px bg-white/20" />
       <div className="absolute inset-x-5 bottom-4 z-10 h-px bg-white/20" />
       <div className="absolute inset-y-5 left-5 z-10 w-px bg-white/20" />
@@ -54,14 +54,14 @@ export function PadelCourt({ formation, players, selectedSlot, onSelectSlot, onR
           );
         })}
 
-        <div className="absolute bottom-3 left-3 z-30 border border-white/20 bg-[#081226]/70 px-3 py-2 text-left text-white backdrop-blur-md">
-          <p className="text-[0.55rem] font-black uppercase tracking-[0.22em] text-white/60">Formation</p>
+        <div className="absolute bottom-3 left-3 z-30 border border-theme bg-[#081226]/70 px-3 py-2 text-left text-white backdrop-blur-md">
+          <p className="text-[0.55rem] font-black uppercase tracking-[0.22em] app-text-secondary">Formation</p>
           <p className="text-lg font-black leading-none">{config.label}</p>
         </div>
 
         {scoreLabel && (
-          <div className="absolute right-3 top-3 z-30 border border-white/20 bg-[#081226]/70 px-3 py-2 text-right text-white backdrop-blur-md">
-            <p className="text-[0.55rem] font-black uppercase tracking-[0.22em] text-white/60">Match</p>
+          <div className="absolute right-3 top-3 z-30 border border-theme bg-[#081226]/70 px-3 py-2 text-right text-white backdrop-blur-md">
+            <p className="text-[0.55rem] font-black uppercase tracking-[0.22em] app-text-secondary">Match</p>
             <p className="text-lg font-black leading-none">{scoreLabel}</p>
           </div>
         )}
