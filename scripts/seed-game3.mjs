@@ -22,7 +22,7 @@ function genId() {
 
 async function seed() {
   // Fetch existing players
-  const snap = await getDocs(collection(db, 'players'));
+  const snap = await getDocs(collection(db, 'dev_players'));
   const existing = {};
   snap.docs.forEach((d) => { const p = d.data(); existing[p.name] = p.id; });
   console.log('Existing players:', Object.keys(existing).join(', '));
@@ -30,7 +30,7 @@ async function seed() {
   // Add Sergej if not exists
   if (!existing['Sergej']) {
     const sergej = { id: genId(), name: 'Sergej', createdAt: '2025-04-03T10:00:00.000Z' };
-    await setDoc(doc(db, 'players', sergej.id), sergej);
+    await setDoc(doc(db, 'dev_players', sergej.id), sergej);
     existing['Sergej'] = sergej.id;
     console.log(`  + Added new player: Sergej (${sergej.id})`);
   }
@@ -113,7 +113,7 @@ async function seed() {
   };
 
   console.log('\nSeeding Americano Groß (April 3)...');
-  await setDoc(doc(db, 'games', tournament.id), tournament);
+  await setDoc(doc(db, 'dev_games', tournament.id), tournament);
   console.log(`  ✓ Tournament ${tournament.id} with ${games.length} games`);
 
   // Print leaderboard

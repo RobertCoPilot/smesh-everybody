@@ -93,12 +93,12 @@ const tournament = {
 async function seed() {
   console.log('Seeding players...');
   for (const player of Object.values(PLAYERS)) {
-    await setDoc(doc(db, 'players', player.id), player);
+    await setDoc(doc(db, 'dev_players', player.id), player);
     console.log(`  ✓ ${player.name} (${player.id})`);
   }
 
   console.log('\nSeeding Americano Klein tournament (March 28)...');
-  await setDoc(doc(db, 'games', tournament.id), tournament);
+  await setDoc(doc(db, 'dev_games', tournament.id), tournament);
   console.log(`  ✓ Tournament ${tournament.id} with ${games.length} games`);
 
   // Print leaderboard

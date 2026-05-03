@@ -1,6 +1,7 @@
 import { create } from 'zustand';
-import { db } from '@/lib/firebase';
 import { doc, setDoc, deleteDoc } from 'firebase/firestore';
+import { firestoreCollections } from '@/lib/firestoreCollections';
+import { db } from '@/lib/firebase';
 import type {
   Player,
   Match1vs1,
@@ -66,7 +67,7 @@ export const useGameStore = create<GameStore>()((set, get) => ({
       createdAt: new Date().toISOString(),
     };
     set((state) => ({ players: [...state.players, player] }));
-    setDoc(doc(db, 'players', player.id), clean(player)).catch(console.error);
+    setDoc(doc(db, firestoreCollections.players, player.id), clean(player)).catch(console.error);
     return player;
   },
 
@@ -74,7 +75,7 @@ export const useGameStore = create<GameStore>()((set, get) => ({
     set((state) => ({
       players: state.players.filter((p) => p.id !== id),
     }));
-    deleteDoc(doc(db, 'players', id)).catch(console.error);
+    deleteDoc(doc(db, firestoreCollections.players, id)).catch(console.error);
   },
 
   getPlayer: (id: string) => {
@@ -83,7 +84,7 @@ export const useGameStore = create<GameStore>()((set, get) => ({
 
   addGame: (game: GameRecord) => {
     set((state) => ({ games: [...state.games, game] }));
-    setDoc(doc(db, 'games', game.id), clean(game)).catch(console.error);
+    setDoc(doc(db, firestoreCollections.games, game.id), clean(game)).catch(console.error);
   },
 
   updateGame: (id: string, updater: (game: GameRecord) => GameRecord) => {
@@ -98,7 +99,7 @@ export const useGameStore = create<GameStore>()((set, get) => ({
       }),
     }));
     if (updatedGame) {
-      setDoc(doc(db, 'games', id), clean(updatedGame)).catch(console.error);
+      setDoc(doc(db, firestoreCollections.games, id), clean(updatedGame)).catch(console.error);
     }
   },
 
@@ -106,7 +107,7 @@ export const useGameStore = create<GameStore>()((set, get) => ({
     set((state) => ({
       games: state.games.filter((g) => g.id !== id),
     }));
-    deleteDoc(doc(db, 'games', id)).catch(console.error);
+    deleteDoc(doc(db, firestoreCollections.games, id)).catch(console.error);
   },
 
   getGame: (id: string) => {

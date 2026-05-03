@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { collection, getDocs } from 'firebase/firestore';
+import { firestoreCollections } from '@/lib/firestoreCollections';
 import { db } from '@/lib/firebase';
 import type {
   GameRecord,
@@ -16,7 +17,6 @@ import {
   needsTiebreak,
   canAddGame,
   getMatchWinner,
-  getSetsScore,
 } from '@/lib/scoring';
 
 function clean<T>(obj: T): T {
@@ -43,7 +43,7 @@ export async function POST(
       return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
     }
 
-    const gameRef = doc(db, 'games', id);
+    const gameRef = doc(db, firestoreCollections.games, id);
     const gameDoc = await getDoc(gameRef);
     if (!gameDoc.exists()) {
       return NextResponse.json({ error: 'Game not found' }, { status: 404 });
@@ -52,7 +52,7 @@ export async function POST(
     const game = gameDoc.data() as GameRecord;
 
     // Fetch players for name resolution
-    const playersSnap = await getDocs(collection(db, 'players'));
+    const playersSnap = await getDocs(collection(db, firestoreCollections.players));
     const players = new Map<string, string>();
     playersSnap.docs.forEach((d) => {
       const p = d.data() as Player;

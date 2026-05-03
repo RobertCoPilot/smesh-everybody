@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type ReactNode } from 'react';
 import { collection, onSnapshot } from 'firebase/firestore';
+import { firestoreCollections } from '@/lib/firestoreCollections';
 import { db } from '@/lib/firebase';
 import { useGameStore } from '@/store/gameStore';
 import type { Player, GameRecord } from '@/types';
@@ -19,7 +20,7 @@ export default function FirestoreProvider({ children }: { children: ReactNode })
     };
 
     const unsubPlayers = onSnapshot(
-      collection(db, 'players'),
+      collection(db, firestoreCollections.players),
       (snap) => {
         useGameStore.getState()._setPlayers(
           snap.docs.map((d) => d.data() as Player)
@@ -31,7 +32,7 @@ export default function FirestoreProvider({ children }: { children: ReactNode })
     );
 
     const unsubGames = onSnapshot(
-      collection(db, 'games'),
+      collection(db, firestoreCollections.games),
       (snap) => {
         useGameStore.getState()._setGames(
           snap.docs.map((d) => d.data() as GameRecord)

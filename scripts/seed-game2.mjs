@@ -22,7 +22,7 @@ function genId() {
 
 async function seed() {
   // Fetch existing players
-  const snap = await getDocs(collection(db, 'players'));
+  const snap = await getDocs(collection(db, 'dev_players'));
   const existing = {};
   snap.docs.forEach((d) => { const p = d.data(); existing[p.name] = p.id; });
   console.log('Existing players:', Object.keys(existing).join(', '));
@@ -87,7 +87,7 @@ async function seed() {
   };
 
   console.log('\nSeeding 2nd Americano Klein (March 28)...');
-  await setDoc(doc(db, 'games', tournament.id), tournament);
+  await setDoc(doc(db, 'dev_games', tournament.id), tournament);
   console.log(`  ✓ Tournament ${tournament.id} with ${games.length} games`);
 
   // Print leaderboard

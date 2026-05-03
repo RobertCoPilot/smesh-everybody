@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { collection, getDocs } from 'firebase/firestore';
+import { firestoreCollections } from '@/lib/firestoreCollections';
 import { db } from '@/lib/firebase';
 import type {
   GameRecord,
@@ -9,12 +10,7 @@ import type {
   AmericanoTournament,
   Player,
 } from '@/types';
-import {
-  isSetComplete,
-  getSetWinner,
-  getSetsScore,
-  needsTiebreak,
-} from '@/lib/scoring';
+import { getSetsScore } from '@/lib/scoring';
 
 // GET /api/garmin/games
 // Returns a flat list of all active scoreable items for the Garmin watch.
@@ -23,8 +19,8 @@ export async function GET() {
   try {
     // Fetch players and games in parallel
     const [playersSnap, gamesSnap] = await Promise.all([
-      getDocs(collection(db, 'players')),
-      getDocs(collection(db, 'games')),
+      getDocs(collection(db, firestoreCollections.players)),
+      getDocs(collection(db, firestoreCollections.games)),
     ]);
 
     const players = new Map<string, string>();

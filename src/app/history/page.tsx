@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useMemo, useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { format } from 'date-fns';
+import { calculateEloMatchSummaries, type EloChange } from '@/lib/elo';
 import { useGameStore } from '@/store/gameStore';
 import type { GameRecord, Match2vs2, Match1vs1, Tournament, AmericanoTournament } from '@/types';
 import { formatSetScore, getSetsScore } from '@/lib/scoring';
@@ -42,7 +43,28 @@ function getGameLink(game: GameRecord): string {
   }
 }
 
-function Match1vs1Card({ game }: { game: Match1vs1 }) {
+function formatDelta(delta: number): string {
+  return delta > 0 ? `+${delta}` : String(delta);
+}
+
+function EloDeltaLine({ changes, team1Ids, team2Ids }: { changes?: EloChange[]; team1Ids: string[]; team2Ids: string[] }) {
+  if (!changes || changes.length === 0) return null;
+
+  const teamDelta = (ids: string[]) => {
+    const change = changes.find((entry) => ids.includes(entry.playerId));
+    return change ? formatDelta(change.delta) : '0';
+  };
+
+  return (
+    <div className="flex justify-center gap-3 text-[11px] app-text-subtle">
+      <span>Team 1 ELO {teamDelta(team1Ids)}</span>
+      <span>·</span>
+      <span>Team 2 ELO {teamDelta(team2Ids)}</span>
+    </div>
+  );
+}
+
+function Match1vs1Card({ game, eloChanges }: { game: Match1vs1; eloChanges?: EloChange[] }) {
   const getPlayer = useGameStore((s) => s.getPlayer);
   const p1 = getPlayer(game.player1)?.name ?? '?';
   const p2 = getPlayer(game.player2)?.name ?? '?';
@@ -68,11 +90,12 @@ function Match1vs1Card({ game }: { game: Match1vs1 }) {
           ))}
         </div>
       )}
+      <EloDeltaLine changes={eloChanges} team1Ids={[game.player1]} team2Ids={[game.player2]} />
     </div>
   );
 }
 
-function Match2vs2Card({ game }: { game: Match2vs2 }) {
+function Match2vs2Card({ game, eloChanges }: { game: Match2vs2; eloChanges?: EloChange[] }) {
   const getPlayer = useGameStore((s) => s.getPlayer);
   const team1Names = [...new Set(game.team1)].map((id) => getPlayer(id)?.name ?? '?').join(' & ');
   const team2Names = [...new Set(game.team2)].map((id) => getPlayer(id)?.name ?? '?').join(' & ');
@@ -98,6 +121,7 @@ function Match2vs2Card({ game }: { game: Match2vs2 }) {
           ))}
         </div>
       )}
+      <EloDeltaLine changes={eloChanges} team1Ids={[...game.team1]} team2Ids={[...game.team2]} />
     </div>
   );
 }
@@ -157,14 +181,18 @@ function AmericanoCard({ game }: { game: AmericanoTournament }) {
 }
 
 export default function HistoryPage() {
-  const [hydrated, setHydrated] = useState(false);
+  const hydrated = useSyncExternalStore(
+    () => () => undefined,
+    () => true,
+    () => false
+  );
   const [filter, setFilter] = useState<FilterType>('all');
   const [deleteId, setDeleteId] = useState<string | null>(null);
-  const { games, getPlayer, removeGame } = useGameStore();
+  const { games, players, removeGame } = useGameStore();
 
-  useEffect(() => {
-    setHydrated(true);
-  }, []);
+  const eloChangesByGameId = useMemo(() => {
+    return new Map(calculateEloMatchSummaries(players, games).map((summary) => [summary.gameId, summary.changes]));
+  }, [players, games]);
 
   if (!hydrated) {
     return (
@@ -243,8 +271,8 @@ export default function HistoryPage() {
                   </p>
 
                   {/* Game-type specific content */}
-                  {game.type === '1vs1' && <Match1vs1Card game={game} />}
-                  {game.type === '2vs2' && <Match2vs2Card game={game} />}
+                  {game.type === '1vs1' && <Match1vs1Card game={game} eloChanges={eloChangesByGameId.get(game.id)} />}
+                  {game.type === '2vs2' && <Match2vs2Card game={game} eloChanges={eloChangesByGameId.get(game.id)} />}
                   {game.type === '2vs2-tournament' && <TournamentCard game={game} />}
                   {(game.type === 'americano-klein' || game.type === 'americano-gross') && (
                     <AmericanoCard game={game} />

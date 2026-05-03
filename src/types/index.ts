@@ -1,7 +1,36 @@
+export type EloTier = 'bronze' | 'silver' | 'gold' | 'elite' | 'icon';
+
+export interface EloChange {
+  playerId: string;
+  before: number;
+  after: number;
+  delta: number;
+}
+
+export interface ChemistryChange {
+  pairKey: string;
+  delta: number;
+}
+
+export interface MatchTracking {
+  trackedAt: string;
+  teams: [string[], string[]];
+  score: string;
+  mvp: string | null;
+  winnerPlayers: string[];
+  loserPlayers: string[];
+  eloChanges: EloChange[];
+  chemistryChanges: ChemistryChange[];
+}
+
 export interface Player {
   id: string;
   name: string;
   createdAt: string;
+  currentElo?: number;
+  peakElo?: number;
+  allTimeBestElo?: number;
+  eloTier?: EloTier;
 }
 
 export interface SetScore {
@@ -20,6 +49,7 @@ export interface Match1vs1 {
   sets: SetScore[];
   winner: 1 | 2 | null;
   status: 'in_progress' | 'completed';
+  matchTracking?: MatchTracking;
 }
 
 export interface Match2vs2 {
@@ -32,6 +62,7 @@ export interface Match2vs2 {
   sets: SetScore[];
   winner: 1 | 2 | null;
   status: 'in_progress' | 'completed';
+  matchTracking?: MatchTracking;
 }
 
 export interface TournamentTeam {

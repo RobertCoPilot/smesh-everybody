@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useMemo, useState, useSyncExternalStore } from 'react';
+import { calculateEloLeaderboard, getTierLabel } from '@/lib/elo';
 import { useGameStore } from '@/store/gameStore';
 
-type CategoryKey = 'overall' | 'americano' | 'normal';
+type CategoryKey = 'overall' | 'elo' | 'americano' | 'normal';
 
 interface OverallRow {
   playerId: string;
@@ -27,6 +28,16 @@ interface AmericanoRow {
   avgPoints: number;
 }
 
+interface EloRow {
+  playerId: string;
+  name: string;
+  currentElo: number;
+  peakElo: number;
+  matchesPlayed: number;
+  wins: number;
+  winPct: number;
+}
+
 interface NormalRow {
   playerId: string;
   name: string;
@@ -42,6 +53,7 @@ type SortKey<T> = keyof Omit<T, 'playerId' | 'name'>;
 
 const CATEGORY_TABS: { key: CategoryKey; label: string }[] = [
   { key: 'overall', label: 'Gesamt' },
+  { key: 'elo', label: 'ELO' },
   { key: 'americano', label: 'Americano' },
   { key: 'normal', label: 'Normal' },
 ];
@@ -63,6 +75,14 @@ const AMERICANO_COLS: { key: SortKey<AmericanoRow>; label: string; short: string
   { key: 'tournamentWins', label: 'Turnier Siege', short: 'TS' },
   { key: 'points', label: 'Punkte', short: 'Pkt' },
   { key: 'avgPoints', label: 'Durchschnitt', short: '⌀' },
+];
+
+const ELO_COLS: { key: SortKey<EloRow>; label: string; short: string }[] = [
+  { key: 'currentElo', label: 'Aktuelles ELO', short: 'ELO' },
+  { key: 'peakElo', label: 'Peak ELO', short: 'Peak' },
+  { key: 'matchesPlayed', label: 'ELO Matches', short: 'Sp' },
+  { key: 'wins', label: 'Siege', short: 'S' },
+  { key: 'winPct', label: 'Sieg-%', short: 'S%' },
 ];
 
 const NORMAL_COLS: { key: SortKey<NormalRow>; label: string; short: string }[] = [
@@ -91,18 +111,20 @@ function sortRows<T>(rows: T[], key: keyof T): T[] {
 }
 
 export default function RankingsPage() {
-  const [hydrated, setHydrated] = useState(false);
+  const hydrated = useSyncExternalStore(
+    () => () => undefined,
+    () => true,
+    () => false
+  );
   const [category, setCategory] = useState<CategoryKey>('overall');
   const [overallSort, setOverallSort] = useState<SortKey<OverallRow>>('gameWinPct');
   const [americanoSort, setAmericanoSort] = useState<SortKey<AmericanoRow>>('points');
+  const [eloSort, setEloSort] = useState<SortKey<EloRow>>('currentElo');
   const [normalSort, setNormalSort] = useState<SortKey<NormalRow>>('twovstwoWins');
 
   const players = useGameStore((s) => s.players);
+  const games = useGameStore((s) => s.games);
   const getPlayerWins = useGameStore((s) => s.getPlayerWins);
-
-  useEffect(() => {
-    setHydrated(true);
-  }, []);
 
   const allStats = useMemo(() => {
     if (!hydrated) return [];
@@ -157,8 +179,21 @@ export default function RankingsPage() {
     }));
   }, [allStats]);
 
+  const eloRows = useMemo<EloRow[]>(() => {
+    return calculateEloLeaderboard(players, games).map((row) => ({
+      playerId: row.playerId,
+      name: `${row.name} · ${getTierLabel(row.tier)}`,
+      currentElo: row.currentElo,
+      peakElo: row.peakElo,
+      matchesPlayed: row.matchesPlayed,
+      wins: row.wins,
+      winPct: row.winPct,
+    }));
+  }, [players, games]);
+
   const sortedOverall = useMemo(() => sortRows(overallRows, overallSort), [overallRows, overallSort]);
   const sortedAmericano = useMemo(() => sortRows(americanoRows, americanoSort), [americanoRows, americanoSort]);
+  const sortedElo = useMemo(() => sortRows(eloRows, eloSort), [eloRows, eloSort]);
   const sortedNormal = useMemo(() => sortRows(normalRows, normalSort), [normalRows, normalSort]);
 
   if (!hydrated) {
@@ -203,6 +238,23 @@ export default function RankingsPage() {
             formatValue={(key, val) =>
               key === 'gameWinPct' || key === 'tournamentWinPct' ? formatPct(val) : String(val)
             }
+          />
+        </div>
+      )}
+
+      {category === 'elo' && (
+        <div className="animate-fade-in-up">
+          <div className="glass-card-static rounded-2xl p-3 mb-4">
+            <p className="text-xs app-text-muted leading-relaxed">
+              ELO wird live aus abgeschlossenen 1vs1- und 2vs2-Spielen berechnet. Alte Match-History bleibt unverändert.
+            </p>
+          </div>
+          <SortPills cols={ELO_COLS} activeKey={eloSort} setKey={setEloSort} />
+          <RankTable<EloRow>
+            rows={sortedElo}
+            cols={ELO_COLS}
+            activeKey={eloSort}
+            formatValue={(key, val) => (key === 'winPct' ? formatPct(val) : String(Math.round(val)))}
           />
         </div>
       )}

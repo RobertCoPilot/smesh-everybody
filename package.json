@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:export": "node scripts/export-firestore.mjs",
+    "db:import": "node scripts/import-firestore.mjs",
+    "db:validate-backup": "node scripts/validate-firestore-backup.mjs"
   },
   "dependencies": {
     "@mozilla/readability": "^0.6.0",
