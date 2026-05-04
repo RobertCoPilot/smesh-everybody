@@ -56,7 +56,7 @@ jobs:
           do
             grep -q "^$name=" "$ENV_FILE" || (echo "Missing Vercel project env var: $name" && exit 1)
           done
-          grep -q "^NEXT_PUBLIC_FIREBASE_PROJECT_ID=smesh-everybody-dev" "$ENV_FILE" || (echo "Vercel project must point at smesh-everybody-dev" && exit 1)
+          grep -Eq '^NEXT_PUBLIC_FIREBASE_PROJECT_ID="?smesh-everybody-dev"?$' "$ENV_FILE" || (echo "Vercel project must point at smesh-everybody-dev" && exit 1)
 
       - name: Build with Vercel
         run: npx vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
