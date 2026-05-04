@@ -42,6 +42,22 @@ jobs:
       - name: Pull Vercel dev project settings
         run: npx vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
 
+      - name: Validate pulled Vercel env
+        run: |
+          ENV_FILE=.vercel/.env.production.local
+          test -f "$ENV_FILE" || (echo "Vercel env file was not created by vercel pull" && exit 1)
+          for name in \
+            NEXT_PUBLIC_FIREBASE_API_KEY \
+            NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN \
+            NEXT_PUBLIC_FIREBASE_PROJECT_ID \
+            NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET \
+            NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID \
+            NEXT_PUBLIC_FIREBASE_APP_ID
+          do
+            grep -q "^$name=" "$ENV_FILE" || (echo "Missing Vercel project env var: $name" && exit 1)
+          done
+          grep -q "^NEXT_PUBLIC_FIREBASE_PROJECT_ID=smesh-everybody-dev" "$ENV_FILE" || (echo "Vercel project must point at smesh-everybody-dev" && exit 1)
+
       - name: Build with Vercel
         run: npx vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
 
