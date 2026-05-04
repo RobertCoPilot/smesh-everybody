@@ -119,13 +119,17 @@ export default function TournamentSetupPage() {
       const placements: PlacedPadelPlayers = {};
 
       if (team1) {
-        placements.left = createPadelPlayer(team1.players[0], getPlayer(team1.players[0])?.name ?? 'Offen', 'left', `${match.id}-${team1.players[0]}-left`);
-        placements.right = createPadelPlayer(team1.players[1], getPlayer(team1.players[1])?.name ?? 'Offen', 'right', `${match.id}-${team1.players[1]}-right`);
+        const player1 = getPlayer(team1.players[0]);
+        const player2 = getPlayer(team1.players[1]);
+        placements.left = createPadelPlayer(team1.players[0], player1?.name ?? 'Offen', 'left', `${match.id}-${team1.players[0]}-left`, player1?.currentElo);
+        placements.right = createPadelPlayer(team1.players[1], player2?.name ?? 'Offen', 'right', `${match.id}-${team1.players[1]}-right`, player2?.currentElo);
       }
 
       if (team2) {
-        placements.left2 = createPadelPlayer(team2.players[0], getPlayer(team2.players[0])?.name ?? 'Offen', 'left2', `${match.id}-${team2.players[0]}-left2`);
-        placements.right2 = createPadelPlayer(team2.players[1], getPlayer(team2.players[1])?.name ?? 'Offen', 'right2', `${match.id}-${team2.players[1]}-right2`);
+        const player3 = getPlayer(team2.players[0]);
+        const player4 = getPlayer(team2.players[1]);
+        placements.left2 = createPadelPlayer(team2.players[0], player3?.name ?? 'Offen', 'left2', `${match.id}-${team2.players[0]}-left2`, player3?.currentElo);
+        placements.right2 = createPadelPlayer(team2.players[1], player4?.name ?? 'Offen', 'right2', `${match.id}-${team2.players[1]}-right2`, player4?.currentElo);
       }
 
       return placements;
@@ -256,7 +260,7 @@ export default function TournamentSetupPage() {
                   i < step
                     ? 'bg-accent-soft app-text-accent border border-theme cursor-pointer'
                     : i === step
-                      ? 'bg-[var(--league-accent)] text-white shadow-[0_0_20px_rgba(139,92,246,0.3)] ring-2 ring-[var(--league-accent)]/30'
+                      ? 'app-choice-active ring-2 ring-[var(--league-accent)]/30'
                       : 'glass-card-static app-text-faint'
                 }`}
               >

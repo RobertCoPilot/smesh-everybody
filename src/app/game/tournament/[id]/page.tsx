@@ -297,7 +297,7 @@ export default function TournamentPage() {
 
   if (!tournament) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4 text-white">
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 app-text-primary">
         <p className="app-text-muted">Turnier nicht gefunden</p>
         <button
           onClick={() => router.push('/')}
@@ -564,7 +564,7 @@ function ScoringModal({
             {/* Team 1 */}
             <button
               onClick={() => scoreAction(match.id, 1)}
-              className="bg-accent-soft hover-surface border border-theme text-white rounded-2xl p-4 transition-all duration-300 active:scale-95"
+              className="surface-accent-soft hover-surface rounded-2xl p-4 transition-all duration-300 active:scale-95"
             >
               <p className="text-xs app-text-accent mb-1.5 font-medium">
                 {isTiebreak && hasTiebreak ? 'Punkt' : 'Spiel'}
@@ -577,7 +577,7 @@ function ScoringModal({
             {/* Team 2 */}
             <button
               onClick={() => scoreAction(match.id, 2)}
-              className="bg-blue-500/15 hover:bg-blue-500/25 border border-theme text-white rounded-2xl p-4 transition-all duration-300 active:scale-95"
+              className="surface-muted hover-surface rounded-2xl p-4 transition-all duration-300 active:scale-95"
             >
               <p className="text-xs app-text-accent/70 mb-1.5 font-medium">
                 {isTiebreak && hasTiebreak ? 'Punkt' : 'Spiel'}

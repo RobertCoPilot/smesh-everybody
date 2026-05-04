@@ -1,29 +1,17 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useMemo, useState, useSyncExternalStore } from 'react';
 import { format } from 'date-fns';
+import { PadelPlayerCard } from '@/components/padel-builder/PadelPlayerCard';
+import { createPadelPlayer } from '@/components/padel-builder/playerFactory';
 import { useGameStore } from '@/store/gameStore';
 
-function getInitials(name: string): string {
-  return name
-    .split(' ')
-    .map((w) => w[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
-}
-
-function hashColor(name: string): string {
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) {
-    hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  const hue = Math.abs(hash) % 360;
-  return `hsl(${hue}, 60%, 45%)`;
-}
-
 export default function PlayersPage() {
-  const [hydrated, setHydrated] = useState(false);
+  const hydrated = useSyncExternalStore(
+    () => () => undefined,
+    () => true,
+    () => false
+  );
   const [newName, setNewName] = useState('');
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
@@ -34,10 +22,6 @@ export default function PlayersPage() {
   const addPlayer = useGameStore((s) => s.addPlayer);
   const removePlayer = useGameStore((s) => s.removePlayer);
   const getPlayerWins = useGameStore((s) => s.getPlayerWins);
-
-  useEffect(() => {
-    setHydrated(true);
-  }, []);
 
   const isPlayerInGames = useMemo(() => {
     if (!hydrated) return new Set<string>();
@@ -170,6 +154,7 @@ export default function PlayersPage() {
             const stats = getPlayerWins(player.id);
             const canDelete = !isPlayerInGames.has(player.id);
             const totalWins = stats.twovstwoWins + stats.tournamentWins + stats.americanoWins;
+            const cardPlayer = createPadelPlayer(player.id, player.name, 'left', `${player.id}-profile-card`, player.currentElo);
 
             return (
               <div
@@ -177,12 +162,9 @@ export default function PlayersPage() {
                 className="glass-card-static rounded-2xl p-5 group"
               >
                 <div className="flex items-center gap-3">
-                  {/* Avatar */}
-                  <div
-                    className="w-12 h-12 rounded-xl flex items-center justify-center text-white text-sm font-bold shrink-0"
-                    style={{ backgroundColor: hashColor(player.name) }}
-                  >
-                    {getInitials(player.name)}
+                  {/* FUT card */}
+                  <div className="h-36 w-24 shrink-0">
+                    <PadelPlayerCard player={cardPlayer} compact />
                   </div>
 
                   {/* Info */}

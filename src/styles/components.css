@@ -129,6 +129,50 @@
 /* ===== Semantic surfaces and controls ===== */
 .app-page { min-height: 100vh; color: var(--foreground); }
 .app-page-pad { padding: 1.5rem 1rem 6rem; }
+.app-page-shell { padding: 2rem 1.25rem 6rem; }
+.app-section-title { color: var(--foreground); font-weight: 650; letter-spacing: -0.02em; }
+.app-kicker { color: var(--league-accent); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; }
+.app-card-title { color: rgba(31,31,31,0.88); font-weight: 650; }
+.app-card-copy { color: rgba(31,31,31,0.58); }
+.app-card-meta { color: rgba(31,31,31,0.42); }
+.app-stat-label { color: rgba(31,31,31,0.54); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.app-choice-active { background: var(--clay-black); color: #fffaeb; box-shadow: 0 12px 30px rgba(127, 99, 21, 0.16); }
+.app-choice-idle { color: rgba(31,31,31,0.58); }
+.app-choice-idle:hover { color: rgba(31,31,31,0.86); }
+.app-status-active { background: rgba(245,158,11,0.12); color: #b45309; border: 1px solid rgba(245,158,11,0.22); }
+.app-danger-text { color: #dc2626; }
+.app-danger-button { background: rgba(220,38,38,0.86); color: #fff; }
+.app-danger-button:hover { background: #dc2626; }
+
+.app-dark-panel,
+.builder-pool,
+.court-footer,
+.court-score-controls {
+  background: #1f1f1f;
+  color: rgba(255,250,235,0.92);
+  border-color: rgba(255,250,235,0.14);
+}
+.app-dark-panel .app-text-secondary,
+.app-dark-panel .app-text-muted,
+.builder-pool .app-text-secondary,
+.builder-pool .app-text-muted,
+.builder-pool .app-text-subtle,
+.court-footer .app-text-secondary,
+.court-score-controls .app-text-secondary {
+  color: rgba(255,250,235,0.68);
+}
+.builder-slot-badge {
+  border: 1px solid rgba(250,82,15,0.38);
+  background: rgba(250,82,15,0.14);
+  color: #fffaeb;
+}
+.court-hud {
+  border: 1px solid rgba(255,250,235,0.18);
+  background: rgba(8,18,38,0.72);
+  color: rgba(255,250,235,0.94);
+  backdrop-filter: blur(12px);
+}
+
 
 .surface-muted {
   background: rgba(255, 226, 149, 0.36);

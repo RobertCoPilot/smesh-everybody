@@ -77,6 +77,30 @@
   color: #1456f0;
 }
 
+:root[data-design-theme="electric"] .app-card-title { color: rgba(34,34,34,0.9); }
+:root[data-design-theme="electric"] .app-card-copy { color: rgba(34,34,34,0.6); }
+:root[data-design-theme="electric"] .app-card-meta { color: rgba(34,34,34,0.42); }
+:root[data-design-theme="electric"] .app-stat-label { color: rgba(34,34,34,0.54); }
+:root[data-design-theme="electric"] .app-choice-active {
+  background: #181e25;
+  color: #ffffff;
+  border-radius: 9999px;
+  box-shadow: rgba(44, 30, 116, 0.16) 0px 0px 15px;
+}
+:root[data-design-theme="electric"] .app-status-active { background: rgba(245,158,11,0.12); color: #92400e; border-color: rgba(245,158,11,0.24); }
+:root[data-design-theme="electric"] .app-dark-panel,
+:root[data-design-theme="electric"] .builder-pool,
+:root[data-design-theme="electric"] .court-footer,
+:root[data-design-theme="electric"] .court-score-controls {
+  background: #181e25;
+  color: rgba(255,255,255,0.92);
+}
+:root[data-design-theme="electric"] .builder-slot-badge {
+  border-color: rgba(20,86,240,0.32);
+  background: rgba(20,86,240,0.16);
+  color: #1456f0;
+}
+
 :root[data-design-theme="electric"] .btn-primary {
   background: #181e25;
   border-radius: 9999px;

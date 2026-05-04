@@ -1,6 +1,7 @@
 import type { PadelPosition } from '@/config/padelFormations';
+import type { EloTier } from '@/types';
 
-export type PadelCardVariant = 'gold' | 'silver' | 'bronze' | 'special';
+export type PadelCardVariant = EloTier;
 
 export interface PadelStats {
   speed: number;
@@ -23,6 +24,8 @@ export interface PadelPlayer {
   level?: string;
   stats: PadelStats;
   cardVariant?: PadelCardVariant;
+  eloTier?: EloTier;
+  currentElo?: number;
 }
 
 export type PlacedPadelPlayers = Partial<Record<PadelPosition, PadelPlayer>>;

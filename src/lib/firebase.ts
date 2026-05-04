@@ -1,26 +1,23 @@
-import { initializeApp } from 'firebase/app';
+import { initializeApp, type FirebaseOptions } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 
-// Production Firebase project config. Kept for reference only; do not delete.
-// This fork/local development must not point directly at the production data.
-// const productionFirebaseConfig = {
-//   apiKey: "AIzaSyAWmLZys9lbH5IYOTjZFHbyt0NTdpjKfHA",
-//   authDomain: "smesh-everybody.firebaseapp.com",
-//   projectId: "smesh-everybody",
-//   storageBucket: "smesh-everybody.firebasestorage.app",
-//   messagingSenderId: "767791181149",
-//   appId: "1:767791181149:web:9834d6ad1263162b824cb4",
-// };
+function requirePublicEnv(name: string, value: string | undefined): string {
+  if (!value) {
+    throw new Error(`Missing ${name}. Create .env.local from .env.example and point it at a development Firebase project.`);
+  }
+  return value;
+}
 
-// Development Firebase config. Currently uses isolated dev_* collections that were
-// copied from production, so app changes cannot touch the production collections.
-const firebaseConfig = {
-  apiKey: "AIzaSyAWmLZys9lbH5IYOTjZFHbyt0NTdpjKfHA",
-  authDomain: "smesh-everybody.firebaseapp.com",
-  projectId: "smesh-everybody",
-  storageBucket: "smesh-everybody.firebasestorage.app",
-  messagingSenderId: "767791181149",
-  appId: "1:767791181149:web:9834d6ad1263162b824cb4",
+// Keep these as direct process.env.NEXT_PUBLIC_* reads. Next.js only inlines
+// direct public env references in client bundles; dynamic process.env[name]
+// lookups are intentionally not supported in browser code.
+const firebaseConfig: FirebaseOptions = {
+  apiKey: requirePublicEnv('NEXT_PUBLIC_FIREBASE_API_KEY', process.env.NEXT_PUBLIC_FIREBASE_API_KEY),
+  authDomain: requirePublicEnv('NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN', process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN),
+  projectId: requirePublicEnv('NEXT_PUBLIC_FIREBASE_PROJECT_ID', process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID),
+  storageBucket: requirePublicEnv('NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET', process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET),
+  messagingSenderId: requirePublicEnv('NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID', process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID),
+  appId: requirePublicEnv('NEXT_PUBLIC_FIREBASE_APP_ID', process.env.NEXT_PUBLIC_FIREBASE_APP_ID),
 };
 
 const app = initializeApp(firebaseConfig);

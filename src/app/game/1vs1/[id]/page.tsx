@@ -178,8 +178,10 @@ export default function Match1vs1Page() {
   const showTiebreak = activeSet && needsTiebreak(activeSet) && !isSetComplete(activeSet);
 
   const winnerName = match.winner === 1 ? playerName(match.player1) : playerName(match.player2);
-  const team1Player = createPadelPlayer(match.player1, playerName(match.player1), 'left', `${match.player1}-left`);
-  const team2Player = createPadelPlayer(match.player2, playerName(match.player2), 'right2', `${match.player2}-right2`);
+  const player1 = getPlayer(match.player1);
+  const player2 = getPlayer(match.player2);
+  const team1Player = createPadelPlayer(match.player1, player1?.name ?? 'Unbekannt', 'left', `${match.player1}-left`, player1?.currentElo);
+  const team2Player = createPadelPlayer(match.player2, player2?.name ?? 'Unbekannt', 'right2', `${match.player2}-right2`, player2?.currentElo);
 
   return (
     <div className="min-h-screen app-text-primary px-4 py-6 pb-24 animate-fade-in">

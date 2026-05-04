@@ -88,20 +88,20 @@ const gameModes: GameMode[] = [
 
 export default function NewGamePage() {
   return (
-    <div className="px-5 pt-8 pb-10 space-y-8">
+    <div className="app-page-shell space-y-8">
       {/* Header */}
       <div className="flex items-center gap-4 animate-fade-in">
         <Link
           href="/"
-          className="flex items-center justify-center w-11 h-11 rounded-full glass-card-static transition-all duration-300 hover:border-[rgba(255,255,255,0.15)]"
+          className="flex items-center justify-center w-11 h-11 rounded-full glass-card-static transition-all duration-300 hover-border-theme"
         >
-          <svg className="w-5 h-5 text-[rgba(255,255,255,0.6)]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+          <svg className="w-5 h-5 app-text-secondary" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
           </svg>
         </Link>
         <div>
           <h1 className="text-2xl font-bold tracking-tight gradient-text">Neues Spiel</h1>
-          <p className="text-sm text-[rgba(255,255,255,0.4)] mt-0.5">Wähle einen Spielmodus</p>
+          <p className="text-sm app-card-copy mt-0.5">Wähle einen Spielmodus</p>
         </div>
       </div>
 
@@ -122,12 +122,12 @@ export default function NewGamePage() {
             </div>
 
             <div className="space-y-1.5">
-              <h3 className="font-semibold text-sm text-[rgba(255,255,255,0.9)] leading-tight">{mode.title}</h3>
-              <p className="text-xs text-[rgba(255,255,255,0.4)] leading-snug">{mode.description}</p>
+              <h3 className="app-card-title text-sm leading-tight">{mode.title}</h3>
+              <p className="text-xs app-card-copy leading-snug">{mode.description}</p>
             </div>
 
             {/* Subtle arrow indicator */}
-            <div className="text-[rgba(255,255,255,0.15)] group-hover:text-[rgba(255,255,255,0.4)] transition-colors duration-300">
+            <div className="app-text-faint transition-colors duration-300">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
               </svg>

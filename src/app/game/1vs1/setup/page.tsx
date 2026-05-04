@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { v4 as uuidv4 } from 'uuid';
 import { useGameStore } from '@/store/gameStore';
 import PlayerSelector from '@/components/PlayerSelector';
-import CourtCard from '@/components/CourtCard';
+import { PadelBuilder } from '@/components/padel-builder/PadelBuilder';
+import { createPadelPlayer } from '@/components/padel-builder/playerFactory';
 import type { Match1vs1 } from '@/types';
 
 export default function Setup1vs1Page() {
@@ -17,10 +18,14 @@ export default function Setup1vs1Page() {
   const [selectedPlayers, setSelectedPlayers] = useState<string[]>([]);
   const [setsToWin, setSetsToWin] = useState(1);
 
-  const playerName = useCallback(
-    (id: string) => getPlayer(id)?.name ?? 'Unbekannt',
-    [getPlayer]
-  );
+  const previewPlayer1 = selectedPlayers[0] ? getPlayer(selectedPlayers[0]) : undefined;
+  const previewPlayer2 = selectedPlayers[1] ? getPlayer(selectedPlayers[1]) : undefined;
+  const previewCard1 = previewPlayer1
+    ? createPadelPlayer(previewPlayer1.id, previewPlayer1.name, 'left', `${previewPlayer1.id}-setup-left`, previewPlayer1.currentElo)
+    : undefined;
+  const previewCard2 = previewPlayer2
+    ? createPadelPlayer(previewPlayer2.id, previewPlayer2.name, 'right2', `${previewPlayer2.id}-setup-right2`, previewPlayer2.currentElo)
+    : undefined;
 
   const handleStart = () => {
     const id = uuidv4();
@@ -92,7 +97,7 @@ export default function Setup1vs1Page() {
                   onClick={() => setSetsToWin(n)}
                   className={`flex-1 py-3 rounded-xl text-sm font-semibold transition-all ${
                     setsToWin === n
-                      ? 'bg-[#1f1f1f] text-white shadow-lg shadow-[#8a4a17]/20'
+                      ? 'app-choice-active'
                       : 'glass-card-static app-text-secondary hover-text-primary'
                   }`}
                 >
@@ -107,11 +112,16 @@ export default function Setup1vs1Page() {
             <h3 className="text-xs font-semibold app-text-muted uppercase tracking-wider text-center">
               Match Übersicht
             </h3>
-            <CourtCard
-              team1Players={[playerName(selectedPlayers[0])]}
-              team2Players={[playerName(selectedPlayers[1])]}
-              accentColor="blue"
-            />
+            {previewCard1 && previewCard2 ? (
+              <PadelBuilder
+                title="Match Preview"
+                initialFormation="1-1"
+                players={[previewCard1, previewCard2]}
+                initialPlacements={{ left: previewCard1, right2: previewCard2 }}
+                scoreLabel="0 - 0"
+                readOnly
+              />
+            ) : null}
             <p className="text-center text-xs app-text-subtle">
               Best of {setsToWin * 2 - 1} · {setsToWin} {setsToWin === 1 ? 'Satz' : 'Sätze'} zum Gewinnen
             </p>

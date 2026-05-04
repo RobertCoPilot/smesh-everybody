@@ -1,5 +1,7 @@
 import type { PadelPosition } from '@/config/padelFormations';
-import type { PadelCardVariant, PadelPlayer, PadelStats } from './types';
+import { DEFAULT_ELO } from '@/lib/elo';
+import { getEloTierDefinition } from '@/lib/eloTiers';
+import type { PadelPlayer, PadelStats } from './types';
 
 const playstyles = ['Net Rusher', 'Baseline Lock', 'Glass Master', 'Power Server', 'Control Point', 'Counter Puncher'] as const;
 
@@ -16,14 +18,11 @@ function statFromSeed(seed: number, offset: number): number {
   return 62 + ((seed >> offset) % 34);
 }
 
-function cardVariantFromRating(rating: number, seed: number): PadelCardVariant {
-  if (rating >= 88 || seed % 9 === 0) return 'special';
-  if (rating >= 75) return 'gold';
-  if (rating >= 66) return 'silver';
-  return 'bronze';
+function ratingFromElo(elo: number): number {
+  return Math.max(55, Math.min(99, Math.round(55 + ((elo - 700) / 1000) * 44)));
 }
 
-export function createPadelPlayer(playerId: string, name: string, position: PadelPosition, cardInstanceId = playerId): PadelPlayer {
+export function createPadelPlayer(playerId: string, name: string, position: PadelPosition, cardInstanceId = playerId, currentElo = DEFAULT_ELO): PadelPlayer {
   const seed = hashString(`${playerId}-${name}`);
   const stats: PadelStats = {
     speed: statFromSeed(seed, 1),
@@ -33,7 +32,8 @@ export function createPadelPlayer(playerId: string, name: string, position: Pade
     volley: statFromSeed(seed, 9),
     serve: statFromSeed(seed, 11),
   };
-  const rating = Math.round((stats.speed + stats.power + stats.control + stats.defense + stats.volley + stats.serve) / 6);
+  const tier = getEloTierDefinition(currentElo);
+  const rating = ratingFromElo(currentElo);
 
   return {
     id: cardInstanceId,
@@ -43,8 +43,10 @@ export function createPadelPlayer(playerId: string, name: string, position: Pade
     dominantHand: seed % 5 === 0 ? 'left' : 'right',
     preferredSide: position === 'right' || position === 'right2' ? 'right' : 'left',
     playstyle: playstyles[seed % playstyles.length],
-    level: rating >= 86 ? 'Elite' : rating >= 76 ? 'Advanced' : 'Club',
+    level: tier.label,
     stats,
-    cardVariant: cardVariantFromRating(rating, seed),
+    currentElo,
+    eloTier: tier.id,
+    cardVariant: tier.cardVariant,
   };
 }

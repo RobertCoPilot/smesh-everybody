@@ -41,7 +41,7 @@ export default function RootLayout({
   return (
     <html lang="de">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#fffaeb] text-[#1f1f1f] min-h-screen noise-overlay`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen noise-overlay`}
       >
         {/* Warm Clay League ambient background */}
         <div className="ambient-bg">

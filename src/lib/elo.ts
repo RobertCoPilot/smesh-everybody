@@ -1,3 +1,4 @@
+import { getEloTier, getTierLabel } from '@/lib/eloTiers';
 import type { EloTier, GameRecord, Match1vs1, Match2vs2, Player } from '@/types';
 
 export const DEFAULT_ELO = 1000;
@@ -44,24 +45,7 @@ export function getPlayerElo(player: Player | undefined): number {
   return player?.currentElo ?? DEFAULT_ELO;
 }
 
-export function getEloTier(elo: number): EloTier {
-  if (elo >= 1600) return 'icon';
-  if (elo >= 1300) return 'elite';
-  if (elo >= 1100) return 'gold';
-  if (elo >= 900) return 'silver';
-  return 'bronze';
-}
-
-export function getTierLabel(tier: EloTier): string {
-  const labels: Record<EloTier, string> = {
-    bronze: 'Bronze',
-    silver: 'Silver',
-    gold: 'Gold',
-    elite: 'Elite',
-    icon: 'Icon',
-  };
-  return labels[tier];
-}
+export { getEloTier, getTierLabel };
 
 function averageElo(players: Array<Player | undefined>): number {
   if (players.length === 0) return DEFAULT_ELO;
@@ -133,7 +117,7 @@ function createInitialEloState(players: Player[]): Map<string, MutableEloState> 
   const state = new Map<string, MutableEloState>();
 
   for (const player of players) {
-    const initialElo = getPlayerElo(player);
+    const initialElo = DEFAULT_ELO;
     state.set(player.id, {
       playerId: player.id,
       name: player.name,
@@ -173,30 +157,45 @@ function replayElo(players: Player[], games: GameRecord[]): {
 
     if (team1.length !== team1Ids.length || team2.length !== team2Ids.length) continue;
 
-    const team1Elo = averageStateElo(team1);
-    const team2Elo = averageStateElo(team2);
-    const team1Delta = Math.round(K_FACTOR * ((winner === 1 ? 1 : 0) - expectedScore(team1Elo, team2Elo)));
-    const team2Delta = Math.round(K_FACTOR * ((winner === 2 ? 1 : 0) - expectedScore(team2Elo, team1Elo)));
+    const persistedChanges = match.matchTracking?.eloChanges;
     const changes: EloChange[] = [];
 
-    for (const player of team1) {
-      const before = player.currentElo;
-      player.currentElo += team1Delta;
-      player.peakElo = Math.max(player.peakElo, player.currentElo);
-      player.matchesPlayed += 1;
-      if (winner === 1) player.wins += 1;
-      else player.losses += 1;
-      changes.push({ playerId: player.playerId, before, after: player.currentElo, delta: team1Delta });
-    }
+    if (persistedChanges && persistedChanges.length > 0) {
+      for (const change of persistedChanges) {
+        const player = state.get(change.playerId);
+        if (!player) continue;
+        player.currentElo = change.after;
+        player.peakElo = Math.max(player.peakElo, player.currentElo);
+        player.matchesPlayed += 1;
+        if ((winner === 1 && team1Ids.includes(player.playerId)) || (winner === 2 && team2Ids.includes(player.playerId))) player.wins += 1;
+        else player.losses += 1;
+        changes.push(change);
+      }
+    } else {
+      const team1Elo = averageStateElo(team1);
+      const team2Elo = averageStateElo(team2);
+      const team1Delta = Math.round(K_FACTOR * ((winner === 1 ? 1 : 0) - expectedScore(team1Elo, team2Elo)));
+      const team2Delta = Math.round(K_FACTOR * ((winner === 2 ? 1 : 0) - expectedScore(team2Elo, team1Elo)));
 
-    for (const player of team2) {
-      const before = player.currentElo;
-      player.currentElo += team2Delta;
-      player.peakElo = Math.max(player.peakElo, player.currentElo);
-      player.matchesPlayed += 1;
-      if (winner === 2) player.wins += 1;
-      else player.losses += 1;
-      changes.push({ playerId: player.playerId, before, after: player.currentElo, delta: team2Delta });
+      for (const player of team1) {
+        const before = player.currentElo;
+        player.currentElo += team1Delta;
+        player.peakElo = Math.max(player.peakElo, player.currentElo);
+        player.matchesPlayed += 1;
+        if (winner === 1) player.wins += 1;
+        else player.losses += 1;
+        changes.push({ playerId: player.playerId, before, after: player.currentElo, delta: team1Delta });
+      }
+
+      for (const player of team2) {
+        const before = player.currentElo;
+        player.currentElo += team2Delta;
+        player.peakElo = Math.max(player.peakElo, player.currentElo);
+        player.matchesPlayed += 1;
+        if (winner === 2) player.wins += 1;
+        else player.losses += 1;
+        changes.push({ playerId: player.playerId, before, after: player.currentElo, delta: team2Delta });
+      }
     }
 
     summaries.push({

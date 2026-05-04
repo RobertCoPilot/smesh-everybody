@@ -17,8 +17,8 @@ export function FormationSelector({ activeFormation, onChange }: FormationSelect
             onClick={() => onChange(formation)}
             className={`shrink-0 border px-3 py-2 text-xs font-black uppercase tracking-[0.18em] transition ${
               isActive
-                ? 'border-red-500 bg-red-500 text-white shadow-[0_0_20px_rgba(239,68,68,0.35)]'
-                : 'border-theme bg-theme-soft app-text-secondary hover-border-theme hover-text-primary'
+                ? 'app-choice-active border-transparent'
+                : 'app-choice-idle border-theme bg-theme-soft hover-border-theme hover-text-primary'
             }`}
           >
             {formation}

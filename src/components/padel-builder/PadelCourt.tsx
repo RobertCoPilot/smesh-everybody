@@ -9,10 +9,11 @@ interface PadelCourtProps {
   selectedSlot: PadelPosition | null;
   onSelectSlot: (position: PadelPosition) => void;
   onRemovePlayer: (position: PadelPosition) => void;
+  onDropPlayer?: (position: PadelPosition, playerId: string) => void;
   scoreLabel?: string;
 }
 
-export function PadelCourt({ formation, players, selectedSlot, onSelectSlot, onRemovePlayer, scoreLabel }: PadelCourtProps) {
+export function PadelCourt({ formation, players, selectedSlot, onSelectSlot, onRemovePlayer, onDropPlayer, scoreLabel }: PadelCourtProps) {
   const config = PADEL_FORMATIONS[formation];
 
   return (
@@ -50,17 +51,18 @@ export function PadelCourt({ formation, players, selectedSlot, onSelectSlot, onR
               selected={selectedSlot === slot}
               onSelect={onSelectSlot}
               onRemove={onRemovePlayer}
+              onDropPlayer={onDropPlayer}
             />
           );
         })}
 
-        <div className="absolute bottom-3 left-3 z-30 border border-theme bg-[#081226]/70 px-3 py-2 text-left text-white backdrop-blur-md">
+        <div className="court-hud absolute bottom-3 left-3 z-30 px-3 py-2 text-left">
           <p className="text-[0.55rem] font-black uppercase tracking-[0.22em] app-text-secondary">Formation</p>
           <p className="text-lg font-black leading-none">{config.label}</p>
         </div>
 
         {scoreLabel && (
-          <div className="absolute right-3 top-3 z-30 border border-theme bg-[#081226]/70 px-3 py-2 text-right text-white backdrop-blur-md">
+          <div className="court-hud absolute right-3 top-3 z-30 px-3 py-2 text-right">
             <p className="text-[0.55rem] font-black uppercase tracking-[0.22em] app-text-secondary">Match</p>
             <p className="text-lg font-black leading-none">{scoreLabel}</p>
           </div>

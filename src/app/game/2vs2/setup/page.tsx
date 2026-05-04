@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { v4 as uuidv4 } from 'uuid';
 import { useGameStore } from '@/store/gameStore';
 import { generateTeams } from '@/lib/tournament';
 import PlayerSelector from '@/components/PlayerSelector';
-import CourtCard from '@/components/CourtCard';
+import { PadelBuilder } from '@/components/padel-builder/PadelBuilder';
+import { createPadelPlayer } from '@/components/padel-builder/playerFactory';
 import type { Match2vs2, TournamentTeam } from '@/types';
 
 type TeamMode = 'manual' | 'random' | 'skill-based';
@@ -15,7 +16,6 @@ export default function Setup2vs2Page() {
   const router = useRouter();
   const { getPlayer, getPlayerWins, addGame } = useGameStore();
 
-  const [hydrated, setHydrated] = useState(false);
   const [step, setStep] = useState(0);
   const [selectedPlayers, setSelectedPlayers] = useState<string[]>([]);
   const [teamMode, setTeamMode] = useState<TeamMode>('random');
@@ -25,24 +25,27 @@ export default function Setup2vs2Page() {
   const [manualTeam2, setManualTeam2] = useState<string[]>([]);
   const [setsToWin, setSetsToWin] = useState(2);
 
-  useEffect(() => {
-    setHydrated(true);
-  }, []);
-
   const playerName = useCallback(
     (id: string) => getPlayer(id)?.name ?? 'Unbekannt',
     [getPlayer]
   );
 
-  // Reset team state when mode changes
-  useEffect(() => {
+  const resetTeamsForPlayers = (playerIds: string[]) => {
     setTeams([]);
-    if (teamMode === 'manual') {
-      setManualPool([...selectedPlayers]);
-      setManualTeam1([]);
-      setManualTeam2([]);
-    }
-  }, [teamMode, selectedPlayers]);
+    setManualPool([...playerIds]);
+    setManualTeam1([]);
+    setManualTeam2([]);
+  };
+
+  const handlePlayersChange = (playerIds: string[]) => {
+    setSelectedPlayers(playerIds);
+    resetTeamsForPlayers(playerIds);
+  };
+
+  const handleTeamModeChange = (mode: TeamMode) => {
+    setTeamMode(mode);
+    resetTeamsForPlayers(selectedPlayers);
+  };
 
   const handleGenerateRandom = () => {
     const result = generateTeams(selectedPlayers, 'random');
@@ -111,6 +114,16 @@ export default function Setup2vs2Page() {
   const canProceedStep1 = selectedPlayers.length === 4;
   const canProceedStep2 = finalTeam1 !== null && finalTeam2 !== null;
 
+  const createPreviewCard = (playerId: string, position: 'left' | 'right' | 'left2' | 'right2') => {
+    const player = getPlayer(playerId);
+    return createPadelPlayer(playerId, player?.name ?? 'Unbekannt', position, `${playerId}-setup-${position}`, player?.currentElo);
+  };
+
+  const previewTeam1Left = finalTeam1 ? createPreviewCard(finalTeam1[0], 'left') : null;
+  const previewTeam1Right = finalTeam1 ? createPreviewCard(finalTeam1[1], 'right') : null;
+  const previewTeam2Left = finalTeam2 ? createPreviewCard(finalTeam2[0], 'left2') : null;
+  const previewTeam2Right = finalTeam2 ? createPreviewCard(finalTeam2[1], 'right2') : null;
+
   const handleStartMatch = () => {
     if (!finalTeam1 || !finalTeam2) return;
 
@@ -129,14 +142,6 @@ export default function Setup2vs2Page() {
     addGame(match);
     router.push(`/game/2vs2/${match.id}`);
   };
-
-  if (!hydrated) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-[var(--league-accent)] border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
-  }
 
   const steps = ['Spieler', 'Teams', 'Einstellungen'];
 
@@ -170,9 +175,9 @@ export default function Setup2vs2Page() {
               <div
                 className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold transition-all ${
                   i < step
-                    ? 'bg-[#1f1f1f] text-white shadow-lg shadow-[#8a4a17]/20'
+                    ? 'app-choice-active'
                     : i === step
-                      ? 'bg-[#1f1f1f] text-white ring-2 ring-[#fa520f]/30 shadow-lg shadow-[#8a4a17]/20'
+                      ? 'app-choice-active ring-2 ring-[var(--league-accent)]/30'
                       : 'glass-card-static app-text-faint'
                 }`}
               >
@@ -206,7 +211,7 @@ export default function Setup2vs2Page() {
         <div className="space-y-6 animate-fade-in-up">
           <PlayerSelector
             selectedPlayers={selectedPlayers}
-            onPlayersChange={setSelectedPlayers}
+            onPlayersChange={handlePlayersChange}
             exactCount={4}
           />
 
@@ -248,10 +253,10 @@ export default function Setup2vs2Page() {
               {(['manual', 'random', 'skill-based'] as TeamMode[]).map((mode) => (
                 <button
                   key={mode}
-                  onClick={() => setTeamMode(mode)}
+                  onClick={() => handleTeamModeChange(mode)}
                   className={`py-3 px-3 rounded-2xl text-sm font-medium transition-all ${
                     teamMode === mode
-                      ? 'bg-[#1f1f1f] text-white shadow-lg shadow-[#8a4a17]/20'
+                      ? 'app-choice-active'
                       : 'glass-card-static app-text-muted hover-text-secondary hover-border-theme'
                   }`}
                 >
@@ -326,7 +331,7 @@ export default function Setup2vs2Page() {
                       <button
                         key={id}
                         onClick={() => handleManualAssign(id)}
-                        className="w-full bg-amber-500/10 text-amber-300 px-3 py-2 rounded-xl text-sm font-medium hover:bg-amber-500/15 transition-colors text-left border border-amber-500/15"
+                        className="player-option-selected w-full px-3 py-2 rounded-xl text-sm font-medium transition-colors text-left"
                       >
                         {playerName(id)}
                         <span className="text-amber-500/50 text-xs ml-1">✕</span>
@@ -402,7 +407,7 @@ export default function Setup2vs2Page() {
                   onClick={() => setSetsToWin(n)}
                   className={`py-3.5 rounded-2xl text-lg font-bold transition-all ${
                     setsToWin === n
-                      ? 'bg-[#1f1f1f] text-white shadow-lg shadow-[#8a4a17]/20'
+                      ? 'app-choice-active'
                       : 'glass-card-static app-text-muted hover-text-secondary hover-border-theme'
                   }`}
                 >
@@ -421,11 +426,21 @@ export default function Setup2vs2Page() {
               Match Übersicht
             </h3>
 
-            <CourtCard
-              team1Players={[playerName(finalTeam1![0]), playerName(finalTeam1![1])]}
-              team2Players={[playerName(finalTeam2![0]), playerName(finalTeam2![1])]}
-              accentColor="blue"
-            />
+            {previewTeam1Left && previewTeam1Right && previewTeam2Left && previewTeam2Right ? (
+              <PadelBuilder
+                title="Team Preview"
+                initialFormation="2-2"
+                players={[previewTeam1Left, previewTeam1Right, previewTeam2Left, previewTeam2Right]}
+                initialPlacements={{
+                  left: previewTeam1Left,
+                  right: previewTeam1Right,
+                  left2: previewTeam2Left,
+                  right2: previewTeam2Right,
+                }}
+                scoreLabel="0 - 0"
+                readOnly
+              />
+            ) : null}
 
             <div className="text-center">
               <span className="text-xs app-text-muted">Best of </span>

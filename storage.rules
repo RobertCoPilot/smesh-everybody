@@ -1,0 +1,10 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Development-only rules. Tighten before storing user uploads publicly.
+    match /{allPaths=**} {
+      allow read, write: if true;
+    }
+  }
+}

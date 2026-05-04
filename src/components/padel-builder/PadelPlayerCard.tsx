@@ -1,3 +1,4 @@
+import { getTierBorderClassName, getTierCardClassName, getTierLabel } from '@/lib/eloTiers';
 import type { PadelPlayer } from './types';
 
 interface PadelPlayerCardProps {
@@ -6,13 +7,6 @@ interface PadelPlayerCardProps {
   emptyLabel?: string;
   compact?: boolean;
 }
-
-const cardVariantClass: Record<NonNullable<PadelPlayer['cardVariant']>, string> = {
-  gold: 'from-[#f8dd84] via-[#c99a35] to-[#7a5218] text-[#241705]',
-  silver: 'from-[#f4f7f8] via-[#aeb8c2] to-[#65707a] text-[#101820]',
-  bronze: 'from-[#d9a06a] via-[#a76132] to-[#5a2f16] text-[#211006]',
-  special: 'from-[#201337] via-[#073a68] to-[#00d1ff] text-white',
-};
 
 const statRows: Array<[keyof PadelPlayer['stats'], string]> = [
   ['speed', 'SPD'],
@@ -42,7 +36,8 @@ export function PadelPlayerCard({ player, selected = false, emptyLabel = 'Slot',
     );
   }
 
-  const variant = player.cardVariant ?? 'gold';
+  const variant = player.cardVariant ?? player.eloTier ?? 'silver';
+  const tierLabel = getTierLabel(variant);
   const sideLabel = player.preferredSide === 'both' ? 'B' : player.preferredSide === 'right' ? 'R' : 'L';
 
   return (
@@ -56,7 +51,7 @@ export function PadelPlayerCard({ player, selected = false, emptyLabel = 'Slot',
         </div>
       )}
 
-      <div className={`relative h-full min-h-[9rem] overflow-hidden bg-gradient-to-br ${cardVariantClass[variant]} p-2 shadow-[0_18px_35px_rgba(0,0,0,0.38)]`}>
+      <div className={`relative h-full min-h-[9rem] overflow-hidden border bg-gradient-to-br ${getTierCardClassName(variant)} ${getTierBorderClassName(variant)} p-2 shadow-[0_18px_35px_rgba(0,0,0,0.38)]`}>
         <div className="absolute inset-[3px] border border-theme" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_10%,rgba(255,255,255,0.5),transparent_38%),linear-gradient(135deg,rgba(255,255,255,0.18),transparent_42%)]" />
 
@@ -65,9 +60,11 @@ export function PadelPlayerCard({ player, selected = false, emptyLabel = 'Slot',
             <div>
               <p className={`${compact ? 'text-xl' : 'text-2xl'} font-black leading-none tabular-nums`}>{player.rating}</p>
               <p className="text-[0.55rem] font-black uppercase tracking-widest">OVR</p>
+              {player.currentElo !== undefined && <p className="text-[0.5rem] font-black uppercase tracking-widest opacity-80">{Math.round(player.currentElo)} ELO</p>}
             </div>
             <div className="text-right">
-              <p className="text-[0.58rem] font-black uppercase tracking-widest">Side {sideLabel}</p>
+              <p className="text-[0.58rem] font-black uppercase tracking-widest">{tierLabel}</p>
+              <p className="text-[0.55rem] font-black uppercase tracking-widest opacity-80">Side {sideLabel}</p>
               <p className="text-[0.55rem] uppercase opacity-80">{player.dominantHand === 'left' ? 'Lefty' : 'Righty'}</p>
             </div>
           </div>

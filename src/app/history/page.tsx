@@ -4,6 +4,7 @@ import { useMemo, useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { calculateEloMatchSummaries, type EloChange } from '@/lib/elo';
+import { getEloChangesFromGame } from '@/lib/matchTracking';
 import { useGameStore } from '@/store/gameStore';
 import type { GameRecord, Match2vs2, Match1vs1, Tournament, AmericanoTournament } from '@/types';
 import { formatSetScore, getSetsScore } from '@/lib/scoring';
@@ -191,7 +192,12 @@ export default function HistoryPage() {
   const { games, players, removeGame } = useGameStore();
 
   const eloChangesByGameId = useMemo(() => {
-    return new Map(calculateEloMatchSummaries(players, games).map((summary) => [summary.gameId, summary.changes]));
+    const liveChanges = new Map(calculateEloMatchSummaries(players, games).map((summary) => [summary.gameId, summary.changes]));
+    for (const game of games) {
+      const persistedChanges = getEloChangesFromGame(game);
+      if (persistedChanges.length > 0) liveChanges.set(game.id, persistedChanges);
+    }
+    return liveChanges;
   }, [players, games]);
 
   if (!hydrated) {
@@ -221,7 +227,7 @@ export default function HistoryPage() {
             onClick={() => setFilter(f.key)}
             className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-300 ${
               filter === f.key
-                ? 'bg-[var(--league-accent)] text-white shadow-[0_0_20px_rgba(139,92,246,0.3)]'
+                ? 'app-choice-active'
                 : 'glass-card-static app-text-muted hover-text-secondary'
             }`}
           >
@@ -257,7 +263,7 @@ export default function HistoryPage() {
                         className={`pill ${
                           game.status === 'completed'
                             ? 'bg-accent-soft app-text-accent'
-                            : 'bg-yellow-500/10 text-yellow-400'
+                            : 'app-status-active'
                         }`}
                       >
                         {game.status === 'completed' ? 'Abgeschlossen' : 'Aktiv'}
@@ -302,7 +308,7 @@ export default function HistoryPage() {
       {deleteId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1f1f1f]/60 backdrop-blur-sm animate-fade-in">
           <div className="glass-card rounded-2xl p-6 max-w-sm w-full space-y-4">
-            <h2 className="text-lg font-semibold text-white">Spiel wirklich löschen?</h2>
+            <h2 className="text-lg app-section-title">Spiel wirklich löschen?</h2>
             <p className="text-sm app-text-muted">Diese Aktion kann nicht rückgängig gemacht werden.</p>
             <div className="flex gap-3 pt-2">
               <button
@@ -316,7 +322,7 @@ export default function HistoryPage() {
                   removeGame(deleteId);
                   setDeleteId(null);
                 }}
-                className="flex-1 py-2.5 rounded-xl bg-red-500/80 text-sm font-medium text-white hover:bg-red-500 transition-colors"
+                className="app-danger-button flex-1 py-2.5 rounded-xl text-sm font-medium transition-colors"
               >
                 Löschen
               </button>

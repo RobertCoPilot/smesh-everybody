@@ -10,6 +10,7 @@ interface PadelSlotProps {
   selected: boolean;
   onSelect: (position: PadelPosition) => void;
   onRemove: (position: PadelPosition) => void;
+  onDropPlayer?: (position: PadelPosition, playerId: string) => void;
 }
 
 const anchorClass: Record<PadelSlotAnchor, string> = {
@@ -21,7 +22,7 @@ const anchorClass: Record<PadelSlotAnchor, string> = {
   'top-center': 'left-1/2 top-[9%] -translate-x-1/2',
 };
 
-export function PadelSlot({ position, anchor, player, selected, onSelect, onRemove }: PadelSlotProps) {
+export function PadelSlot({ position, anchor, player, selected, onSelect, onRemove, onDropPlayer }: PadelSlotProps) {
   const handleRemove = (event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     onRemove(position);
@@ -32,6 +33,15 @@ export function PadelSlot({ position, anchor, player, selected, onSelect, onRemo
       role="button"
       tabIndex={0}
       onClick={() => onSelect(position)}
+      onDragOver={(event) => {
+        if (onDropPlayer) event.preventDefault();
+      }}
+      onDrop={(event) => {
+        const playerId = event.dataTransfer.getData('text/plain');
+        if (!playerId || !onDropPlayer) return;
+        event.preventDefault();
+        onDropPlayer(position, playerId);
+      }}
       onKeyDown={(event: KeyboardEvent<HTMLDivElement>) => {
         if (event.key === 'Enter' || event.key === ' ') onSelect(position);
       }}

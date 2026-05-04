@@ -144,14 +144,14 @@ export default function CourtCard({
         />
 
         {hasScoreControls && !scoreLabel && (
-          <div className="grid grid-cols-2 gap-3 border-x border-b border-theme bg-[#07152f] p-3 text-white">
+          <div className="court-score-controls grid grid-cols-2 gap-3 border-x border-b p-3">
             <div className="flex justify-center">{team1Score}</div>
             <div className="flex justify-center">{team2Score}</div>
           </div>
         )}
 
         {footer && (
-          <div className="border-x border-b border-theme bg-[#1f1f1f] px-4 py-3 text-white">
+          <div className="court-footer border-x border-b px-4 py-3">
             {footer}
           </div>
         )}
@@ -167,7 +167,7 @@ interface CourtSurfaceProps {
 
 export function CourtSurface({ className = '', children }: CourtSurfaceProps) {
   return (
-    <div className={`relative overflow-hidden border border-theme bg-[#07152f] p-4 text-white ${className}`}>
+    <div className={`app-dark-panel relative overflow-hidden border p-4 ${className}`}>
       {children}
     </div>
   );

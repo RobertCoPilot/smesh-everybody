@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { PADEL_FORMATIONS, type FormationId, type PadelPosition } from '@/config/padelFormations';
 import { FormationSelector } from './FormationSelector';
 import { PadelCourt } from './PadelCourt';
@@ -14,6 +14,7 @@ interface PadelBuilderProps {
   initialPlacements: PlacedPadelPlayers;
   scoreLabel?: string;
   readOnly?: boolean;
+  onLineupChange?: (lineup: { formation: FormationId; placements: PlacedPadelPlayers }) => void;
 }
 
 function cleanupPlacements(formation: FormationId, placements: PlacedPadelPlayers): PlacedPadelPlayers {
@@ -34,6 +35,7 @@ export function PadelBuilder({
   initialPlacements,
   scoreLabel,
   readOnly = false,
+  onLineupChange,
 }: PadelBuilderProps) {
   const [formation, setFormation] = useState<FormationId>(initialFormation);
   const [selectedSlot, setSelectedSlot] = useState<PadelPosition | null>(PADEL_FORMATIONS[initialFormation].activeSlots[0] ?? null);
@@ -44,6 +46,10 @@ export function PadelBuilder({
     return players.filter((player) => !placedIds.has(player.id));
   }, [placements, players]);
 
+  useEffect(() => {
+    onLineupChange?.({ formation, placements });
+  }, [formation, placements, onLineupChange]);
+
   const handleFormationChange = (nextFormation: FormationId) => {
     if (readOnly) return;
     setFormation(nextFormation);
@@ -51,21 +57,33 @@ export function PadelBuilder({
     setSelectedSlot(PADEL_FORMATIONS[nextFormation].activeSlots[0] ?? null);
   };
 
-  const handleAssignPlayer = (player: PadelPlayer) => {
-    if (readOnly || !selectedSlot) return;
+  const assignPlayerToSlot = (player: PadelPlayer, slot: PadelPosition) => {
     setPlacements((current) => {
       const withoutDuplicate: PlacedPadelPlayers = {};
-      for (const [slot, placedPlayer] of Object.entries(current) as Array<[PadelPosition, PadelPlayer | undefined]>) {
-        if (placedPlayer?.id !== player.id) withoutDuplicate[slot] = placedPlayer;
+      for (const [currentSlot, placedPlayer] of Object.entries(current) as Array<[PadelPosition, PadelPlayer | undefined]>) {
+        if (placedPlayer?.id !== player.id) withoutDuplicate[currentSlot] = placedPlayer;
       }
       return {
         ...withoutDuplicate,
-        [selectedSlot]: {
+        [slot]: {
           ...player,
-          position: selectedSlot,
+          position: slot,
         },
       };
     });
+  };
+
+  const handleAssignPlayer = (player: PadelPlayer) => {
+    if (readOnly || !selectedSlot) return;
+    assignPlayerToSlot(player, selectedSlot);
+  };
+
+  const handleDropPlayer = (position: PadelPosition, playerId: string) => {
+    if (readOnly) return;
+    const player = players.find((entry) => entry.id === playerId);
+    if (!player) return;
+    setSelectedSlot(position);
+    assignPlayerToSlot(player, position);
   };
 
   const handleRemovePlayer = (position: PadelPosition) => {
@@ -86,9 +104,9 @@ export function PadelBuilder({
       <div className="flex items-end justify-between gap-3">
         <div>
           <p className="text-[0.65rem] font-black uppercase tracking-[0.22em] text-[#fa520f]">FUT-style Padel</p>
-          <h2 className="text-2xl font-black tracking-[-0.04em] text-[#1f1f1f]">{title}</h2>
+          <h2 className="text-2xl font-black tracking-[-0.04em] app-section-title">{title}</h2>
         </div>
-        <div className="text-right text-[0.62rem] font-black uppercase tracking-[0.18em] text-[#1f1f1f]/45">
+        <div className="text-right text-[0.62rem] font-black uppercase tracking-[0.18em] app-card-meta">
           {Object.values(placements).filter(Boolean).length}/{PADEL_FORMATIONS[formation].activeSlots.length} Slots
         </div>
       </div>
@@ -101,18 +119,19 @@ export function PadelBuilder({
         selectedSlot={readOnly ? null : selectedSlot}
         onSelectSlot={handleSelectSlot}
         onRemovePlayer={handleRemovePlayer}
+        onDropPlayer={handleDropPlayer}
         scoreLabel={scoreLabel}
       />
 
       {!readOnly && (
-        <div className="border border-black/10 bg-[#1f1f1f] p-3 shadow-[0_18px_45px_rgba(0,0,0,0.25)]">
+        <div className="builder-pool border p-3 shadow-[0_18px_45px_rgba(0,0,0,0.25)]">
           <div className="mb-3 flex items-center justify-between gap-3">
             <div>
               <p className="text-xs font-black uppercase tracking-[0.2em] app-text-secondary">Player Pool</p>
-              <p className="text-[0.7rem] app-text-subtle">Select a slot, then tap a card to place it.</p>
+              <p className="text-[0.7rem] app-text-subtle">Select a slot and tap, or drag a card onto the court.</p>
             </div>
             {selectedSlot && (
-              <span className="border border-red-500/40 bg-red-500/15 px-2 py-1 text-[0.62rem] font-black uppercase tracking-widest text-red-200">
+              <span className="builder-slot-badge px-2 py-1 text-[0.62rem] font-black uppercase tracking-widest">
                 {selectedSlot}
               </span>
             )}
@@ -121,7 +140,14 @@ export function PadelBuilder({
           {benchedPlayers.length > 0 ? (
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
               {benchedPlayers.map((player) => (
-                <button key={player.id} type="button" onClick={() => handleAssignPlayer(player)} className="transition hover:-translate-y-1 active:scale-95">
+                <button
+                  key={player.id}
+                  type="button"
+                  draggable
+                  onDragStart={(event) => event.dataTransfer.setData('text/plain', player.id)}
+                  onClick={() => handleAssignPlayer(player)}
+                  className="transition hover:-translate-y-1 active:scale-95"
+                >
                   <PadelPlayerCard player={player} compact />
                 </button>
               ))}

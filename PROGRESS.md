@@ -2,6 +2,40 @@
 
 ## Session summary
 
+### 0. 2026-05-04 new-machine Firebase backup + dev setup
+
+Status: **Backup complete; separate dev Firebase project connected and imported**
+
+What changed:
+- Installed dependencies with `npm ci` on the new machine.
+- Exported and validated a fresh production Firestore backup:
+  - `.firebase-backups/firestore-production-2026-05-04T15-46-09-716Z.json`
+  - Contains `10` players and `13` games.
+- `gh` is not installed on this machine, so GitHub issues were read through the GitHub REST API.
+- Added Firebase dev-project scaffolding/config:
+  - `.env.example`
+  - `.firebaserc` pointing at `smesh-everybody-dev`
+  - `firebase.json`
+  - `firestore.rules`
+  - `firestore.indexes.json`
+  - `storage.rules`
+- Moved app Firebase config to required `NEXT_PUBLIC_FIREBASE_*` env variables; no production Firebase credentials remain hardcoded in `src/lib/firebase.ts`.
+- Made Firestore collection names env-prefixable via `NEXT_PUBLIC_FIRESTORE_COLLECTION_PREFIX`.
+- Updated backup/import/seed scripts to load env via `@next/env` and refuse seed runs against production unless `ALLOW_PRODUCTION_SEED=true` is explicit.
+
+Dev Firebase import completed:
+```bash
+npm run db:import -- --file=.firebase-backups/firestore-production-2026-05-04T15-46-09-716Z.json --target=dev
+npm run db:import -- --file=.firebase-backups/firestore-production-2026-05-04T15-46-09-716Z.json --target=dev --write
+```
+
+Result:
+- `players -> players`: 10 documents
+- `games -> games`: 13 documents
+- Confirmed with fresh dev export: `.firebase-backups/firestore-dev-2026-05-04T16-09-30-830Z.json`
+
+---
+
 ### 1. Production Firestore safety
 
 Status: **Partially complete / safe for current dev work**
@@ -80,7 +114,7 @@ npm run db:import -- --file=.firebase-backups/<backup-file>.json --target=produc
 
 ### 3. ELO Phase 1 + Phase 2
 
-Status: **Implemented, non-destructive**
+Status: **Implemented, non-destructive; Phase 1 tier/card follow-up added 2026-05-04**
 
 What changed:
 - Added ELO types to `src/types/index.ts`.
@@ -90,11 +124,38 @@ What changed:
 - Added chronological ELO replay procedure.
 - Added per-match ELO summaries via `calculateEloMatchSummaries`.
 - Added ELO delta display in `src/app/history/page.tsx` for completed `1vs1` and `2vs2` matches.
+- Added centralized ELO tier definitions in `src/lib/eloTiers.ts`.
+- Updated FUT-style padel cards to use Bronze/Silver/Gold/Elite/Icon tier colors from the shared helper.
+- Updated card generation to derive OVR/card tier from ELO instead of random-only card variants.
+- Wired match completion through `finalizeMatchTracking` in `src/store/gameStore.ts` so newly completed `1vs1`/`2vs2` matches persist immutable `matchTracking` metadata with teams, score, MVP, ELO deltas and chemistry deltas.
+- ELO deltas for new matches are calculated from historical replay before the current match, so the old match history remains the source of truth and is not rewritten.
+- New players now receive default ELO fields (`currentElo`, `peakElo`, `allTimeBestElo`, `eloTier`) without migrating existing players.
+- History now prefers persisted match ELO deltas when available and falls back to live replay for older games.
+- `PadelBuilder` now exposes an `onLineupChange` export callback, supports tap assignment and drag/drop from the player pool onto slots, and 1vs1/2vs2 setup previews use real ELO-tiered player cards.
+- Store players are enriched in-memory with replayed ELO after Firestore snapshots load, so existing player documents are not migrated but rankings/cards can immediately reflect current historical ELO.
+- Players page now renders compact FUT-style cards from shared ELO tier styling.
 
 Important:
 - Existing match history is **not rewritten**.
 - ELO is calculated live from completed historical matches.
-- No migration wrote ELO fields into Firestore documents.
+- No migration wrote ELO fields into existing Firestore documents.
+- Existing imported historical games are still untouched; persisted `matchTracking` is added only when a match is newly completed/updated through the app.
+
+---
+
+### 4. Theme/CSS cleanup
+
+Status: **In progress / first pass complete**
+
+What changed:
+- Added reusable semantic CSS component classes in `src/styles/components.css` for page shells, section/card text, stats labels, choice buttons, dark panels, builder pool, court footer/score controls and court HUD overlays.
+- Added electric-theme overrides for the new semantic classes in `src/styles/themes.css`.
+- Replaced several hardcoded white-on-light text patterns on Home, New Game, builder, court cards, history modal and tournament scoring buttons.
+- Removed layout-level hardcoded clay background/text classes so theme variables own the page background/text.
+
+Important:
+- Some highly specific gameplay buttons/toasts still use inline Tailwind/gradients intentionally.
+- Existing tournament pages still have pre-existing React Compiler lint noise unrelated to this CSS pass.
 
 ---
 
@@ -105,15 +166,46 @@ Passed:
 npx tsc --noEmit
 ```
 
-Passed targeted ESLint for touched files:
+Passed backup validation:
 ```bash
-npx eslint scripts/firestore-backup-utils.mjs scripts/export-firestore.mjs scripts/import-firestore.mjs scripts/validate-firestore-backup.mjs src/lib/elo.ts src/lib/matchTracking.ts src/types/index.ts src/app/rankings/page.tsx src/app/history/page.tsx
+npm run db:validate-backup -- --file=.firebase-backups/firestore-production-2026-05-04T15-46-09-716Z.json
+npm run db:validate-backup -- --file=.firebase-backups/firestore-dev-2026-05-04T16-09-30-830Z.json
+```
+
+Passed production build:
+```bash
+npm run build
+```
+
+Passed CSS/theme targeted validation:
+```bash
+npx eslint src/app/page.tsx src/app/new-game/page.tsx src/app/layout.tsx src/components/CourtCard.tsx src/components/padel-builder/PadelBuilder.tsx src/components/padel-builder/PadelCourt.tsx src/components/padel-builder/FormationSelector.tsx src/app/history/page.tsx src/app/game/1vs1/setup/page.tsx src/app/game/2vs2/setup/page.tsx
+```
+
+Smoke-tested existing dev server on port 3000:
+- `/`
+- `/new-game`
+- `/players`
+- `/rankings`
+- `/history`
+- `/game/1vs1/setup`
+- `/game/2vs2/setup`
+
+Passed targeted Phase 1 validation:
+```bash
+npx tsc --noEmit
+npx eslint src/store/gameStore.ts src/lib/elo.ts src/lib/matchTracking.ts src/app/history/page.tsx src/app/players/page.tsx src/components/padel-builder/PadelBuilder.tsx src/components/padel-builder/PadelCourt.tsx src/components/padel-builder/PadelSlot.tsx src/app/game/1vs1/setup/page.tsx src/app/game/2vs2/setup/page.tsx
+```
+
+Passed targeted ESLint for touched/new files that do not include pre-existing page-level React Compiler lint noise:
+```bash
+npx eslint scripts/firestore-backup-utils.mjs scripts/firebase-script-env.mjs scripts/export-firestore.mjs scripts/import-firestore.mjs scripts/validate-firestore-backup.mjs scripts/seed-game1.mjs scripts/seed-game2.mjs scripts/seed-game3.mjs src/lib/elo.ts src/lib/eloTiers.ts src/lib/firebase.ts src/lib/firestoreCollections.ts src/components/padel-builder/types.ts src/components/padel-builder/playerFactory.ts src/components/padel-builder/PadelPlayerCard.tsx src/app/rankings/page.tsx
 ```
 
 Full lint still fails because of pre-existing unrelated lint errors in:
 - `.pi/extensions/**`
 - existing game pages under `src/app/game/**`
-- some existing hydration/setState-in-effect patterns
+- some existing hydration/setState-in-effect and React Compiler manual memoization patterns
 
 `bun` is not installed in this environment, so commands were run with `npm`/`npx`.
 

@@ -202,10 +202,14 @@ export default function Match2vs2Page() {
   const activeSet = match.sets[match.sets.length - 1];
   const isMatchComplete = match.status === 'completed';
   const showTiebreak = activeSet && needsTiebreak(activeSet) && !isSetComplete(activeSet);
-  const team1Left = createPadelPlayer(match.team1[0], playerName(match.team1[0]), 'left', `${match.team1[0]}-left`);
-  const team1Right = createPadelPlayer(match.team1[1], playerName(match.team1[1]), 'right', `${match.team1[1]}-right`);
-  const team2Left = createPadelPlayer(match.team2[0], playerName(match.team2[0]), 'left2', `${match.team2[0]}-left2`);
-  const team2Right = createPadelPlayer(match.team2[1], playerName(match.team2[1]), 'right2', `${match.team2[1]}-right2`);
+  const team1LeftPlayer = getPlayer(match.team1[0]);
+  const team1RightPlayer = getPlayer(match.team1[1]);
+  const team2LeftPlayer = getPlayer(match.team2[0]);
+  const team2RightPlayer = getPlayer(match.team2[1]);
+  const team1Left = createPadelPlayer(match.team1[0], team1LeftPlayer?.name ?? 'Unbekannt', 'left', `${match.team1[0]}-left`, team1LeftPlayer?.currentElo);
+  const team1Right = createPadelPlayer(match.team1[1], team1RightPlayer?.name ?? 'Unbekannt', 'right', `${match.team1[1]}-right`, team1RightPlayer?.currentElo);
+  const team2Left = createPadelPlayer(match.team2[0], team2LeftPlayer?.name ?? 'Unbekannt', 'left2', `${match.team2[0]}-left2`, team2LeftPlayer?.currentElo);
+  const team2Right = createPadelPlayer(match.team2[1], team2RightPlayer?.name ?? 'Unbekannt', 'right2', `${match.team2[1]}-right2`, team2RightPlayer?.currentElo);
 
   return (
     <div className="min-h-screen app-text-primary px-4 py-6 pb-24 animate-fade-in">

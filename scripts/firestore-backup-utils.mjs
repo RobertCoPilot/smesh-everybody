@@ -1,27 +1,44 @@
 import { createHash } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import nextEnv from '@next/env';
 import { initializeApp, getApps } from 'firebase/app';
 import { getFirestore, collection, doc, getDocs, setDoc } from 'firebase/firestore';
 
+const { loadEnvConfig } = nextEnv;
+loadEnvConfig(process.cwd());
+
+function env(name, fallback = '') {
+  return process.env[name] || fallback;
+}
+
+function requiredEnv(name) {
+  const value = process.env[name];
+  if (!value) throw new Error(`Missing ${name}. Create .env.local from .env.example before running Firestore scripts.`);
+  return value;
+}
+
+const devPrefix = env('FIRESTORE_DEV_COLLECTION_PREFIX', env('NEXT_PUBLIC_FIRESTORE_COLLECTION_PREFIX'));
+const productionPrefix = env('FIRESTORE_PRODUCTION_COLLECTION_PREFIX');
+
 export const COLLECTION_SETS = {
   dev: {
-    players: 'dev_players',
-    games: 'dev_games',
+    players: `${devPrefix}players`,
+    games: `${devPrefix}games`,
   },
   production: {
-    players: 'players',
-    games: 'games',
+    players: `${productionPrefix}players`,
+    games: `${productionPrefix}games`,
   },
 };
 
 export const DEFAULT_FIREBASE_CONFIG = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || 'AIzaSyAWmLZys9lbH5IYOTjZFHbyt0NTdpjKfHA',
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || 'smesh-everybody.firebaseapp.com',
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'smesh-everybody',
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || 'smesh-everybody.firebasestorage.app',
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '767791181149',
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || '1:767791181149:web:9834d6ad1263162b824cb4',
+  apiKey: env('NEXT_PUBLIC_FIREBASE_API_KEY'),
+  authDomain: env('NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN'),
+  projectId: env('NEXT_PUBLIC_FIREBASE_PROJECT_ID'),
+  storageBucket: env('NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET'),
+  messagingSenderId: env('NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID'),
+  appId: env('NEXT_PUBLIC_FIREBASE_APP_ID'),
 };
 
 export function parseArgs(argv) {
@@ -42,6 +59,17 @@ export function getCollectionSet(name) {
 }
 
 export function getDb(appName = 'firestore-backup') {
+  for (const name of [
+    'NEXT_PUBLIC_FIREBASE_API_KEY',
+    'NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN',
+    'NEXT_PUBLIC_FIREBASE_PROJECT_ID',
+    'NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET',
+    'NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID',
+    'NEXT_PUBLIC_FIREBASE_APP_ID',
+  ]) {
+    requiredEnv(name);
+  }
+
   const existing = getApps().find((app) => app.name === appName);
   const app = existing ?? initializeApp(DEFAULT_FIREBASE_CONFIG, appName);
   return getFirestore(app);
