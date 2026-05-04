@@ -1,19 +1,22 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { GeistSans } from "geist/font/sans";
+import { GeistMono } from "geist/font/mono";
+// Previous Next Google font setup kept for reference; Vercel Geist package is now used site-wide.
+// import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import BottomNav from "@/components/BottomNav";
 import DesignThemeToggle from "@/components/DesignThemeToggle";
 import FirestoreProvider from "@/components/FirestoreProvider";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+// const geistSans = Geist({
+//   variable: "--font-geist-sans",
+//   subsets: ["latin"],
+// });
+//
+// const geistMono = Geist_Mono({
+//   variable: "--font-geist-mono",
+//   subsets: ["latin"],
+// });
 
 export const metadata: Metadata = {
   title: "Smesh Everybody",
@@ -41,7 +44,7 @@ export default function RootLayout({
   return (
     <html lang="de">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen noise-overlay`}
+        className={`${GeistSans.variable} ${GeistMono.variable} antialiased min-h-screen noise-overlay`}
       >
         {/* Warm Clay League ambient background */}
         <div className="ambient-bg">
