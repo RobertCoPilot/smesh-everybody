@@ -466,7 +466,6 @@ function ScoringModal({
   const currentSet: SetScore | undefined = match.sets[match.sets.length - 1];
   const isTiebreak = currentSet ? needsTiebreak(currentSet) : false;
   const hasTiebreak = currentSet?.tiebreak != null;
-  const setComplete = currentSet ? isSetComplete(currentSet) : false;
   const matchWinner = getMatchWinner(match.sets, match.setsToWin);
   const setsScore = getSetsScore(match.sets);
 

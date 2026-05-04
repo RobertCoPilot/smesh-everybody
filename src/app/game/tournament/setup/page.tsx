@@ -31,7 +31,7 @@ type TeamMode = 'manual' | 'random' | 'skill-based';
 
 export default function TournamentSetupPage() {
   const router = useRouter();
-  const { players, addGame, getPlayer, getPlayerWins } = useGameStore();
+  const { addGame, getPlayer, getPlayerWins } = useGameStore();
 
   const [isHydrated, setIsHydrated] = useState(false);
   const [step, setStep] = useState(0);

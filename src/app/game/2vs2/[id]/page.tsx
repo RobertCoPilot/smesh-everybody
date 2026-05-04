@@ -12,7 +12,6 @@ import {
   getMatchWinner,
   getSetsScore,
   formatSetScore,
-  GAMES_TO_WIN_SET,
 } from '@/lib/scoring';
 import { PadelBuilder } from '@/components/padel-builder/PadelBuilder';
 import { createPadelPlayer } from '@/components/padel-builder/playerFactory';
@@ -54,10 +53,6 @@ export default function Match2vs2Page() {
     match && match.sets.length > 0
       ? match.sets[match.sets.length - 1]
       : null;
-
-  const currentSetIndex = match ? match.sets.length - 1 : 0;
-  const isTiebreak = currentSet ? needsTiebreak(currentSet) : false;
-  const currentSetComplete = currentSet ? isSetComplete(currentSet) : false;
 
   const handleAddGame = useCallback(
     (team: 1 | 2) => {

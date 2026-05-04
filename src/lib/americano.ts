@@ -207,10 +207,6 @@ function generateAllPartnerships(n: number): [number, number][] {
   return pairs;
 }
 
-function pairKey(a: string, b: string): string {
-  return a < b ? `${a}|${b}` : `${b}|${a}`;
-}
-
 function scheduleRoundLegacy(
   playerIds: string[],
   allPartnerships: [number, number][],
@@ -218,7 +214,6 @@ function scheduleRoundLegacy(
   maxCourts: number,
   round: number
 ): AmericanoGame[] {
-  const n = playerIds.length;
   const games: AmericanoGame[] = [];
   const usedInRound = new Set<number>();
   let court = 0;

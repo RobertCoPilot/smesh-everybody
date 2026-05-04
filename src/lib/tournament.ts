@@ -65,7 +65,6 @@ export function generateBracket(
 
   // First round with byes
   const firstRoundSize = nextPowerOf2 / 2;
-  const byes = nextPowerOf2 - numTeams;
 
   // Seed ordering for bracket placement
   const slots: (TournamentTeam | null)[] = new Array(nextPowerOf2).fill(null);

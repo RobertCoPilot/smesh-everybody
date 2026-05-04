@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Smesh Everybody
 
-## Getting Started
+Padel match tracker for 1v1, 2v2, tournaments and Americano rounds. The app stores match history in Firestore, derives ELO rankings from completed matches and includes FUT-style player cards / lineup previews.
 
-First, run the development server:
+## Local development
+
+```bash
+npm ci
+cp .env.example .env.local
+npm run dev
+```
+
+Fill `.env.local` with the **development** Firebase web app config. Local development should normally point at `smesh-everybody-dev`.
+
+Required public Firebase variables:
+
+```env
+NEXT_PUBLIC_FIREBASE_API_KEY=
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=smesh-everybody-dev
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
+NEXT_PUBLIC_FIREBASE_APP_ID=
+NEXT_PUBLIC_FIRESTORE_COLLECTION_PREFIX=
+```
+
+Use an empty `NEXT_PUBLIC_FIRESTORE_COLLECTION_PREFIX` for the separate dev Firebase project. Do not commit `.env.local` or backup files.
+
+## Useful commands
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run build
+npx tsc --noEmit
+npm run lint
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Firestore backup helpers:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run db:export -- --source=dev
+npm run db:validate-backup -- --file=.firebase-backups/<file>.json
+npm run db:import -- --file=.firebase-backups/<file>.json --target=dev
+npm run db:import -- --file=.firebase-backups/<file>.json --target=dev --write
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Production import is blocked unless explicitly allowed by the script. Prefer backing up production first and importing only into dev.
 
-## Learn More
+## Deployment
 
-To learn more about Next.js, take a look at the following resources:
+Dev CI/CD is configured in `.github/workflows/dev-vercel.yml`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Every push to `main` runs:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. `npm ci`
+2. `npx tsc --noEmit`
+3. `vercel pull --environment=production`
+4. Vercel build
+5. Vercel deploy
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The linked Vercel project must contain the dev Firebase environment variables above. See `docs/dev-cicd.md` for the required GitHub secrets.
