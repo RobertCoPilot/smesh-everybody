@@ -13,7 +13,8 @@ import {
   getSetsScore,
   formatSetScore,
 } from '@/lib/scoring';
-import { CourtSurface } from '@/components/CourtCard';
+import { PadelBuilder } from '@/components/padel-builder/PadelBuilder';
+import { createPadelPlayer } from '@/components/padel-builder/playerFactory';
 import type { Match1vs1, SetScore } from '@/types';
 
 export default function Match1vs1Page() {
@@ -38,6 +39,12 @@ export default function Match1vs1Page() {
       setShowCompletionModal(true);
     }
   }, [match?.status, match?.winner]);
+
+  useEffect(() => {
+    if (!showCompletionModal) return;
+    const timeout = window.setTimeout(() => setShowCompletionModal(false), 1500);
+    return () => window.clearTimeout(timeout);
+  }, [showCompletionModal]);
 
   const currentSet: SetScore | null =
     match && match.sets.length > 0 ? match.sets[match.sets.length - 1] : null;
@@ -150,15 +157,15 @@ export default function Match1vs1Page() {
   if (!hydrated) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[var(--league-accent)] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   if (!match) {
     return (
-      <div className="min-h-screen text-white flex flex-col items-center justify-center gap-4 px-4">
-        <p className="text-white/40 text-lg">Match nicht gefunden</p>
+      <div className="min-h-screen app-text-primary flex flex-col items-center justify-center gap-4 px-4">
+        <p className="app-text-muted text-lg">Match nicht gefunden</p>
         <Link href="/" className="btn-primary px-6 py-3 text-sm">Zur Startseite</Link>
       </div>
     );
@@ -171,76 +178,61 @@ export default function Match1vs1Page() {
   const showTiebreak = activeSet && needsTiebreak(activeSet) && !isSetComplete(activeSet);
 
   const winnerName = match.winner === 1 ? playerName(match.player1) : playerName(match.player2);
+  const player1 = getPlayer(match.player1);
+  const player2 = getPlayer(match.player2);
+  const team1Player = createPadelPlayer(match.player1, player1?.name ?? 'Unbekannt', 'left', `${match.player1}-left`, player1?.currentElo);
+  const team2Player = createPadelPlayer(match.player2, player2?.name ?? 'Unbekannt', 'right2', `${match.player2}-right2`, player2?.currentElo);
 
   return (
-    <div className="min-h-screen text-white px-4 py-6 pb-24 animate-fade-in">
+    <div className="min-h-screen app-text-primary px-4 py-6 pb-24 animate-fade-in">
       {/* Header */}
       <div className="flex items-center justify-between mb-6 animate-fade-in-up stagger-1">
         <button
           onClick={() => router.back()}
-          className="glass-card-static w-10 h-10 rounded-full flex items-center justify-center hover:border-white/20 transition-all active:scale-95"
+          className="glass-card-static w-10 h-10 rounded-full flex items-center justify-center hover-border-theme transition-all active:scale-95"
         >
-          <svg className="w-5 h-5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5 app-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
         {isMatchComplete && (
-          <span className="bg-violet-500/10 text-violet-400 px-4 py-1.5 rounded-full text-xs font-semibold border border-violet-500/20">
+          <span className="bg-accent-soft app-text-accent px-4 py-1.5 rounded-full text-xs font-semibold border border-theme">
             Abgeschlossen
           </span>
         )}
       </div>
 
-      {/* Court with players + sets score */}
-      <div className="mb-4 animate-fade-in-up stagger-2">
-        <CourtSurface accentColor="blue">
-          <div className="px-6 py-6">
-            <div className="text-center mb-4">
-              <p className="text-xs text-blue-400 font-semibold uppercase tracking-wider mb-1">Spieler 1</p>
-              <p className="text-lg font-semibold text-white/90">{playerName(match.player1)}</p>
-            </div>
-
-            <div className="py-4">
-              <p className="text-xs text-white/25 text-center uppercase tracking-widest mb-3">Sätze</p>
-              <div className="flex items-center justify-center gap-8">
-                <span className={`text-6xl font-black tabular-nums ${
-                  isMatchComplete && match.winner === 1 ? 'gradient-text-accent' : 'text-white/90'
-                }`}>{team1SetsWon}</span>
-                <span className="text-2xl text-white/15 font-bold">–</span>
-                <span className={`text-6xl font-black tabular-nums ${
-                  isMatchComplete && match.winner === 2 ? 'gradient-text-accent' : 'text-white/90'
-                }`}>{team2SetsWon}</span>
-              </div>
-            </div>
-
-            <div className="text-center mt-4">
-              <p className="text-xs text-amber-400 font-semibold uppercase tracking-wider mb-1">Spieler 2</p>
-              <p className="text-lg font-semibold text-white/90">{playerName(match.player2)}</p>
-            </div>
-          </div>
-        </CourtSurface>
+      {/* FUT-style padel lineup editor */}
+      <div className="mb-5 animate-fade-in-up stagger-2">
+        <PadelBuilder
+          title="Match Lineup"
+          initialFormation="1-1"
+          players={[team1Player, team2Player]}
+          initialPlacements={{ left: team1Player, right2: team2Player }}
+          scoreLabel={`${team1SetsWon} - ${team2SetsWon}`}
+        />
       </div>
 
       {/* Current set */}
       {!isMatchComplete && activeSet && (
         <div className="glass-card-static rounded-2xl p-6 mb-4 animate-fade-in-up stagger-4">
-          <p className="text-xs text-white/25 text-center uppercase tracking-widest mb-3">
+          <p className="text-xs app-text-faint text-center uppercase tracking-widest mb-3">
             Satz {match.sets.length} – Spiele
           </p>
           <div className="flex items-center justify-center gap-10">
-            <span className="text-5xl font-black tabular-nums text-white/90">{activeSet.team1Games}</span>
-            <span className="text-xl text-white/15 font-bold">–</span>
-            <span className="text-5xl font-black tabular-nums text-white/90">{activeSet.team2Games}</span>
+            <span className="text-5xl font-black tabular-nums app-text-primary">{activeSet.team1Games}</span>
+            <span className="text-xl app-text-faint font-bold">–</span>
+            <span className="text-5xl font-black tabular-nums app-text-primary">{activeSet.team2Games}</span>
           </div>
 
           {showTiebreak && activeSet.tiebreak && (
-            <div className="mt-4 pt-4 border-t border-white/6">
+            <div className="mt-4 pt-4 border-t border-theme-weak">
               <div className="glass-card-static rounded-xl p-4 !border-amber-500/15 bg-amber-500/5">
-                <p className="text-xs text-amber-400 text-center font-semibold uppercase tracking-widest mb-2">Tiebreak</p>
+                <p className="text-xs app-text-accent text-center font-semibold uppercase tracking-widest mb-2">Tiebreak</p>
                 <div className="flex items-center justify-center gap-6">
-                  <span className="text-3xl font-bold tabular-nums text-amber-400">{activeSet.tiebreak.team1Points}</span>
-                  <span className="text-lg text-white/15 font-bold">–</span>
-                  <span className="text-3xl font-bold tabular-nums text-amber-400">{activeSet.tiebreak.team2Points}</span>
+                  <span className="text-3xl font-bold tabular-nums app-text-accent">{activeSet.tiebreak.team1Points}</span>
+                  <span className="text-lg app-text-faint font-bold">–</span>
+                  <span className="text-3xl font-bold tabular-nums app-text-accent">{activeSet.tiebreak.team2Points}</span>
                 </div>
               </div>
             </div>
@@ -256,10 +248,10 @@ export default function Match1vs1Page() {
             return (
               <div key={i} className={`px-3.5 py-1.5 rounded-full text-xs font-bold ${
                 winner === 1
-                  ? 'bg-blue-500/10 text-blue-300 border border-blue-500/20'
+                  ? 'bg-accent-soft app-text-accent border border-blue-500/20'
                   : 'bg-amber-500/10 text-amber-300 border border-amber-500/20'
               }`}>
-                <span className="text-white/25 mr-1">S{i + 1}</span>
+                <span className="app-text-faint mr-1">S{i + 1}</span>
                 {formatSetScore(set)}
               </div>
             );
@@ -272,7 +264,7 @@ export default function Match1vs1Page() {
         <div className="space-y-3 mt-6 animate-fade-in-up stagger-6">
           {showTiebreak ? (
             <>
-              <p className="text-xs text-amber-400 text-center font-semibold uppercase tracking-widest">
+              <p className="text-xs app-text-accent text-center font-semibold uppercase tracking-widest">
                 Tiebreak – Tippe um Punkt hinzuzufügen
               </p>
               <div className="grid grid-cols-2 gap-3">
@@ -335,7 +327,7 @@ export default function Match1vs1Page() {
           {/* Finish match early button */}
           <button
             onClick={handleFinishEarly}
-            className="w-full py-3 mt-4 text-sm font-semibold rounded-2xl border border-white/10 text-white/50 bg-white/[0.03] hover:bg-white/[0.06] hover:text-white/70 transition-all"
+            className="w-full py-3 mt-4 text-sm font-semibold rounded-2xl border border-theme app-text-muted bg-theme-softer hover-surface hover-text-secondary transition-all"
           >
             ⏱ Match vorzeitig beenden
           </button>
@@ -351,24 +343,18 @@ export default function Match1vs1Page() {
         </div>
       )}
 
-      {/* Completion modal */}
+      {/* Completion toast */}
       {showCompletionModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md px-6">
-          <div className="glass rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl animate-fade-in-scale">
-            <div className="text-6xl mb-4">🏆</div>
-            <h2 className="text-2xl font-black gradient-text-accent mb-2">{winnerName} gewinnt!</h2>
-            <div className="flex items-center justify-center gap-2 mt-4 mb-6">
-              {match.sets.filter((s) => isSetComplete(s)).map((set, i) => (
-                <span key={i} className="glass-card-static text-white/60 px-3 py-1 rounded-full text-xs font-bold">
-                  {formatSetScore(set)}
-                </span>
-              ))}
-            </div>
-            <div className="space-y-2.5">
-              <Link href="/" className="block w-full btn-primary py-3.5 text-sm text-center">Zurück zur Startseite</Link>
-              <button onClick={() => setShowCompletionModal(false)} className="block w-full btn-secondary py-3.5 text-sm">
-                Ergebnis ansehen
-              </button>
+        <div className="fixed inset-x-0 bottom-24 z-50 mx-auto flex max-w-lg justify-center px-4 pointer-events-none">
+          <div className="glass border-[#fa520f]/30 bg-[#1f1f1f]/90 px-4 py-3 text-white shadow-2xl animate-slide-up">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">🏆</span>
+              <div>
+                <p className="text-sm font-black uppercase tracking-wide">{winnerName} gewinnt!</p>
+                <p className="text-xs app-text-secondary">
+                  {match.sets.filter((s) => isSetComplete(s)).map(formatSetScore).join(' · ')}
+                </p>
+              </div>
             </div>
           </div>
         </div>

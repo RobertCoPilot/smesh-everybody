@@ -1,29 +1,17 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useMemo, useState, useSyncExternalStore } from 'react';
 import { format } from 'date-fns';
+import { PadelPlayerCard } from '@/components/padel-builder/PadelPlayerCard';
+import { createPadelPlayer } from '@/components/padel-builder/playerFactory';
 import { useGameStore } from '@/store/gameStore';
 
-function getInitials(name: string): string {
-  return name
-    .split(' ')
-    .map((w) => w[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
-}
-
-function hashColor(name: string): string {
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) {
-    hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  const hue = Math.abs(hash) % 360;
-  return `hsl(${hue}, 60%, 45%)`;
-}
-
 export default function PlayersPage() {
-  const [hydrated, setHydrated] = useState(false);
+  const hydrated = useSyncExternalStore(
+    () => () => undefined,
+    () => true,
+    () => false
+  );
   const [newName, setNewName] = useState('');
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
@@ -34,10 +22,6 @@ export default function PlayersPage() {
   const addPlayer = useGameStore((s) => s.addPlayer);
   const removePlayer = useGameStore((s) => s.removePlayer);
   const getPlayerWins = useGameStore((s) => s.getPlayerWins);
-
-  useEffect(() => {
-    setHydrated(true);
-  }, []);
 
   const isPlayerInGames = useMemo(() => {
     if (!hydrated) return new Set<string>();
@@ -95,7 +79,7 @@ export default function PlayersPage() {
       <div className="p-4 pt-6">
         <h1 className="text-3xl font-bold gradient-text mb-6">Spieler</h1>
         <div className="flex items-center justify-center h-40">
-          <div className="w-8 h-8 border-2 border-violet-400 border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-[var(--league-accent)] border-t-transparent rounded-full animate-spin" />
         </div>
       </div>
     );
@@ -105,7 +89,7 @@ export default function PlayersPage() {
     <div className="p-4 pt-6 pb-24 animate-fade-in">
       <div className="flex items-center gap-3 mb-6">
         <h1 className="text-3xl font-bold gradient-text">Spieler</h1>
-        <span className="pill bg-white/[0.06] text-white/40">{players.length}</span>
+        <span className="pill bg-theme-soft app-text-muted">{players.length}</span>
       </div>
 
       {/* Add Player */}
@@ -131,7 +115,7 @@ export default function PlayersPage() {
         </div>
         {error && (
           <div className="mt-2 px-3 py-2 rounded-xl bg-rose-500/10 border border-rose-500/20">
-            <p className="text-rose-400 text-sm">{error}</p>
+            <p className="app-text-accent text-sm">{error}</p>
           </div>
         )}
       </div>
@@ -152,15 +136,15 @@ export default function PlayersPage() {
       {/* Player List */}
       {filteredPlayers.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-48 animate-fade-in-up">
-          <svg className="w-16 h-16 mb-4 text-white/15" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="w-16 h-16 mb-4 app-text-faint" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
           {search ? (
-            <p className="text-lg font-medium text-white/40">Keine Spieler gefunden</p>
+            <p className="text-lg font-medium app-text-muted">Keine Spieler gefunden</p>
           ) : (
             <>
-              <p className="text-lg font-medium text-white/40">Noch keine Spieler</p>
-              <p className="text-sm mt-1 text-white/25">Füge oben deinen ersten Spieler hinzu</p>
+              <p className="text-lg font-medium app-text-muted">Noch keine Spieler</p>
+              <p className="text-sm mt-1 app-text-faint">Füge oben deinen ersten Spieler hinzu</p>
             </>
           )}
         </div>
@@ -170,6 +154,7 @@ export default function PlayersPage() {
             const stats = getPlayerWins(player.id);
             const canDelete = !isPlayerInGames.has(player.id);
             const totalWins = stats.twovstwoWins + stats.tournamentWins + stats.americanoWins;
+            const cardPlayer = createPadelPlayer(player.id, player.name, 'left', `${player.id}-profile-card`, player.currentElo);
 
             return (
               <div
@@ -177,18 +162,15 @@ export default function PlayersPage() {
                 className="glass-card-static rounded-2xl p-5 group"
               >
                 <div className="flex items-center gap-3">
-                  {/* Avatar */}
-                  <div
-                    className="w-12 h-12 rounded-xl flex items-center justify-center text-white text-sm font-bold shrink-0"
-                    style={{ backgroundColor: hashColor(player.name) }}
-                  >
-                    {getInitials(player.name)}
+                  {/* FUT card */}
+                  <div className="h-36 w-24 shrink-0">
+                    <PadelPlayerCard player={cardPlayer} compact />
                   </div>
 
                   {/* Info */}
                   <div className="flex-1 min-w-0">
-                    <p className="text-white/90 font-medium truncate">{player.name}</p>
-                    <p className="text-xs text-white/25">
+                    <p className="app-text-primary font-medium truncate">{player.name}</p>
+                    <p className="text-xs app-text-faint">
                       Dabei seit {format(new Date(player.createdAt), 'MMM d, yyyy')}
                     </p>
                   </div>
@@ -199,8 +181,8 @@ export default function PlayersPage() {
                       onClick={() => handleDelete(player.id)}
                       className={`shrink-0 p-2 rounded-xl transition-all duration-300 ${
                         deleteConfirm === player.id
-                          ? 'bg-rose-500/15 text-rose-400'
-                          : 'text-white/20 opacity-0 group-hover:opacity-100 max-sm:opacity-100 hover:text-rose-400 hover:bg-white/[0.04]'
+                          ? 'bg-rose-500/15 app-text-accent'
+                          : 'app-text-faint opacity-0 group-hover:opacity-100 max-sm:opacity-100 hover-text-accent hover-surface'
                       }`}
                       title={deleteConfirm === player.id ? 'Erneut klicken zum Bestätigen' : 'Spieler löschen'}
                     >
@@ -216,14 +198,14 @@ export default function PlayersPage() {
                 </div>
 
                 {/* Quick stats */}
-                <div className="flex gap-4 mt-4 pt-4 border-t border-white/[0.06]">
+                <div className="flex gap-4 mt-4 pt-4 border-t border-theme-weak">
                   <div className="text-center flex-1">
-                    <p className="text-lg font-bold text-white/90">{stats.gamesPlayed}</p>
-                    <p className="text-xs text-white/30">Spiele</p>
+                    <p className="text-lg font-bold app-text-primary">{stats.gamesPlayed}</p>
+                    <p className="text-xs app-text-subtle">Spiele</p>
                   </div>
                   <div className="text-center flex-1">
-                    <p className="text-lg font-bold text-violet-400">{totalWins}</p>
-                    <p className="text-xs text-white/30">Siege</p>
+                    <p className="text-lg font-bold app-text-accent">{totalWins}</p>
+                    <p className="text-xs app-text-subtle">Siege</p>
                   </div>
                 </div>
               </div>

@@ -1,0 +1,141 @@
+/* ===== Electric League secondary design palette ===== */
+:root[data-design-theme="electric"] {
+  --background: #ffffff;
+  --foreground: #222222;
+  --clay-black: #181e25;
+  --league-accent: #1456f0;
+  --league-flame: #3b82f6;
+  --block-orange: #60a5fa;
+  --sunshine-700: #3daeff;
+  --sunshine-500: #ea5ec1;
+  --sunshine-300: #bfdbfe;
+  --bright-yellow: #ea5ec1;
+  --block-gold: #f2f7ff;
+  --warm-ivory: #ffffff;
+  --cream: #f0f0f0;
+  --card: rgba(255, 255, 255, 0.92);
+  --card-hover: rgba(242, 247, 255, 0.98);
+  --card-border: rgba(20, 86, 240, 0.12);
+  --card-border-hover: rgba(20, 86, 240, 0.26);
+  --glass: rgba(255, 255, 255, 0.82);
+  --glass-border: rgba(20, 86, 240, 0.14);
+  --accent: #1456f0;
+  --accent-glow: rgba(44, 30, 116, 0.16);
+  --golden-shadow: rgba(44, 30, 116, 0.16) 0px 0px 15px, rgba(36, 36, 36, 0.08) 0px 12px 16px -4px;
+}
+
+:root[data-design-theme="electric"] body {
+  background:
+    radial-gradient(circle at 8% 0%, rgba(61, 174, 255, 0.2), transparent 30rem),
+    radial-gradient(circle at 92% 24%, rgba(234, 94, 193, 0.16), transparent 26rem),
+    linear-gradient(180deg, #ffffff 0%, #f7fbff 54%, #ffffff 100%);
+  color: #222222;
+}
+
+:root[data-design-theme="electric"] .ambient-bg::before {
+  background: linear-gradient(135deg, rgba(61,174,255,0.15), rgba(234,94,193,0.08) 42%, rgba(20,86,240,0.08));
+}
+
+:root[data-design-theme="electric"] .ambient-bg::after {
+  background: linear-gradient(180deg, transparent, rgba(20,86,240,0.08));
+}
+
+:root[data-design-theme="electric"] .ambient-orb:nth-child(1) { background: #3daeff !important; opacity: 0.18; }
+:root[data-design-theme="electric"] .ambient-orb:nth-child(2) { background: #ea5ec1 !important; opacity: 0.14; }
+:root[data-design-theme="electric"] .ambient-orb:nth-child(3) { background: #1456f0 !important; opacity: 0.12; }
+
+:root[data-design-theme="electric"] .glass,
+:root[data-design-theme="electric"] .glass-card,
+:root[data-design-theme="electric"] .glass-card-static {
+  border-radius: 1.35rem;
+  box-shadow: var(--golden-shadow);
+}
+
+:root[data-design-theme="electric"] .glass {
+  background: rgba(255,255,255,0.82);
+  border-color: rgba(20,86,240,0.14);
+}
+
+:root[data-design-theme="electric"] .glass-card,
+:root[data-design-theme="electric"] .glass-card-static {
+  background: rgba(255,255,255,0.9);
+  border-color: rgba(20,86,240,0.12);
+}
+
+:root[data-design-theme="electric"] .glass-card:hover {
+  background: #ffffff;
+  border-color: rgba(20,86,240,0.26);
+  box-shadow: rgba(44, 30, 116, 0.16) 0px 0px 22px;
+}
+
+:root[data-design-theme="electric"] .gradient-text {
+  color: #222222;
+  letter-spacing: -0.035em;
+}
+
+:root[data-design-theme="electric"] .gradient-text-accent {
+  color: #1456f0;
+}
+
+:root[data-design-theme="electric"] .app-card-title { color: rgba(34,34,34,0.9); }
+:root[data-design-theme="electric"] .app-card-copy { color: rgba(34,34,34,0.6); }
+:root[data-design-theme="electric"] .app-card-meta { color: rgba(34,34,34,0.42); }
+:root[data-design-theme="electric"] .app-stat-label { color: rgba(34,34,34,0.54); }
+:root[data-design-theme="electric"] .app-choice-active {
+  background: #181e25;
+  color: #ffffff;
+  border-radius: 9999px;
+  box-shadow: rgba(44, 30, 116, 0.16) 0px 0px 15px;
+}
+:root[data-design-theme="electric"] .app-status-active { background: rgba(245,158,11,0.12); color: #92400e; border-color: rgba(245,158,11,0.24); }
+:root[data-design-theme="electric"] .app-dark-panel,
+:root[data-design-theme="electric"] .builder-pool,
+:root[data-design-theme="electric"] .court-footer,
+:root[data-design-theme="electric"] .court-score-controls {
+  background: #181e25;
+  color: rgba(255,255,255,0.92);
+}
+:root[data-design-theme="electric"] .builder-slot-badge {
+  border-color: rgba(20,86,240,0.32);
+  background: rgba(20,86,240,0.16);
+  color: #1456f0;
+}
+
+:root[data-design-theme="electric"] .btn-primary {
+  background: #181e25;
+  border-radius: 9999px;
+  box-shadow: rgba(44, 30, 116, 0.16) 0px 0px 15px;
+}
+
+:root[data-design-theme="electric"] .btn-primary:hover {
+  background: #1456f0;
+  box-shadow: rgba(44, 30, 116, 0.22) 0px 0px 22px;
+}
+
+:root[data-design-theme="electric"] .btn-secondary,
+:root[data-design-theme="electric"] .input-glass,
+:root[data-design-theme="electric"] .pill {
+  border-radius: 9999px;
+  border-color: rgba(20,86,240,0.14);
+}
+
+:root[data-design-theme="electric"] .league-blocks span:nth-child(1) { background: #1456f0; }
+:root[data-design-theme="electric"] .league-blocks span:nth-child(2) { background: #3b82f6; }
+:root[data-design-theme="electric"] .league-blocks span:nth-child(3) { background: #3daeff; }
+:root[data-design-theme="electric"] .league-blocks span:nth-child(4) { background: #bfdbfe; }
+:root[data-design-theme="electric"] .league-blocks span:nth-child(5) { background: #ea5ec1; }
+:root[data-design-theme="electric"] .league-blocks span:nth-child(6) { background: #181e25; }
+
+.design-theme-toggle {
+  background: #1f1f1f;
+  color: #ffffff;
+  border-color: rgba(250,82,15,0.35);
+  border-radius: 9999px;
+}
+
+:root[data-design-theme="electric"] .design-theme-toggle {
+  background: #ffffff;
+  color: #181e25;
+  border-color: rgba(20,86,240,0.22);
+  box-shadow: rgba(44, 30, 116, 0.16) 0px 0px 15px;
+}

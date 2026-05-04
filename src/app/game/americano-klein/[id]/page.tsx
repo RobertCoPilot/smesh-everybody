@@ -159,8 +159,8 @@ export default function AmericanoKleinTournamentPage() {
 
   if (!tournament) {
     return (
-      <div className="min-h-screen text-white flex flex-col items-center justify-center gap-4">
-        <p className="text-white/40">Turnier nicht gefunden.</p>
+      <div className="min-h-screen app-text-primary flex flex-col items-center justify-center gap-4">
+        <p className="app-text-muted">Turnier nicht gefunden.</p>
         <button
           onClick={() => router.push('/game/americano-klein/setup')}
           className="btn-primary px-6 py-2.5"
@@ -174,24 +174,24 @@ export default function AmericanoKleinTournamentPage() {
   const hasNextRound = rounds.some(([r]) => r > currentRound);
 
   return (
-    <div className="min-h-screen text-white pb-24 animate-fade-in">
+    <div className="min-h-screen app-text-primary pb-24 animate-fade-in">
       <div className="max-w-lg mx-auto px-4 py-6">
         {/* Header */}
         <div className="flex items-center gap-3 mb-4 animate-fade-in-up stagger-1">
           <button
             onClick={() => router.back()}
-            className="glass-card-static p-2.5 rounded-2xl hover:bg-white/[0.06] transition-all"
+            className="glass-card-static p-2.5 rounded-2xl hover-surface transition-all"
           >
-            <svg className="w-5 h-5 text-white/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg className="w-5 h-5 app-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
             </svg>
           </button>
           <div className="flex-1">
             <h1 className="text-xl font-bold gradient-text">Americano Klein</h1>
-            <p className="text-sm text-white/40">
+            <p className="text-sm app-text-muted">
               {tournament.players.length} Spieler · {tournament.pointsToWin} Pkt.
               {tournament.status === 'completed' && (
-                <span className="ml-2 text-amber-400 font-medium">Abgeschlossen</span>
+                <span className="ml-2 app-text-accent font-medium">Abgeschlossen</span>
               )}
             </p>
           </div>
@@ -204,7 +204,7 @@ export default function AmericanoKleinTournamentPage() {
             <div className="font-bold text-xl gradient-text">
               {playerName(leaderboard[0].playerId)}
             </div>
-            <div className="text-xs text-white/40 mt-1">
+            <div className="text-xs app-text-muted mt-1">
               {usingAvg ? `⌀ ${leaderboard[0].avgPoints.toFixed(1)} Pkt./Spiel` : `${leaderboard[0].points} Punkte`} • {leaderboard[0].wins} Siege
             </div>
           </div>
@@ -218,8 +218,8 @@ export default function AmericanoKleinTournamentPage() {
               onClick={() => setActiveTab(tab)}
               className={`flex-1 py-2.5 text-sm font-semibold rounded-xl transition-all duration-300 ${
                 activeTab === tab
-                  ? 'bg-amber-500/15 text-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.1)]'
-                  : 'text-white/40 hover:text-white/70'
+                  ? 'bg-amber-500/15 app-text-accent shadow-[0_0_12px_rgba(245,158,11,0.1)]'
+                  : 'app-text-muted hover-text-secondary'
               }`}
             >
               {tab === 'games' ? 'Spiele' : 'Tabelle'}
@@ -233,7 +233,7 @@ export default function AmericanoKleinTournamentPage() {
             {/* Tournament Complete Banner */}
             {isTournamentComplete && tournament.status !== 'completed' && (
               <div className="glass-card-static rounded-2xl p-5 text-center space-y-3 border-amber-500/20">
-                <p className="text-amber-400 font-semibold text-lg">🏆 Alle Spiele abgeschlossen!</p>
+                <p className="app-text-accent font-semibold text-lg">🏆 Alle Spiele abgeschlossen!</p>
                 <button
                   onClick={handleCompleteTournament}
                   className="btn-primary px-8 py-3 font-bold"
@@ -252,17 +252,17 @@ export default function AmericanoKleinTournamentPage() {
                   {/* Round header */}
                   <div className="flex items-center gap-2">
                     <h3 className={`text-xs font-bold uppercase tracking-wider ${
-                      isCurrent ? 'text-amber-400' : 'text-white/25'
+                      isCurrent ? 'app-text-accent' : 'app-text-faint'
                     }`}>
                       Runde {roundNum + 1}
                     </h3>
                     {roundComplete && (
-                      <span className="pill bg-white/[0.04] text-white/40 text-[10px]">
+                      <span className="pill bg-theme-soft app-text-muted text-[10px]">
                         ✓ Fertig
                       </span>
                     )}
                     {isCurrent && !roundComplete && (
-                      <span className="pill bg-amber-500/15 text-amber-400 text-[10px]">
+                      <span className="pill bg-amber-500/15 app-text-accent text-[10px]">
                         Aktiv
                       </span>
                     )}
@@ -295,14 +295,14 @@ export default function AmericanoKleinTournamentPage() {
 
             {/* Finish tournament early button */}
             {!isTournamentComplete && tournament.status !== 'completed' && (
-              <div className="pt-4 border-t border-white/[0.06]">
+              <div className="pt-4 border-t border-theme-weak">
                 <button
                   onClick={handleFinishTournamentEarly}
-                  className="w-full py-3 text-sm font-semibold rounded-2xl border border-amber-500/30 text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 transition-all"
+                  className="w-full py-3 text-sm font-semibold rounded-2xl border border-theme app-text-accent bg-amber-500/10 hover:bg-amber-500/20 transition-all"
                 >
                   ⏱ Turnier vorzeitig beenden
                 </button>
-                <p className="text-[11px] text-white/30 text-center mt-2">
+                <p className="text-[11px] app-text-subtle text-center mt-2">
                   Beendet alle offenen Spiele beim aktuellen Stand
                 </p>
               </div>
@@ -321,7 +321,7 @@ export default function AmericanoKleinTournamentPage() {
 
             <div className="glass-card-static rounded-2xl overflow-hidden">
               {/* Table header */}
-              <div className={`grid ${usingAvg ? 'grid-cols-[2rem_1fr_2.5rem_2.5rem_2rem_2rem]' : 'grid-cols-[2.5rem_1fr_3.5rem_2.5rem_2rem]'} gap-2 px-4 py-3 border-b border-white/[0.06] text-[11px] font-semibold uppercase tracking-wider text-white/25`}>
+              <div className={`grid ${usingAvg ? 'grid-cols-[2rem_1fr_2.5rem_2.5rem_2rem_2rem]' : 'grid-cols-[2.5rem_1fr_3.5rem_2.5rem_2rem]'} gap-2 px-4 py-3 border-b border-theme-weak text-[11px] font-semibold uppercase tracking-wider app-text-faint`}>
                 <span>#</span>
                 <span>Spieler</span>
                 {usingAvg && <span className="text-right">⌀</span>}
@@ -339,7 +339,7 @@ export default function AmericanoKleinTournamentPage() {
                   rank === 1
                     ? 'bg-amber-500/[0.08] border-l-2 border-amber-500'
                     : rank === 2
-                    ? 'bg-white/[0.03] border-l-2 border-white/30'
+                    ? 'bg-theme-softer border-l-2 border-theme'
                     : rank === 3
                     ? 'bg-orange-500/[0.05] border-l-2 border-orange-600'
                     : 'border-l-2 border-transparent';
@@ -347,24 +347,24 @@ export default function AmericanoKleinTournamentPage() {
                 return (
                   <div
                     key={entry.playerId}
-                    className={`grid ${usingAvg ? 'grid-cols-[2rem_1fr_2.5rem_2.5rem_2rem_2rem]' : 'grid-cols-[2.5rem_1fr_3.5rem_2.5rem_2rem]'} gap-2 px-4 py-3 items-center border-t border-white/[0.04] ${highlight}`}
+                    className={`grid ${usingAvg ? 'grid-cols-[2rem_1fr_2.5rem_2.5rem_2rem_2rem]' : 'grid-cols-[2.5rem_1fr_3.5rem_2.5rem_2rem]'} gap-2 px-4 py-3 items-center border-t border-theme-weak ${highlight}`}
                   >
                     <span className="text-sm">
-                      {medal ?? <span className="text-white/25">{rank}</span>}
+                      {medal ?? <span className="app-text-faint">{rank}</span>}
                     </span>
-                    <span className="text-sm font-medium truncate text-white/90">
+                    <span className="text-sm font-medium truncate app-text-primary">
                       {playerName(entry.playerId)}
                     </span>
                     {usingAvg && (
-                      <span className="text-sm font-bold text-amber-400 text-right">
+                      <span className="text-sm font-bold app-text-accent text-right">
                         {entry.avgPoints.toFixed(1)}
                       </span>
                     )}
-                    <span className={`text-sm ${usingAvg ? 'text-white/50' : 'font-bold text-amber-400'} text-right`}>
+                    <span className={`text-sm ${usingAvg ? 'app-text-muted' : 'font-bold app-text-accent'} text-right`}>
                       {entry.points}
                     </span>
-                    <span className="text-sm text-white/40 text-right">{entry.wins}</span>
-                    <span className="text-sm text-white/25 text-right">
+                    <span className="text-sm app-text-muted text-right">{entry.wins}</span>
+                    <span className="text-sm app-text-faint text-right">
                       {entry.gamesPlayed}
                     </span>
                   </div>
@@ -372,14 +372,14 @@ export default function AmericanoKleinTournamentPage() {
               })}
 
               {leaderboard.length === 0 && (
-                <div className="px-4 py-8 text-center text-white/25 text-sm">
+                <div className="px-4 py-8 text-center app-text-faint text-sm">
                   Noch keine Spiele abgeschlossen.
                 </div>
               )}
             </div>
 
             {usingAvg && (
-              <p className="text-[11px] text-white/30 text-center mt-3 px-4">
+              <p className="text-[11px] app-text-subtle text-center mt-3 px-4">
                 ⌀ = Durchschnittspunkte pro Spiel (Rangfolge basiert auf ⌀, da Spielanzahl ungleich)
               </p>
             )}
@@ -425,7 +425,7 @@ function GameCard({
       completed={isCompleted}
       team1Score={
         isCompleted ? (
-          <span className={`text-2xl font-bold tabular-nums ${team1Wins ? 'text-amber-400' : 'text-white/30'}`}>
+          <span className={`text-2xl font-bold tabular-nums ${team1Wins ? 'app-text-accent' : 'app-text-subtle'}`}>
             {game.team1Score}
           </span>
         ) : (
@@ -438,7 +438,7 @@ function GameCard({
       }
       team2Score={
         isCompleted ? (
-          <span className={`text-2xl font-bold tabular-nums ${team2Wins ? 'text-amber-400' : 'text-white/30'}`}>
+          <span className={`text-2xl font-bold tabular-nums ${team2Wins ? 'app-text-accent' : 'app-text-subtle'}`}>
             {game.team2Score}
           </span>
         ) : (
@@ -450,7 +450,7 @@ function GameCard({
         )
       }
       statusBadge={isCompleted ? (
-        <span className="text-[10px] font-medium text-white/25">Abgeschlossen</span>
+        <span className="text-[10px] font-medium app-text-faint">Abgeschlossen</span>
       ) : undefined}
       footer={
         canComplete ? (
@@ -463,7 +463,7 @@ function GameCard({
         ) : canFinishEarly ? (
           <button
             onClick={() => onComplete(game.id)}
-            className="w-full py-2.5 text-sm font-semibold rounded-xl border border-amber-500/30 text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 transition-all"
+            className="w-full py-2.5 text-sm font-semibold rounded-xl border border-theme app-text-accent bg-amber-500/10 hover:bg-amber-500/20 transition-all"
           >
             Vorzeitig beenden
           </button>

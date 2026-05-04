@@ -79,21 +79,21 @@ export default function AmericanoKleinSetupPage() {
   }
 
   return (
-    <div className="min-h-screen text-white pb-24 animate-fade-in">
+    <div className="min-h-screen app-text-primary pb-24 animate-fade-in">
       <div className="max-w-lg mx-auto px-4 py-6">
         {/* Header */}
         <div className="flex items-center gap-3 mb-6 animate-fade-in-up stagger-1">
           <button
             onClick={() => (step > 1 ? setStep(step - 1) : router.back())}
-            className="glass-card-static p-2.5 rounded-2xl hover:bg-white/[0.06] transition-all"
+            className="glass-card-static p-2.5 rounded-2xl hover-surface transition-all"
           >
-            <svg className="w-5 h-5 text-white/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg className="w-5 h-5 app-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
             </svg>
           </button>
           <div>
             <h1 className="text-xl font-bold gradient-text">Americano Klein Einrichtung</h1>
-            <p className="text-sm text-white/40">Schritt {step} von 3</p>
+            <p className="text-sm app-text-muted">Schritt {step} von 3</p>
           </div>
         </div>
 
@@ -103,7 +103,7 @@ export default function AmericanoKleinSetupPage() {
             <div
               key={s}
               className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${
-                s <= step ? 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.3)]' : 'bg-white/[0.06]'
+                s <= step ? 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.3)]' : 'bg-theme-soft'
               }`}
             />
           ))}
@@ -113,8 +113,8 @@ export default function AmericanoKleinSetupPage() {
         {step === 1 && (
           <div className="space-y-6 animate-fade-in-up">
             <div>
-              <h2 className="text-lg font-semibold text-white/90 mb-1">Spieler auswählen</h2>
-              <p className="text-sm text-white/40">
+              <h2 className="text-lg font-semibold app-text-primary mb-1">Spieler auswählen</h2>
+              <p className="text-sm app-text-muted">
                 Jeder Spieler spielt einmal mit jedem anderen.
               </p>
             </div>
@@ -126,11 +126,11 @@ export default function AmericanoKleinSetupPage() {
             />
 
             <div className="glass-card-static rounded-2xl px-4 py-3 flex items-center justify-between">
-              <span className="text-sm text-white/60">
+              <span className="text-sm app-text-secondary">
                 {selectedPlayers.length} Spieler ausgewählt
               </span>
               {selectedPlayers.length < 4 && (
-                <span className="text-sm text-amber-400/80">Mindestens 4 Spieler</span>
+                <span className="text-sm app-text-accent/80">Mindestens 4 Spieler</span>
               )}
             </div>
 
@@ -148,13 +148,13 @@ export default function AmericanoKleinSetupPage() {
         {step === 2 && (
           <div className="space-y-8 animate-fade-in-up">
             <div>
-              <h2 className="text-lg font-semibold text-white/90 mb-1">Einstellungen</h2>
-              <p className="text-sm text-white/40">Konfiguriere dein Turnier.</p>
+              <h2 className="text-lg font-semibold app-text-primary mb-1">Einstellungen</h2>
+              <p className="text-sm app-text-muted">Konfiguriere dein Turnier.</p>
             </div>
 
             {/* Points to win */}
             <div className="space-y-3">
-              <label className="text-sm font-medium text-white/60">Punkte zum Gewinnen</label>
+              <label className="text-sm font-medium app-text-secondary">Punkte zum Gewinnen</label>
               <div className="grid grid-cols-4 gap-2">
                 {POINTS_OPTIONS.map((pts) => (
                   <button
@@ -162,8 +162,8 @@ export default function AmericanoKleinSetupPage() {
                     onClick={() => setPointsToWin(pts)}
                     className={`glass-card-static py-3 rounded-2xl text-sm font-semibold transition-all duration-300 ${
                       pointsToWin === pts
-                        ? 'bg-amber-500/15 !border-amber-500/40 text-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.15)]'
-                        : 'text-white/60 hover:bg-white/[0.06] hover:text-white/80'
+                        ? 'bg-amber-500/15 !border-amber-500/40 app-text-accent shadow-[0_0_12px_rgba(245,158,11,0.15)]'
+                        : 'app-text-secondary hover-surface hover-text-primary'
                     }`}
                   >
                     {pts}
@@ -171,7 +171,7 @@ export default function AmericanoKleinSetupPage() {
                 ))}
               </div>
               <div className="flex items-center gap-3">
-                <span className="text-sm text-white/25">Eigene:</span>
+                <span className="text-sm app-text-faint">Eigene:</span>
                 <input
                   type="number"
                   min={1}
@@ -188,7 +188,7 @@ export default function AmericanoKleinSetupPage() {
 
             {/* Number of courts */}
             <div className="space-y-3">
-              <label className="text-sm font-medium text-white/60">
+              <label className="text-sm font-medium app-text-secondary">
                 Anzahl Plätze
               </label>
               <div className="flex gap-2 flex-wrap">
@@ -198,15 +198,15 @@ export default function AmericanoKleinSetupPage() {
                     onClick={() => setCourts(c)}
                     className={`glass-card-static w-14 h-12 rounded-2xl text-sm font-semibold transition-all duration-300 ${
                       courts === c
-                        ? 'bg-amber-500/15 !border-amber-500/40 text-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.15)]'
-                        : 'text-white/60 hover:bg-white/[0.06] hover:text-white/80'
+                        ? 'bg-amber-500/15 !border-amber-500/40 app-text-accent shadow-[0_0_12px_rgba(245,158,11,0.15)]'
+                        : 'app-text-secondary hover-surface hover-text-primary'
                     }`}
                   >
                     {c}
                   </button>
                 ))}
               </div>
-              <p className="text-xs text-white/25">
+              <p className="text-xs app-text-faint">
                 Max. {maxCourts} {maxCourts !== 1 ? 'Plätze' : 'Platz'} für {selectedPlayers.length} Spieler
               </p>
             </div>
@@ -224,8 +224,8 @@ export default function AmericanoKleinSetupPage() {
         {step === 3 && (
           <div className="space-y-6 animate-fade-in-up">
             <div>
-              <h2 className="text-lg font-semibold text-white/90 mb-1">Spielplan Vorschau</h2>
-              <p className="text-sm text-white/40">
+              <h2 className="text-lg font-semibold app-text-primary mb-1">Spielplan Vorschau</h2>
+              <p className="text-sm app-text-muted">
                 {previewRounds.length} {previewRounds.length !== 1 ? 'Runden' : 'Runde'} ·{' '}
                 {previewGames.length} {previewGames.length !== 1 ? 'Spiele' : 'Spiel'} ·{' '}
                 {pointsToWin} Pkt. zum Gewinnen
@@ -235,7 +235,7 @@ export default function AmericanoKleinSetupPage() {
             <div className="space-y-4 max-h-[50vh] overflow-y-auto pr-1">
               {previewRounds.map(([roundNum, games]) => (
                 <div key={roundNum} className="glass-card-static rounded-2xl p-4 space-y-3">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-amber-400">
+                  <h3 className="text-xs font-bold uppercase tracking-wider app-text-accent">
                     Runde {roundNum + 1}
                   </h3>
                   {games.map((game) => (

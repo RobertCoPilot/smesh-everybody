@@ -1,0 +1,322 @@
+/* ===== Clay League surfaces ===== */
+.glass {
+  background: var(--glass);
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  border: 1px solid var(--glass-border);
+  border-radius: 0.35rem;
+  box-shadow: var(--golden-shadow);
+}
+
+.glass-card,
+.glass-card-static {
+  background: var(--card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--card-border);
+  border-radius: 0.35rem;
+  box-shadow: -8px 16px 39px rgba(127, 99, 21, 0.1), -26px 52px 72px rgba(127, 99, 21, 0.06);
+}
+
+.glass-card {
+  transition: border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+  background: var(--card-hover);
+  border-color: var(--card-border-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--golden-shadow);
+}
+
+/* ===== Gradient Text ===== */
+.gradient-text {
+  color: var(--foreground);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+}
+
+.gradient-text-accent {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ===== Buttons ===== */
+.btn-primary {
+  background: var(--clay-black);
+  color: white;
+  font-weight: 500;
+  border-radius: 0.25rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1), background 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 12px 30px rgba(127, 99, 21, 0.16), inset 0 1px 0 rgba(255,255,255,0.08);
+  position: relative;
+  overflow: hidden;
+}
+.btn-primary:hover {
+  background: #2a211a;
+  transform: translateY(-1px);
+  box-shadow: 0 16px 40px rgba(127, 99, 21, 0.22), inset 0 1px 0 rgba(255,255,255,0.12);
+}
+.btn-primary:active {
+  transform: translateY(0) scale(0.98);
+}
+.btn-primary:disabled {
+  background: rgba(31, 31, 31, 0.18);
+  color: rgba(31,31,31,0.35);
+  box-shadow: none;
+  transform: none;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: var(--cream);
+  color: rgba(31,31,31,0.74);
+  font-weight: 500;
+  border-radius: 0.25rem;
+  border: 1px solid rgba(250,82,15,0.18);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-secondary:hover {
+  background: var(--block-gold);
+  border-color: rgba(250,82,15,0.34);
+  color: var(--clay-black);
+}
+.btn-secondary:active {
+  transform: scale(0.98);
+}
+
+/* ===== Input ===== */
+.input-glass {
+  background: rgba(255, 250, 235, 0.86);
+  border: 1px solid rgba(250,82,15,0.2);
+  border-radius: 0.25rem;
+  color: var(--clay-black);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.input-glass:focus {
+  outline: none;
+  border-color: rgba(250, 82, 15, 0.58);
+  box-shadow: 0 0 0 3px rgba(250, 82, 15, 0.12);
+  background: rgba(255, 250, 235, 0.96);
+}
+.input-glass::placeholder {
+  color: rgba(31,31,31,0.38);
+}
+
+/* ===== Pill/Badge ===== */
+.pill {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.2rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid rgba(250,82,15,0.2);
+}
+
+/* ===== Semantic app text ===== */
+.app-text-primary { color: rgba(31,31,31,0.9); }
+.app-text-secondary { color: rgba(31,31,31,0.68); }
+.app-text-muted { color: rgba(31,31,31,0.52); }
+.app-text-subtle { color: rgba(31,31,31,0.34); }
+.app-text-faint { color: rgba(31,31,31,0.24); }
+.app-text-accent { color: var(--league-accent); }
+.app-text-on-dark { color: rgba(255,250,235,0.92); }
+.app-text-on-dark-muted { color: rgba(255,250,235,0.62); }
+
+/* ===== Semantic surfaces and controls ===== */
+.app-page { min-height: 100vh; color: var(--foreground); }
+.app-page-pad { padding: 1.5rem 1rem 6rem; }
+.app-page-shell { padding: 2rem 1.25rem 6rem; }
+.app-section-title { color: var(--foreground); font-weight: 650; letter-spacing: -0.02em; }
+.app-kicker { color: var(--league-accent); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; }
+.app-card-title { color: rgba(31,31,31,0.88); font-weight: 650; }
+.app-card-copy { color: rgba(31,31,31,0.58); }
+.app-card-meta { color: rgba(31,31,31,0.42); }
+.app-stat-label { color: rgba(31,31,31,0.54); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.app-choice-active { background: var(--clay-black); color: #fffaeb; box-shadow: 0 12px 30px rgba(127, 99, 21, 0.16); }
+.app-choice-idle { color: rgba(31,31,31,0.58); }
+.app-choice-idle:hover { color: rgba(31,31,31,0.86); }
+.app-status-active { background: rgba(245,158,11,0.12); color: #b45309; border: 1px solid rgba(245,158,11,0.22); }
+.app-danger-text { color: #dc2626; }
+.app-danger-button { background: rgba(220,38,38,0.86); color: #fff; }
+.app-danger-button:hover { background: #dc2626; }
+
+.app-dark-panel,
+.builder-pool,
+.court-footer,
+.court-score-controls {
+  background: #1f1f1f;
+  color: rgba(255,250,235,0.92);
+  border-color: rgba(255,250,235,0.14);
+}
+.app-dark-panel .app-text-secondary,
+.app-dark-panel .app-text-muted,
+.builder-pool .app-text-secondary,
+.builder-pool .app-text-muted,
+.builder-pool .app-text-subtle,
+.court-footer .app-text-secondary,
+.court-score-controls .app-text-secondary {
+  color: rgba(255,250,235,0.68);
+}
+.builder-slot-badge {
+  border: 1px solid rgba(250,82,15,0.38);
+  background: rgba(250,82,15,0.14);
+  color: #fffaeb;
+}
+.court-hud {
+  border: 1px solid rgba(255,250,235,0.18);
+  background: rgba(8,18,38,0.72);
+  color: rgba(255,250,235,0.94);
+  backdrop-filter: blur(12px);
+}
+
+
+.surface-muted {
+  background: rgba(255, 226, 149, 0.36);
+  border: 1px solid rgba(250,82,15,0.2);
+}
+.surface-muted-weak {
+  background: rgba(255, 226, 149, 0.2);
+  border: 1px solid rgba(250,82,15,0.14);
+}
+.surface-accent-soft {
+  background: rgba(250,82,15,0.1);
+  border: 1px solid rgba(250,82,15,0.24);
+}
+
+.link-accent {
+  color: var(--league-accent);
+  transition: color 0.2s ease;
+}
+.link-accent:hover { color: var(--league-flame); }
+
+.icon-well {
+  background: rgba(255, 226, 149, 0.36);
+  color: rgba(31,31,31,0.52);
+}
+.icon-well-active {
+  background: rgba(250,82,15,0.12);
+  color: var(--league-accent);
+}
+
+.nav-shell {
+  border-radius: 1rem;
+  margin-bottom: 0.5rem;
+  box-shadow: 0 14px 32px rgba(127, 99, 21, 0.16);
+}
+.nav-item {
+  color: rgba(31,31,31,0.52);
+}
+.nav-item:hover { color: rgba(31,31,31,0.72); }
+.nav-item-active { color: var(--league-accent); }
+.nav-item-active::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 0.75rem;
+  background: rgba(250,82,15,0.1);
+}
+
+.tab-option {
+  color: rgba(31,31,31,0.52);
+  transition: color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+}
+.tab-option:hover { color: rgba(31,31,31,0.72); }
+.tab-option-active {
+  color: var(--league-accent);
+  background: rgba(250,82,15,0.1);
+  box-shadow: 0 0 12px rgba(250,82,15,0.14);
+}
+
+.sort-pill-active {
+  background: var(--clay-black);
+  color: #fffaeb;
+  box-shadow: 0 0 16px rgba(138,74,23,0.18);
+}
+.sort-pill-idle { color: rgba(31,31,31,0.52); }
+.sort-pill-idle:hover { color: rgba(31,31,31,0.72); }
+
+.table-divider { border-color: rgba(250,82,15,0.14); }
+.table-row-gold { background: rgba(255,184,62,0.13); }
+.table-row-silver { background: rgba(255,250,235,0.42); }
+.table-row-bronze { background: rgba(255,129,5,0.1); }
+
+.player-option {
+  color: rgba(31,31,31,0.68);
+}
+.player-option:hover { color: rgba(31,31,31,0.9); }
+.player-option-selected {
+  background: rgba(250,82,15,0.1);
+  color: var(--league-accent);
+  box-shadow: inset 0 0 0 1px rgba(250,82,15,0.24);
+}
+.player-option-disabled {
+  background: rgba(255, 226, 149, 0.16);
+  color: rgba(31,31,31,0.24);
+  cursor: not-allowed;
+}
+
+.score-button,
+.score-display {
+  background: rgba(255, 226, 149, 0.3);
+  border: 1px solid rgba(250,82,15,0.16);
+  color: rgba(31,31,31,0.62);
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+.score-button:hover,
+.score-display:hover {
+  background: rgba(255, 226, 149, 0.48);
+  border-color: rgba(250,82,15,0.26);
+}
+.score-button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+.score-input {
+  background: rgba(255, 226, 149, 0.42);
+  border: 1px solid rgba(250,82,15,0.3);
+  color: rgba(31,31,31,0.9);
+  outline: none;
+}
+
+:root[data-design-theme="electric"] .surface-muted,
+:root[data-design-theme="electric"] .surface-muted-weak,
+:root[data-design-theme="electric"] .score-button,
+:root[data-design-theme="electric"] .score-display,
+:root[data-design-theme="electric"] .icon-well {
+  background: rgba(242, 247, 255, 0.9);
+  border-color: rgba(20,86,240,0.14);
+}
+:root[data-design-theme="electric"] .surface-accent-soft,
+:root[data-design-theme="electric"] .tab-option-active,
+:root[data-design-theme="electric"] .player-option-selected,
+:root[data-design-theme="electric"] .icon-well-active {
+  background: rgba(20,86,240,0.08);
+  color: #1456f0;
+  border-color: rgba(20,86,240,0.2);
+}
+:root[data-design-theme="electric"] .table-divider { border-color: rgba(20,86,240,0.12); }
+:root[data-design-theme="electric"] .sort-pill-active { background: #181e25; color: #ffffff; }
+
+/* ===== Migration helpers for theme-aware legacy surfaces ===== */
+.border-theme { border-color: rgba(250,82,15,0.2); }
+.border-theme-weak { border-color: rgba(250,82,15,0.12); }
+.bg-theme-soft { background: rgba(255, 226, 149, 0.3); }
+.bg-theme-softer { background: rgba(255, 226, 149, 0.16); }
+.bg-accent-soft { background: rgba(250,82,15,0.1); }
+.hover-surface:hover { background: rgba(255, 226, 149, 0.42); }
+.hover-border-theme:hover { border-color: rgba(250,82,15,0.28); }
+.hover-text-primary:hover { color: rgba(31,31,31,0.9); }
+.hover-text-secondary:hover { color: rgba(31,31,31,0.68); }
+
+:root[data-design-theme="electric"] .border-theme { border-color: rgba(20,86,240,0.16); }
+:root[data-design-theme="electric"] .border-theme-weak { border-color: rgba(20,86,240,0.1); }
+:root[data-design-theme="electric"] .bg-theme-soft { background: rgba(242, 247, 255, 0.9); }
+:root[data-design-theme="electric"] .bg-theme-softer { background: rgba(242, 247, 255, 0.62); }
+:root[data-design-theme="electric"] .bg-accent-soft { background: rgba(20,86,240,0.08); }
+:root[data-design-theme="electric"] .hover-surface:hover { background: rgba(242, 247, 255, 1); }
+:root[data-design-theme="electric"] .hover-border-theme:hover { border-color: rgba(20,86,240,0.24); }
+.hover-text-accent:hover { color: var(--league-accent); }

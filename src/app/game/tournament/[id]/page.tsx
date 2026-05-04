@@ -290,15 +290,15 @@ export default function TournamentPage() {
   if (!isHydrated) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-pulse text-white/25">Laden...</div>
+        <div className="animate-pulse app-text-faint">Laden...</div>
       </div>
     );
   }
 
   if (!tournament) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4 text-white">
-        <p className="text-white/40">Turnier nicht gefunden</p>
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 app-text-primary">
+        <p className="app-text-muted">Turnier nicht gefunden</p>
         <button
           onClick={() => router.push('/')}
           className="btn-secondary px-5 py-2.5 text-sm"
@@ -315,21 +315,21 @@ export default function TournamentPage() {
   );
 
   return (
-    <div className="min-h-screen text-white pb-20 animate-fade-in">
+    <div className="min-h-screen app-text-primary pb-20 animate-fade-in">
       <div className="max-w-lg mx-auto px-4 pt-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-6 animate-fade-in-up stagger-1">
           <div className="flex items-center gap-3">
             <button
               onClick={() => router.back()}
-              className="glass w-10 h-10 rounded-2xl flex items-center justify-center text-white/60 hover:text-white transition-colors"
+              className="glass w-10 h-10 rounded-2xl flex items-center justify-center app-text-secondary hover-text-primary transition-colors"
             >
               ←
             </button>
             <h1 className="gradient-text text-2xl font-bold tracking-tight">Turnier</h1>
           </div>
           {tournament.status === 'completed' && (
-            <span className="pill bg-violet-500/10 text-violet-400 border border-violet-500/20">
+            <span className="pill bg-accent-soft app-text-accent border border-theme">
               Abgeschlossen
             </span>
           )}
@@ -338,10 +338,10 @@ export default function TournamentPage() {
         {/* Winner celebration */}
         {tournament.status === 'completed' && tournament.winner && (
           <div className="glass-card-static rounded-3xl p-6 mb-6 text-center animate-fade-in-scale relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-violet-500/10 via-transparent to-cyan-500/10" />
+            <div className="absolute inset-0 bg-[#fa520f]/8" />
             <div className="relative">
               <div className="text-5xl mb-3">🏆</div>
-              <p className="text-xs text-white/40 mb-2 uppercase tracking-wider font-medium">Champions</p>
+              <p className="text-xs app-text-muted mb-2 uppercase tracking-wider font-medium">Champions</p>
               <p className="gradient-text-accent text-xl font-bold">
                 {getTeamName(tournament.winner)}
               </p>
@@ -380,38 +380,38 @@ export default function TournamentPage() {
                         completed={match.status === 'completed' && !isBye}
                         onClick={isPlayable && !isBye ? () => setScoringMatchId(match.id) : undefined}
                         team1Score={setsScore ? (
-                          <span className={`text-sm font-mono ${match.winnerId === match.team1Id ? 'text-violet-400 font-bold' : 'text-white/50'}`}>
+                          <span className={`text-sm font-mono ${match.winnerId === match.team1Id ? 'app-text-accent font-bold' : 'app-text-muted'}`}>
                             {setsScore[0]}
                           </span>
                         ) : undefined}
                         team2Score={setsScore ? (
-                          <span className={`text-sm font-mono ${match.winnerId === match.team2Id ? 'text-violet-400 font-bold' : 'text-white/50'}`}>
+                          <span className={`text-sm font-mono ${match.winnerId === match.team2Id ? 'app-text-accent font-bold' : 'app-text-muted'}`}>
                             {setsScore[1]}
                           </span>
                         ) : undefined}
                         statusBadge={
                           <>
                             {match.status === 'completed' && !isBye && (
-                              <span className="pill bg-violet-500/10 text-violet-400 border border-violet-500/20 !text-[10px] !py-0.5">Fertig</span>
+                              <span className="pill bg-accent-soft app-text-accent border border-theme !text-[10px] !py-0.5">Fertig</span>
                             )}
                             {match.status === 'in_progress' && (
-                              <span className="pill bg-blue-500/10 text-blue-400 border border-blue-500/20 !text-[10px] !py-0.5">Live</span>
+                              <span className="pill bg-accent-soft app-text-accent border border-blue-500/20 !text-[10px] !py-0.5">Live</span>
                             )}
                             {isBye && (
-                              <span className="pill bg-white/[0.04] text-white/40 border border-white/[0.06] !text-[10px] !py-0.5">BYE</span>
+                              <span className="pill bg-theme-soft app-text-muted border border-theme-weak !text-[10px] !py-0.5">BYE</span>
                             )}
                             {court && (
-                              <span className="pill bg-blue-500/10 text-blue-400 border border-blue-500/20 !text-[10px] !py-0.5">Platz {court}</span>
+                              <span className="pill bg-accent-soft app-text-accent border border-blue-500/20 !text-[10px] !py-0.5">Platz {court}</span>
                             )}
                             {isPlayable && !isBye && (
-                              <span className="text-[10px] text-violet-500/80 ml-auto font-medium">Tippen zum Eintragen →</span>
+                              <span className="text-[10px] app-text-accent ml-auto font-medium">Tippen zum Eintragen →</span>
                             )}
                           </>
                         }
                         footer={match.sets.length > 0 ? (
                           <div className="flex gap-2">
                             {match.sets.map((set, i) => (
-                              <span key={i} className="text-xs text-white/25 font-mono">{formatSetScore(set)}</span>
+                              <span key={i} className="text-xs app-text-faint font-mono">{formatSetScore(set)}</span>
                             ))}
                           </div>
                         ) : undefined}
@@ -481,14 +481,14 @@ function ScoringModal({
   }, [match.status, onClose]);
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xl flex items-end sm:items-center justify-center animate-fade-in">
+    <div className="fixed inset-0 z-50 bg-[#081226]/75 backdrop-blur-xl flex items-end sm:items-center justify-center animate-fade-in">
       <div className="glass w-full max-w-lg rounded-t-3xl sm:rounded-3xl p-6 max-h-[85vh] overflow-y-auto animate-slide-up sm:animate-fade-in-scale">
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
           <h3 className="gradient-text text-lg font-bold">Ergebnis eintragen</h3>
           <button
             onClick={onClose}
-            className="glass-card-static w-9 h-9 rounded-2xl flex items-center justify-center text-white/40 hover:text-white transition-colors"
+            className="glass-card-static w-9 h-9 rounded-2xl flex items-center justify-center app-text-muted hover-text-primary transition-colors"
           >
             ✕
           </button>
@@ -497,7 +497,7 @@ function ScoringModal({
         {/* Match completed overlay */}
         {matchWinner && (
           <div className="glass-card-static rounded-2xl p-5 mb-5 text-center relative overflow-hidden animate-fade-in-scale">
-            <div className="absolute inset-0 bg-gradient-to-br from-violet-500/10 via-transparent to-cyan-500/10" />
+            <div className="absolute inset-0 bg-[#fa520f]/8" />
             <p className="relative gradient-text-accent font-bold text-base">
               🎉 {getTeamName(matchWinner === 1 ? match.team1Id : match.team2Id)} gewinnt!
             </p>
@@ -507,15 +507,15 @@ function ScoringModal({
         {/* Sets overview */}
         <div className="glass-card-static rounded-2xl p-4 mb-5">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-sm text-white/40 font-medium">Sätze</span>
-            <span className="font-mono text-2xl font-bold text-white/90 tracking-wider">
+            <span className="text-sm app-text-muted font-medium">Sätze</span>
+            <span className="font-mono text-2xl font-bold app-text-primary tracking-wider">
               {setsScore[0]} — {setsScore[1]}
             </span>
           </div>
           {match.sets.length > 0 && (
-            <div className="flex gap-3 text-xs text-white/25">
+            <div className="flex gap-3 text-xs app-text-faint">
               {match.sets.map((set, i) => (
-                <span key={i} className="font-mono bg-white/[0.03] px-2 py-1 rounded-lg">
+                <span key={i} className="font-mono bg-theme-softer px-2 py-1 rounded-lg">
                   {formatSetScore(set)}
                 </span>
               ))}
@@ -529,20 +529,20 @@ function ScoringModal({
             {isTiebreak && !hasTiebreak ? (
               <div className="glass-card-static rounded-2xl py-3 px-4 inline-flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-                <p className="text-sm text-amber-400 font-semibold">
+                <p className="text-sm app-text-accent font-semibold">
                   6-6 — Tiebreak!
                 </p>
               </div>
             ) : isTiebreak && hasTiebreak ? (
-              <div className="glass-card-static rounded-2xl py-3 px-5 inline-flex items-center gap-3 border-amber-500/20 !border-amber-500/30">
+              <div className="glass-card-static rounded-2xl py-3 px-5 inline-flex items-center gap-3 border-amber-500/20 !border-theme">
                 <div className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-                <p className="text-sm text-amber-400 font-semibold font-mono tracking-wider">
+                <p className="text-sm app-text-accent font-semibold font-mono tracking-wider">
                   TB: {currentSet.tiebreak!.team1Points} — {currentSet.tiebreak!.team2Points}
                 </p>
               </div>
             ) : (
-              <p className="text-sm text-white/40 font-mono">
-                Satz {match.sets.length}: <span className="text-white/60">{currentSet.team1Games} — {currentSet.team2Games}</span>
+              <p className="text-sm app-text-muted font-mono">
+                Satz {match.sets.length}: <span className="app-text-secondary">{currentSet.team1Games} — {currentSet.team2Games}</span>
               </p>
             )}
           </div>
@@ -552,7 +552,7 @@ function ScoringModal({
         {isTiebreak && !hasTiebreak && !matchWinner && (
           <button
             onClick={() => onStartTiebreak(match.id)}
-            className="w-full bg-amber-500/15 hover:bg-amber-500/25 text-amber-400 border border-amber-500/30 py-3.5 rounded-2xl mb-5 font-semibold text-sm transition-all duration-300"
+            className="w-full bg-amber-500/15 hover:bg-amber-500/25 app-text-accent border border-theme py-3.5 rounded-2xl mb-5 font-semibold text-sm transition-all duration-300"
           >
             Tiebreak starten
           </button>
@@ -564,12 +564,12 @@ function ScoringModal({
             {/* Team 1 */}
             <button
               onClick={() => scoreAction(match.id, 1)}
-              className="bg-violet-500/15 hover:bg-violet-500/25 border border-violet-500/30 text-white rounded-2xl p-4 transition-all duration-300 active:scale-95"
+              className="surface-accent-soft hover-surface rounded-2xl p-4 transition-all duration-300 active:scale-95"
             >
-              <p className="text-xs text-violet-400/70 mb-1.5 font-medium">
+              <p className="text-xs app-text-accent mb-1.5 font-medium">
                 {isTiebreak && hasTiebreak ? 'Punkt' : 'Spiel'}
               </p>
-              <p className="text-sm font-semibold text-white/90 truncate">
+              <p className="text-sm font-semibold app-text-primary truncate">
                 {getTeamName(match.team1Id)}
               </p>
             </button>
@@ -577,12 +577,12 @@ function ScoringModal({
             {/* Team 2 */}
             <button
               onClick={() => scoreAction(match.id, 2)}
-              className="bg-blue-500/15 hover:bg-blue-500/25 border border-blue-500/30 text-white rounded-2xl p-4 transition-all duration-300 active:scale-95"
+              className="surface-muted hover-surface rounded-2xl p-4 transition-all duration-300 active:scale-95"
             >
-              <p className="text-xs text-blue-400/70 mb-1.5 font-medium">
+              <p className="text-xs app-text-accent/70 mb-1.5 font-medium">
                 {isTiebreak && hasTiebreak ? 'Punkt' : 'Spiel'}
               </p>
-              <p className="text-sm font-semibold text-white/90 truncate">
+              <p className="text-sm font-semibold app-text-primary truncate">
                 {getTeamName(match.team2Id)}
               </p>
             </button>

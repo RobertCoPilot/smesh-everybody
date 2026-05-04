@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { doc, getDoc, collection, getDocs } from 'firebase/firestore';
+import { firestoreCollections } from '@/lib/firestoreCollections';
 import { db } from '@/lib/firebase';
 import type {
   GameRecord,
@@ -9,7 +10,6 @@ import type {
   AmericanoTournament,
   Player,
 } from '@/types';
-import { getSetsScore, needsTiebreak } from '@/lib/scoring';
 
 // GET /api/garmin/games/[id]
 // Returns full game details for the Garmin watch.
@@ -25,13 +25,13 @@ export async function GET(
     const mid = url.searchParams.get('mid');
 
     // Fetch game document
-    const gameDoc = await getDoc(doc(db, 'games', id));
+    const gameDoc = await getDoc(doc(db, firestoreCollections.games, id));
     if (!gameDoc.exists()) {
       return NextResponse.json({ error: 'Game not found' }, { status: 404 });
     }
 
     // Fetch players for name resolution
-    const playersSnap = await getDocs(collection(db, 'players'));
+    const playersSnap = await getDocs(collection(db, firestoreCollections.players));
     const players = new Map<string, string>();
     playersSnap.docs.forEach((d) => {
       const p = d.data() as Player;
@@ -44,9 +44,6 @@ export async function GET(
     // 1vs1 match
     if (game.type === '1vs1') {
       const m = game as Match1vs1;
-      const lastSet = m.sets[m.sets.length - 1];
-      const isTB = lastSet ? needsTiebreak(lastSet) : false;
-
       return NextResponse.json({
         type: '1v1',
         t1: [pn(m.player1)],

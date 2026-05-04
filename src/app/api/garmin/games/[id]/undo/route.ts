@@ -1,16 +1,15 @@
 import { NextResponse } from 'next/server';
 import { doc, getDoc, setDoc, collection, getDocs } from 'firebase/firestore';
+import { firestoreCollections } from '@/lib/firestoreCollections';
 import { db } from '@/lib/firebase';
 import type {
   GameRecord,
   Match1vs1,
   Match2vs2,
-  Tournament,
   AmericanoTournament,
   SetScore,
   Player,
 } from '@/types';
-import { isSetComplete, needsTiebreak, getSetsScore } from '@/lib/scoring';
 
 function clean<T>(obj: T): T {
   return JSON.parse(JSON.stringify(obj));
@@ -25,14 +24,14 @@ export async function POST(
   try {
     const { id } = await params;
     const body = await request.json();
-    const { action, team, gid, mid } = body as {
+    const { action, team, gid } = body as {
       action: string;
       team?: number;
       gid?: string;
       mid?: string;
     };
 
-    const gameRef = doc(db, 'games', id);
+    const gameRef = doc(db, firestoreCollections.games, id);
     const gameDoc = await getDoc(gameRef);
     if (!gameDoc.exists()) {
       return NextResponse.json({ error: 'Game not found' }, { status: 404 });
@@ -135,7 +134,7 @@ export async function POST(
       a.games = a.games.map((g, i) => (i === gameIdx ? ag : g));
       await setDoc(gameRef, clean(a));
 
-      const playersSnap = await getDocs(collection(db, 'players'));
+      const playersSnap = await getDocs(collection(db, firestoreCollections.players));
       const players = new Map<string, string>();
       playersSnap.docs.forEach((d) => {
         const p = d.data() as Player;

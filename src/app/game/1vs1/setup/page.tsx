@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { v4 as uuidv4 } from 'uuid';
 import { useGameStore } from '@/store/gameStore';
 import PlayerSelector from '@/components/PlayerSelector';
-import CourtCard from '@/components/CourtCard';
+import { PadelBuilder } from '@/components/padel-builder/PadelBuilder';
+import { createPadelPlayer } from '@/components/padel-builder/playerFactory';
 import type { Match1vs1 } from '@/types';
 
 export default function Setup1vs1Page() {
@@ -17,10 +18,14 @@ export default function Setup1vs1Page() {
   const [selectedPlayers, setSelectedPlayers] = useState<string[]>([]);
   const [setsToWin, setSetsToWin] = useState(1);
 
-  const playerName = useCallback(
-    (id: string) => getPlayer(id)?.name ?? 'Unbekannt',
-    [getPlayer]
-  );
+  const previewPlayer1 = selectedPlayers[0] ? getPlayer(selectedPlayers[0]) : undefined;
+  const previewPlayer2 = selectedPlayers[1] ? getPlayer(selectedPlayers[1]) : undefined;
+  const previewCard1 = previewPlayer1
+    ? createPadelPlayer(previewPlayer1.id, previewPlayer1.name, 'left', `${previewPlayer1.id}-setup-left`, previewPlayer1.currentElo)
+    : undefined;
+  const previewCard2 = previewPlayer2
+    ? createPadelPlayer(previewPlayer2.id, previewPlayer2.name, 'right2', `${previewPlayer2.id}-setup-right2`, previewPlayer2.currentElo)
+    : undefined;
 
   const handleStart = () => {
     const id = uuidv4();
@@ -45,15 +50,15 @@ export default function Setup1vs1Page() {
       <div className="flex items-center gap-4 animate-fade-in-up">
         <Link
           href="/new-game"
-          className="flex items-center justify-center w-11 h-11 rounded-full glass-card-static transition-all hover:border-white/20 active:scale-95"
+          className="flex items-center justify-center w-11 h-11 rounded-full glass-card-static transition-all hover-border-theme active:scale-95"
         >
-          <svg className="w-5 h-5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5 app-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </Link>
         <div>
           <h1 className="text-2xl font-bold tracking-tight gradient-text">1vs1 Einrichtung</h1>
-          <p className="text-sm text-white/40 mt-0.5">Schritt {step} von 2</p>
+          <p className="text-sm app-text-muted mt-0.5">Schritt {step} von 2</p>
         </div>
       </div>
 
@@ -82,7 +87,7 @@ export default function Setup1vs1Page() {
         <div className="space-y-6 animate-fade-in-up stagger-1">
           {/* Sets to win */}
           <div className="glass-card-static rounded-2xl p-5">
-            <label className="text-xs text-white/40 font-semibold uppercase tracking-wider block mb-3">
+            <label className="text-xs app-text-muted font-semibold uppercase tracking-wider block mb-3">
               Sätze zum Gewinnen
             </label>
             <div className="flex gap-2">
@@ -92,8 +97,8 @@ export default function Setup1vs1Page() {
                   onClick={() => setSetsToWin(n)}
                   className={`flex-1 py-3 rounded-xl text-sm font-semibold transition-all ${
                     setsToWin === n
-                      ? 'bg-gradient-to-r from-violet-600 to-violet-500 text-white shadow-lg shadow-violet-500/20'
-                      : 'glass-card-static text-white/60 hover:text-white/80'
+                      ? 'app-choice-active'
+                      : 'glass-card-static app-text-secondary hover-text-primary'
                   }`}
                 >
                   {n}
@@ -104,15 +109,20 @@ export default function Setup1vs1Page() {
 
           {/* Match Preview */}
           <div className="glass-card-static rounded-2xl p-6 space-y-5">
-            <h3 className="text-xs font-semibold text-white/40 uppercase tracking-wider text-center">
+            <h3 className="text-xs font-semibold app-text-muted uppercase tracking-wider text-center">
               Match Übersicht
             </h3>
-            <CourtCard
-              team1Players={[playerName(selectedPlayers[0])]}
-              team2Players={[playerName(selectedPlayers[1])]}
-              accentColor="blue"
-            />
-            <p className="text-center text-xs text-white/30">
+            {previewCard1 && previewCard2 ? (
+              <PadelBuilder
+                title="Match Preview"
+                initialFormation="1-1"
+                players={[previewCard1, previewCard2]}
+                initialPlacements={{ left: previewCard1, right2: previewCard2 }}
+                scoreLabel="0 - 0"
+                readOnly
+              />
+            ) : null}
+            <p className="text-center text-xs app-text-subtle">
               Best of {setsToWin * 2 - 1} · {setsToWin} {setsToWin === 1 ? 'Satz' : 'Sätze'} zum Gewinnen
             </p>
           </div>

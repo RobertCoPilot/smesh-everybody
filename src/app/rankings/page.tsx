@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useMemo, useState, useSyncExternalStore } from 'react';
+import { calculateEloLeaderboard, getTierLabel } from '@/lib/elo';
 import { useGameStore } from '@/store/gameStore';
 
-type CategoryKey = 'overall' | 'americano' | 'normal';
+type CategoryKey = 'overall' | 'elo' | 'americano' | 'normal';
 
 interface OverallRow {
   playerId: string;
@@ -27,6 +28,16 @@ interface AmericanoRow {
   avgPoints: number;
 }
 
+interface EloRow {
+  playerId: string;
+  name: string;
+  currentElo: number;
+  peakElo: number;
+  matchesPlayed: number;
+  wins: number;
+  winPct: number;
+}
+
 interface NormalRow {
   playerId: string;
   name: string;
@@ -42,6 +53,7 @@ type SortKey<T> = keyof Omit<T, 'playerId' | 'name'>;
 
 const CATEGORY_TABS: { key: CategoryKey; label: string }[] = [
   { key: 'overall', label: 'Gesamt' },
+  { key: 'elo', label: 'ELO' },
   { key: 'americano', label: 'Americano' },
   { key: 'normal', label: 'Normal' },
 ];
@@ -63,6 +75,14 @@ const AMERICANO_COLS: { key: SortKey<AmericanoRow>; label: string; short: string
   { key: 'tournamentWins', label: 'Turnier Siege', short: 'TS' },
   { key: 'points', label: 'Punkte', short: 'Pkt' },
   { key: 'avgPoints', label: 'Durchschnitt', short: '⌀' },
+];
+
+const ELO_COLS: { key: SortKey<EloRow>; label: string; short: string }[] = [
+  { key: 'currentElo', label: 'Aktuelles ELO', short: 'ELO' },
+  { key: 'peakElo', label: 'Peak ELO', short: 'Peak' },
+  { key: 'matchesPlayed', label: 'ELO Matches', short: 'Sp' },
+  { key: 'wins', label: 'Siege', short: 'S' },
+  { key: 'winPct', label: 'Sieg-%', short: 'S%' },
 ];
 
 const NORMAL_COLS: { key: SortKey<NormalRow>; label: string; short: string }[] = [
@@ -91,18 +111,20 @@ function sortRows<T>(rows: T[], key: keyof T): T[] {
 }
 
 export default function RankingsPage() {
-  const [hydrated, setHydrated] = useState(false);
+  const hydrated = useSyncExternalStore(
+    () => () => undefined,
+    () => true,
+    () => false
+  );
   const [category, setCategory] = useState<CategoryKey>('overall');
   const [overallSort, setOverallSort] = useState<SortKey<OverallRow>>('gameWinPct');
   const [americanoSort, setAmericanoSort] = useState<SortKey<AmericanoRow>>('points');
+  const [eloSort, setEloSort] = useState<SortKey<EloRow>>('currentElo');
   const [normalSort, setNormalSort] = useState<SortKey<NormalRow>>('twovstwoWins');
 
   const players = useGameStore((s) => s.players);
+  const games = useGameStore((s) => s.games);
   const getPlayerWins = useGameStore((s) => s.getPlayerWins);
-
-  useEffect(() => {
-    setHydrated(true);
-  }, []);
 
   const allStats = useMemo(() => {
     if (!hydrated) return [];
@@ -157,8 +179,21 @@ export default function RankingsPage() {
     }));
   }, [allStats]);
 
+  const eloRows = useMemo<EloRow[]>(() => {
+    return calculateEloLeaderboard(players, games).map((row) => ({
+      playerId: row.playerId,
+      name: `${row.name} · ${getTierLabel(row.tier)}`,
+      currentElo: row.currentElo,
+      peakElo: row.peakElo,
+      matchesPlayed: row.matchesPlayed,
+      wins: row.wins,
+      winPct: row.winPct,
+    }));
+  }, [players, games]);
+
   const sortedOverall = useMemo(() => sortRows(overallRows, overallSort), [overallRows, overallSort]);
   const sortedAmericano = useMemo(() => sortRows(americanoRows, americanoSort), [americanoRows, americanoSort]);
+  const sortedElo = useMemo(() => sortRows(eloRows, eloSort), [eloRows, eloSort]);
   const sortedNormal = useMemo(() => sortRows(normalRows, normalSort), [normalRows, normalSort]);
 
   if (!hydrated) {
@@ -166,7 +201,7 @@ export default function RankingsPage() {
       <div className="p-4 pt-6">
         <h1 className="text-3xl font-bold gradient-text mb-6">Ranglisten</h1>
         <div className="flex items-center justify-center h-40">
-          <div className="w-8 h-8 border-2 border-violet-400 border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-[var(--league-accent)] border-t-transparent rounded-full animate-spin" />
         </div>
       </div>
     );
@@ -184,8 +219,8 @@ export default function RankingsPage() {
             onClick={() => setCategory(tab.key)}
             className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${
               category === tab.key
-                ? 'bg-violet-500/15 text-violet-400 shadow-[0_0_12px_rgba(139,92,246,0.15)]'
-                : 'text-white/40 hover:text-white/70'
+                ? 'tab-option-active'
+                : 'tab-option'
             }`}
           >
             {tab.label}
@@ -203,6 +238,23 @@ export default function RankingsPage() {
             formatValue={(key, val) =>
               key === 'gameWinPct' || key === 'tournamentWinPct' ? formatPct(val) : String(val)
             }
+          />
+        </div>
+      )}
+
+      {category === 'elo' && (
+        <div className="animate-fade-in-up">
+          <div className="glass-card-static rounded-2xl p-3 mb-4">
+            <p className="text-xs app-text-muted leading-relaxed">
+              ELO wird live aus abgeschlossenen 1vs1- und 2vs2-Spielen berechnet. Alte Match-History bleibt unverändert.
+            </p>
+          </div>
+          <SortPills cols={ELO_COLS} activeKey={eloSort} setKey={setEloSort} />
+          <RankTable<EloRow>
+            rows={sortedElo}
+            cols={ELO_COLS}
+            activeKey={eloSort}
+            formatValue={(key, val) => (key === 'winPct' ? formatPct(val) : String(Math.round(val)))}
           />
         </div>
       )}
@@ -251,8 +303,8 @@ function SortPills<T>({
           onClick={() => setKey(col.key)}
           className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-300 ${
             activeKey === col.key
-              ? 'bg-gradient-to-r from-violet-600 to-violet-500 text-white shadow-[0_0_16px_rgba(139,92,246,0.25)]'
-              : 'glass-card-static text-white/40 hover:text-white/70'
+              ? 'sort-pill-active'
+              : 'glass-card-static sort-pill-idle'
           }`}
         >
           {col.label}
@@ -287,18 +339,18 @@ function RankTable<T extends { playerId: string; name: string }>({
     <div className="glass-card-static rounded-2xl overflow-x-auto">
       <table className="w-full text-left border-collapse" style={{ minWidth: '340px' }}>
         <thead>
-          <tr className="border-b border-white/[0.06]">
-            <th className="px-2.5 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-white/25 w-8 text-center">
+          <tr className="border-b table-divider">
+            <th className="px-2.5 py-2.5 text-[10px] font-semibold uppercase tracking-wider app-text-faint w-8 text-center">
               #
             </th>
-            <th className="py-2.5 text-[10px] font-semibold uppercase tracking-wider text-white/25">
+            <th className="py-2.5 text-[10px] font-semibold uppercase tracking-wider app-text-faint">
               Spieler
             </th>
             {cols.map((col) => (
               <th
                 key={String(col.key)}
                 className={`px-1.5 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-center w-10 ${
-                  activeKey === col.key ? 'text-violet-400' : 'text-white/25'
+                  activeKey === col.key ? 'app-text-accent' : 'app-text-faint'
                 }`}
               >
                 {col.short}
@@ -313,25 +365,25 @@ function RankTable<T extends { playerId: string; name: string }>({
             const medalColor = isTop3 ? MEDAL_COLORS[rank - 1] : undefined;
             const rowBg =
               rank === 1
-                ? 'bg-amber-500/[0.06]'
+                ? 'table-row-gold'
                 : rank === 2
-                ? 'bg-white/[0.02]'
+                ? 'table-row-silver'
                 : rank === 3
-                ? 'bg-orange-500/[0.04]'
+                ? 'table-row-bronze'
                 : '';
 
             return (
-              <tr key={row.playerId} className={`border-t border-white/[0.04] ${rowBg}`}>
+              <tr key={row.playerId} className={`border-t table-divider ${rowBg}`}>
                 <td className="px-2.5 py-2.5 text-center">
                   <span
-                    className="text-xs font-bold"
-                    style={medalColor ? { color: medalColor } : { color: 'rgba(255,255,255,0.25)' }}
+                    className="text-xs font-bold app-text-faint"
+                    style={medalColor ? { color: medalColor } : undefined}
                   >
                     {rank}
                   </span>
                 </td>
                 <td className="py-2.5 pr-2 max-w-0">
-                  <span className="text-sm font-medium text-white/90 truncate block">
+                  <span className="text-sm font-medium app-text-primary truncate block">
                     {row.name}
                   </span>
                 </td>
@@ -343,7 +395,7 @@ function RankTable<T extends { playerId: string; name: string }>({
                     <td key={String(col.key)} className="px-1.5 py-2.5 text-center">
                       <span
                         className={`text-xs tabular-nums ${
-                          isActive ? 'font-bold text-violet-400' : 'text-white/40'
+                          isActive ? 'font-bold app-text-accent' : 'app-text-muted'
                         }`}
                       >
                         {display}
@@ -356,7 +408,7 @@ function RankTable<T extends { playerId: string; name: string }>({
           })}
           {rows.length === 0 && (
             <tr>
-              <td colSpan={cols.length + 2} className="px-4 py-8 text-center text-white/25 text-sm">
+              <td colSpan={cols.length + 2} className="px-4 py-8 text-center app-text-faint text-sm">
                 Noch keine Spieler
               </td>
             </tr>

@@ -3,17 +3,9 @@
 
 import { initializeApp } from 'firebase/app';
 import { getFirestore, doc, setDoc } from 'firebase/firestore';
+import { prefixedCollection, requireFirebaseConfig } from './firebase-script-env.mjs';
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAWmLZys9lbH5IYOTjZFHbyt0NTdpjKfHA",
-  authDomain: "smesh-everybody.firebaseapp.com",
-  projectId: "smesh-everybody",
-  storageBucket: "smesh-everybody.firebasestorage.app",
-  messagingSenderId: "767791181149",
-  appId: "1:767791181149:web:9834d6ad1263162b824cb4",
-};
-
-const app = initializeApp(firebaseConfig);
+const app = initializeApp(requireFirebaseConfig({ allowProduction: process.env.ALLOW_PRODUCTION_SEED === 'true' }));
 const db = getFirestore(app);
 
 function genId() {
@@ -93,12 +85,12 @@ const tournament = {
 async function seed() {
   console.log('Seeding players...');
   for (const player of Object.values(PLAYERS)) {
-    await setDoc(doc(db, 'players', player.id), player);
+    await setDoc(doc(db, prefixedCollection('players'), player.id), player);
     console.log(`  ✓ ${player.name} (${player.id})`);
   }
 
   console.log('\nSeeding Americano Klein tournament (March 28)...');
-  await setDoc(doc(db, 'games', tournament.id), tournament);
+  await setDoc(doc(db, prefixedCollection('games'), tournament.id), tournament);
   console.log(`  ✓ Tournament ${tournament.id} with ${games.length} games`);
 
   // Print leaderboard

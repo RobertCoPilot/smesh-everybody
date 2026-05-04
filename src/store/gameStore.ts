@@ -1,6 +1,10 @@
 import { create } from 'zustand';
-import { db } from '@/lib/firebase';
 import { doc, setDoc, deleteDoc } from 'firebase/firestore';
+import { calculateEloLeaderboard, DEFAULT_ELO } from '@/lib/elo';
+import { getEloTier } from '@/lib/eloTiers';
+import { firestoreCollections } from '@/lib/firestoreCollections';
+import { db } from '@/lib/firebase';
+import { finalizeMatchTracking } from '@/lib/matchTracking';
 import type {
   Player,
   Match1vs1,
@@ -13,6 +17,25 @@ import type {
 // Strip undefined values (Firestore rejects them)
 function clean<T>(obj: T): T {
   return JSON.parse(JSON.stringify(obj));
+}
+
+function playersWithHistoricalElo(players: Player[], games: GameRecord[], excludeGameId?: string): Player[] {
+  const replayGames = excludeGameId ? games.filter((game) => game.id !== excludeGameId) : games;
+  const rows = calculateEloLeaderboard(players, replayGames);
+  const eloByPlayerId = new Map(rows.map((row) => [row.playerId, row]));
+
+  return players.map((player) => {
+    const row = eloByPlayerId.get(player.id);
+    const currentElo = row?.currentElo ?? player.currentElo ?? DEFAULT_ELO;
+    const peakElo = Math.max(row?.peakElo ?? currentElo, player.peakElo ?? DEFAULT_ELO);
+    return {
+      ...player,
+      currentElo,
+      peakElo,
+      allTimeBestElo: Math.max(player.allTimeBestElo ?? DEFAULT_ELO, peakElo),
+      eloTier: getEloTier(currentElo),
+    };
+  });
 }
 
 interface GameStore {
@@ -56,17 +79,21 @@ export const useGameStore = create<GameStore>()((set, get) => ({
   players: [],
   games: [],
 
-  _setPlayers: (players) => set({ players }),
-  _setGames: (games) => set({ games }),
+  _setPlayers: (players) => set((state) => ({ players: playersWithHistoricalElo(players, state.games) })),
+  _setGames: (games) => set((state) => ({ games, players: playersWithHistoricalElo(state.players, games) })),
 
   addPlayer: (name: string) => {
     const player: Player = {
       id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`,
       name,
       createdAt: new Date().toISOString(),
+      currentElo: DEFAULT_ELO,
+      peakElo: DEFAULT_ELO,
+      allTimeBestElo: DEFAULT_ELO,
+      eloTier: getEloTier(DEFAULT_ELO),
     };
     set((state) => ({ players: [...state.players, player] }));
-    setDoc(doc(db, 'players', player.id), clean(player)).catch(console.error);
+    setDoc(doc(db, firestoreCollections.players, player.id), clean(player)).catch(console.error);
     return player;
   },
 
@@ -74,7 +101,7 @@ export const useGameStore = create<GameStore>()((set, get) => ({
     set((state) => ({
       players: state.players.filter((p) => p.id !== id),
     }));
-    deleteDoc(doc(db, 'players', id)).catch(console.error);
+    deleteDoc(doc(db, firestoreCollections.players, id)).catch(console.error);
   },
 
   getPlayer: (id: string) => {
@@ -82,8 +109,12 @@ export const useGameStore = create<GameStore>()((set, get) => ({
   },
 
   addGame: (game: GameRecord) => {
-    set((state) => ({ games: [...state.games, game] }));
-    setDoc(doc(db, 'games', game.id), clean(game)).catch(console.error);
+    let gameToWrite = game;
+    set((state) => {
+      gameToWrite = finalizeMatchTracking(game, playersWithHistoricalElo(state.players, state.games));
+      return { games: [...state.games, gameToWrite] };
+    });
+    setDoc(doc(db, firestoreCollections.games, gameToWrite.id), clean(gameToWrite)).catch(console.error);
   },
 
   updateGame: (id: string, updater: (game: GameRecord) => GameRecord) => {
@@ -91,14 +122,15 @@ export const useGameStore = create<GameStore>()((set, get) => ({
     set((state) => ({
       games: state.games.map((g) => {
         if (g.id === id) {
-          updatedGame = updater(g);
+          const rawUpdatedGame = updater(g);
+          updatedGame = finalizeMatchTracking(rawUpdatedGame, playersWithHistoricalElo(state.players, state.games, id));
           return updatedGame;
         }
         return g;
       }),
     }));
     if (updatedGame) {
-      setDoc(doc(db, 'games', id), clean(updatedGame)).catch(console.error);
+      setDoc(doc(db, firestoreCollections.games, id), clean(updatedGame)).catch(console.error);
     }
   },
 
@@ -106,7 +138,7 @@ export const useGameStore = create<GameStore>()((set, get) => ({
     set((state) => ({
       games: state.games.filter((g) => g.id !== id),
     }));
-    deleteDoc(doc(db, 'games', id)).catch(console.error);
+    deleteDoc(doc(db, firestoreCollections.games, id)).catch(console.error);
   },
 
   getGame: (id: string) => {
