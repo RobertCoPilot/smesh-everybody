@@ -60,6 +60,9 @@ export default function PlayersPage() {
     return derivePhase3SocialStats(players, games);
   }, [hydrated, players, games]);
 
+  const persistedWallets = useGameStore((s) => s.rewardWallets);
+  const equippedCosmetics = useGameStore((s) => s.equippedCosmetics);
+
   const rewardWallets = useMemo(() => {
     if (!hydrated) return new Map();
     return deriveRewardWalletsFromMatches(players, games);
@@ -177,14 +180,16 @@ export default function PlayersPage() {
             const streakLabel = streak?.kind === 'win' ? `W${streak.count}` : streak?.kind === 'loss' ? `L${streak.count}` : '—';
             const topAwards = engagement?.awards.earned.slice(-3).reverse() ?? [];
             const cardPlayer = createPadelPlayer(player.id, player.name, 'left', `${player.id}-profile-card`, player.currentElo);
-            const wallet = rewardWallets.get(player.id);
+            const wallet = persistedWallets.find((item) => item.playerId === player.id) ?? rewardWallets.get(player.id);
             const archetype = phase3SocialStats?.archetypes.get(player.id);
             const bestDuo = [...(phase3SocialStats?.chemistry.values() ?? [])]
               .filter((duo) => duo.players.includes(player.id))
               .sort((a, b) => b.chemistryScore - a.chemistryScore)[0];
             const duoTitle = bestDuo ? phase3SocialStats?.duoTitles.get(bestDuo.pairKey) : null;
+            const equipped = equippedCosmetics.find((item) => item.playerId === player.id);
+            const equippedId = equipped?.frameId ?? equipped?.bannerId ?? equipped?.flairId ?? equipped?.emoteId ?? equipped?.animatedProfileId;
             const defaultFrame = DEFAULT_COSMETICS.find((cosmetic) => cosmetic.id === 'frame-clay-common');
-            cardPlayer.equippedCosmetic = defaultFrame;
+            cardPlayer.equippedCosmetic = DEFAULT_COSMETICS.find((cosmetic) => cosmetic.id === equippedId) ?? defaultFrame;
             cardPlayer.cardEffect = deriveCardEffectState({
               streakKind: streak?.kind,
               streakCount: streak?.count,

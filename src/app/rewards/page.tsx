@@ -7,10 +7,10 @@ import {
   DEFAULT_COSMETICS,
   createRewardWallet,
   deriveRewardWalletsFromMatches,
+  equipOwnedCosmetic,
   openCosmeticPack,
   purchaseCosmetic,
   type CosmeticDefinition,
-  type PlayerCosmeticInventoryItem,
   type RewardWallet,
 } from '@/lib/phase4Rewards';
 
@@ -30,8 +30,13 @@ export default function RewardsPage() {
   const players = useGameStore((state) => state.players);
   const games = useGameStore((state) => state.games);
   const [selectedPlayerId, setSelectedPlayerId] = useState('');
-  const [sessionWallets, setSessionWallets] = useState<Record<string, RewardWallet>>({});
-  const [sessionInventory, setSessionInventory] = useState<PlayerCosmeticInventoryItem[]>([]);
+  const persistedWallets = useGameStore((state) => state.rewardWallets);
+  const persistedInventory = useGameStore((state) => state.cosmeticInventory);
+  const equippedCosmetics = useGameStore((state) => state.equippedCosmetics);
+  const saveRewardWallet = useGameStore((state) => state.saveRewardWallet);
+  const saveCosmeticInventoryItems = useGameStore((state) => state.saveCosmeticInventoryItems);
+  const saveEquippedCosmetics = useGameStore((state) => state.saveEquippedCosmetics);
+  const savePackOpening = useGameStore((state) => state.savePackOpening);
   const [lastPackRewards, setLastPackRewards] = useState<CosmeticDefinition[]>([]);
   const [message, setMessage] = useState('');
 
@@ -42,24 +47,33 @@ export default function RewardsPage() {
 
   const selectedPlayer = players.find((player) => player.id === (selectedPlayerId || players[0]?.id));
   const wallet = selectedPlayer
-    ? sessionWallets[selectedPlayer.id] ?? derivedWallets.get(selectedPlayer.id) ?? createRewardWallet(selectedPlayer.id)
+    ? persistedWallets.find((item) => item.playerId === selectedPlayer.id) ?? derivedWallets.get(selectedPlayer.id) ?? createRewardWallet(selectedPlayer.id)
     : null;
-  const inventory = selectedPlayer ? sessionInventory.filter((item) => item.playerId === selectedPlayer.id) : [];
-
-  const saveWallet = (nextWallet: RewardWallet) => {
-    setSessionWallets((current) => ({ ...current, [nextWallet.playerId]: nextWallet }));
-  };
+  const inventory = selectedPlayer ? persistedInventory.filter((item) => item.playerId === selectedPlayer.id) : [];
+  const equipped = selectedPlayer ? equippedCosmetics.find((item) => item.playerId === selectedPlayer.id) ?? { playerId: selectedPlayer.id } : null;
 
   const handleBuy = (cosmetic: CosmeticDefinition) => {
     if (!wallet) return;
     setMessage('');
     try {
-      const result = purchaseCosmetic({ wallet, inventory: sessionInventory, cosmetic });
-      saveWallet(result.wallet);
-      setSessionInventory(result.inventory);
+      const result = purchaseCosmetic({ wallet, inventory: persistedInventory, cosmetic });
+      saveRewardWallet(result.wallet);
+      saveCosmeticInventoryItems([result.item]);
       setMessage(`${cosmetic.name} gekauft.`);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Kauf fehlgeschlagen.');
+    }
+  };
+
+  const handleEquip = (cosmetic: CosmeticDefinition) => {
+    if (!selectedPlayer || !equipped) return;
+    setMessage('');
+    try {
+      const nextEquipped = equipOwnedCosmetic({ playerId: selectedPlayer.id, equipped, inventory: persistedInventory, cosmetic });
+      saveEquippedCosmetics(nextEquipped);
+      setMessage(`${cosmetic.name} ausgerüstet.`);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'Ausrüsten fehlgeschlagen.');
     }
   };
 
@@ -69,11 +83,12 @@ export default function RewardsPage() {
     try {
       const result = openCosmeticPack({
         wallet,
-        inventory: sessionInventory,
-        openingId: `${wallet.playerId}-${Date.now()}`,
+        inventory: persistedInventory,
+        openingId: `${wallet.playerId}-opening-${wallet.transactions.length}`,
       });
-      saveWallet(result.wallet);
-      setSessionInventory(result.inventory);
+      saveRewardWallet(result.wallet);
+      saveCosmeticInventoryItems(result.inventory.filter((item) => !persistedInventory.some((existing) => existing.playerId === item.playerId && existing.cosmeticId === item.cosmeticId)));
+      savePackOpening(result);
       setLastPackRewards(result.rewards);
       setMessage(`${DEFAULT_COSMETIC_PACK.name} geöffnet.`);
     } catch (error) {
@@ -147,17 +162,29 @@ export default function RewardsPage() {
         <div className="grid grid-cols-2 gap-3">
           {DEFAULT_COSMETICS.map((cosmetic) => {
             const owned = inventory.some((item) => item.cosmeticId === cosmetic.id);
+            const equippedId = equipped?.[cosmetic.type === 'animated-profile' ? 'animatedProfileId' : `${cosmetic.type}Id` as keyof typeof equipped];
+            const isEquipped = equippedId === cosmetic.id;
             return (
               <div key={cosmetic.id} className={`rounded-2xl border p-4 ${rarityClass(cosmetic.rarity)}`}>
                 <p className="text-[0.65rem] font-black uppercase tracking-wider">{cosmetic.rarity} · {cosmetic.type}</p>
                 <p className="mt-1 font-bold app-text-primary">{cosmetic.label ?? '🎴'} {cosmetic.name}</p>
-                <button
-                  onClick={() => handleBuy(cosmetic)}
-                  disabled={owned || !wallet || wallet.balance < cosmetic.price}
-                  className="mt-3 w-full rounded-xl border border-theme-weak bg-theme-soft px-3 py-2 text-xs font-bold app-text-primary disabled:opacity-40"
-                >
-                  {owned ? 'Owned' : `${cosmetic.price} 🪙`}
-                </button>
+                {owned ? (
+                  <button
+                    onClick={() => handleEquip(cosmetic)}
+                    disabled={isEquipped}
+                    className="mt-3 w-full rounded-xl border border-theme-weak bg-theme-soft px-3 py-2 text-xs font-bold app-text-primary disabled:opacity-40"
+                  >
+                    {isEquipped ? 'Equipped' : 'Equip'}
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => handleBuy(cosmetic)}
+                    disabled={!wallet || wallet.balance < cosmetic.price}
+                    className="mt-3 w-full rounded-xl border border-theme-weak bg-theme-soft px-3 py-2 text-xs font-bold app-text-primary disabled:opacity-40"
+                  >
+                    {cosmetic.price} 🪙
+                  </button>
+                )}
               </div>
             );
           })}

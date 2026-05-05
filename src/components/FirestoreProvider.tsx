@@ -5,6 +5,7 @@ import { collection, onSnapshot } from 'firebase/firestore';
 import { firestoreCollections } from '@/lib/firestoreCollections';
 import { db } from '@/lib/firebase';
 import { useGameStore } from '@/store/gameStore';
+import type { EquippedCosmetics, PackOpeningResult, PlayerCosmeticInventoryItem, RewardWallet } from '@/lib/phase4Rewards';
 import type { Player, GameRecord } from '@/types';
 
 export default function FirestoreProvider({ children }: { children: ReactNode }) {
@@ -14,9 +15,13 @@ export default function FirestoreProvider({ children }: { children: ReactNode })
   useEffect(() => {
     let playersReady = false;
     let gamesReady = false;
+    let walletsReady = false;
+    let inventoryReady = false;
+    let equippedReady = false;
+    let openingsReady = false;
 
     const done = () => {
-      if (playersReady && gamesReady) setLoaded(true);
+      if (playersReady && gamesReady && walletsReady && inventoryReady && equippedReady && openingsReady) setLoaded(true);
     };
 
     const unsubPlayers = onSnapshot(
@@ -43,9 +48,53 @@ export default function FirestoreProvider({ children }: { children: ReactNode })
       (err) => setError(err.message)
     );
 
+    const unsubWallets = onSnapshot(
+      collection(db, firestoreCollections.rewardWallets),
+      (snap) => {
+        useGameStore.getState()._setRewardWallets(snap.docs.map((d) => d.data() as RewardWallet));
+        walletsReady = true;
+        done();
+      },
+      (err) => setError(err.message)
+    );
+
+    const unsubInventory = onSnapshot(
+      collection(db, firestoreCollections.cosmeticInventory),
+      (snap) => {
+        useGameStore.getState()._setCosmeticInventory(snap.docs.map((d) => d.data() as PlayerCosmeticInventoryItem));
+        inventoryReady = true;
+        done();
+      },
+      (err) => setError(err.message)
+    );
+
+    const unsubEquipped = onSnapshot(
+      collection(db, firestoreCollections.equippedCosmetics),
+      (snap) => {
+        useGameStore.getState()._setEquippedCosmetics(snap.docs.map((d) => d.data() as EquippedCosmetics));
+        equippedReady = true;
+        done();
+      },
+      (err) => setError(err.message)
+    );
+
+    const unsubOpenings = onSnapshot(
+      collection(db, firestoreCollections.packOpenings),
+      (snap) => {
+        useGameStore.getState()._setPackOpenings(snap.docs.map((d) => d.data() as PackOpeningResult));
+        openingsReady = true;
+        done();
+      },
+      (err) => setError(err.message)
+    );
+
     return () => {
       unsubPlayers();
       unsubGames();
+      unsubWallets();
+      unsubInventory();
+      unsubEquipped();
+      unsubOpenings();
     };
   }, []);
 
