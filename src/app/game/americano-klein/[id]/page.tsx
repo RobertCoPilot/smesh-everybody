@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useGameStore } from '@/store/gameStore';
 import { getAmericanoLeaderboard } from '@/lib/americano';
+import { markCompleted, markStarted } from '@/lib/matchTiming';
 import type { AmericanoTournament, AmericanoGame } from '@/types';
 import CourtCard from '@/components/CourtCard';
 import ScoreInput from '@/components/ScoreInput';
@@ -92,6 +93,7 @@ export default function AmericanoKleinTournamentPage() {
 
           // Mark in_progress on first score entry
           if (updated.status === 'pending' && (updated.team1Score > 0 || updated.team2Score > 0)) {
+            Object.assign(updated, markStarted(updated));
             updated.status = 'in_progress';
           }
 
@@ -110,7 +112,7 @@ export default function AmericanoKleinTournamentPage() {
       updateGame(tournamentId, (record) => {
         const t = { ...record } as AmericanoTournament;
         const games = t.games.map((g) =>
-          g.id === gameId ? { ...g, status: 'completed' as const } : g
+          g.id === gameId ? markCompleted({ ...g, status: 'completed' as const }) : g
         );
         return { ...t, games };
       });
@@ -143,7 +145,7 @@ export default function AmericanoKleinTournamentPage() {
     updateGame(tournamentId, (record) => {
       const t = { ...record } as AmericanoTournament;
       const games = t.games.map((g) =>
-        g.status !== 'completed' ? { ...g, status: 'completed' as const } : g
+        g.status !== 'completed' ? markCompleted({ ...g, status: 'completed' as const }) : g
       );
       return { ...t, games, status: 'completed' as const };
     });

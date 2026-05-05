@@ -29,10 +29,12 @@ export default function Setup1vs1Page() {
 
   const handleStart = () => {
     const id = uuidv4();
+    const now = new Date().toISOString();
     const match: Match1vs1 = {
       id,
       type: '1vs1',
-      date: new Date().toISOString(),
+      date: now,
+      startedAt: now,
       player1: selectedPlayers[0],
       player2: selectedPlayers[1],
       setsToWin,

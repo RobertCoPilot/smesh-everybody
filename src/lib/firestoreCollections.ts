@@ -6,4 +6,8 @@ export const firestoreCollections = {
   awardDefinitions: `${collectionPrefix}awardDefinitions`,
   playerAwards: `${collectionPrefix}playerAwards`,
   primeSnapshots: `${collectionPrefix}primeSnapshots`,
+  chemistrySummaries: `${collectionPrefix}chemistrySummaries`,
+  rivalrySummaries: `${collectionPrefix}rivalrySummaries`,
+  playerArchetypes: `${collectionPrefix}playerArchetypes`,
+  teamBalancePreviews: `${collectionPrefix}teamBalancePreviews`,
 } as const;

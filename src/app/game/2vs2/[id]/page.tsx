@@ -13,6 +13,8 @@ import {
   getSetsScore,
   formatSetScore,
 } from '@/lib/scoring';
+import { markCompleted, markStarted } from '@/lib/matchTiming';
+import { deriveChemistryScoreMap } from '@/lib/phase3SocialStats';
 import { PadelBuilder } from '@/components/padel-builder/PadelBuilder';
 import { createPadelPlayer } from '@/components/padel-builder/playerFactory';
 import type { Match2vs2, SetScore } from '@/types';
@@ -20,7 +22,7 @@ import type { Match2vs2, SetScore } from '@/types';
 export default function Match2vs2Page() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
-  const { getGame, getPlayer, updateGame } = useGameStore();
+  const { games, getGame, getPlayer, updateGame } = useGameStore();
 
   const [hydrated, setHydrated] = useState(false);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
@@ -59,7 +61,7 @@ export default function Match2vs2Page() {
       if (!match || match.status === 'completed') return;
 
       updateGame(match.id, (game) => {
-        const m = { ...game } as Match2vs2;
+        let m = markStarted({ ...game } as Match2vs2);
         const sets = m.sets.map((s) => ({ ...s, tiebreak: s.tiebreak ? { ...s.tiebreak } : undefined }));
         const lastSet = { ...sets[sets.length - 1] };
         if (lastSet.tiebreak) lastSet.tiebreak = { ...lastSet.tiebreak };
@@ -79,6 +81,7 @@ export default function Match2vs2Page() {
           if (matchWinner) {
             m.winner = matchWinner;
             m.status = 'completed';
+            m = markCompleted(m);
           } else {
             // Start new set
             m.sets = [...sets, { team1Games: 0, team2Games: 0 }];
@@ -96,7 +99,7 @@ export default function Match2vs2Page() {
       if (!match || match.status === 'completed') return;
 
       updateGame(match.id, (game) => {
-        const m = { ...game } as Match2vs2;
+        let m = markStarted({ ...game } as Match2vs2);
         const sets = m.sets.map((s) => ({ ...s, tiebreak: s.tiebreak ? { ...s.tiebreak } : undefined }));
         const lastSet = { ...sets[sets.length - 1] };
 
@@ -139,6 +142,7 @@ export default function Match2vs2Page() {
           if (matchWinner) {
             m.winner = matchWinner;
             m.status = 'completed';
+            m = markCompleted(m);
           } else {
             m.sets = [...sets, { team1Games: 0, team2Games: 0 }];
           }
@@ -153,7 +157,7 @@ export default function Match2vs2Page() {
   const handleFinishEarly = useCallback(() => {
     if (!match || match.status === 'completed') return;
     updateGame(match.id, (game) => {
-      const m = { ...game } as Match2vs2;
+      let m = markStarted({ ...game } as Match2vs2);
       const [s1, s2] = getSetsScore(m.sets);
       let winner: 1 | 2;
       if (s1 > s2) {
@@ -166,6 +170,7 @@ export default function Match2vs2Page() {
       }
       m.winner = winner;
       m.status = 'completed';
+      m = markCompleted(m);
       return m;
     });
   }, [match, updateGame]);
@@ -205,6 +210,7 @@ export default function Match2vs2Page() {
   const team1Right = createPadelPlayer(match.team1[1], team1RightPlayer?.name ?? 'Unbekannt', 'right', `${match.team1[1]}-right`, team1RightPlayer?.currentElo);
   const team2Left = createPadelPlayer(match.team2[0], team2LeftPlayer?.name ?? 'Unbekannt', 'left2', `${match.team2[0]}-left2`, team2LeftPlayer?.currentElo);
   const team2Right = createPadelPlayer(match.team2[1], team2RightPlayer?.name ?? 'Unbekannt', 'right2', `${match.team2[1]}-right2`, team2RightPlayer?.currentElo);
+  const chemistryScores = deriveChemistryScoreMap(games, [match.team1, match.team2]);
 
   return (
     <div className="min-h-screen app-text-primary px-4 py-6 pb-24 animate-fade-in">
@@ -238,6 +244,7 @@ export default function Match2vs2Page() {
             right2: team2Right,
           }}
           scoreLabel={`${team1SetsWon} - ${team2SetsWon}`}
+          chemistryScores={chemistryScores}
         />
       </div>
 
@@ -333,7 +340,7 @@ export default function Match2vs2Page() {
                 <button
                   onClick={() => {
                     updateGame(match.id, (game) => {
-                      const m = { ...game } as Match2vs2;
+                      const m = markStarted({ ...game } as Match2vs2);
                       const sets = m.sets.map((s) => ({
                         ...s,
                         tiebreak: s.tiebreak ? { ...s.tiebreak } : undefined,

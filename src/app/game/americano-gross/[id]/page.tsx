@@ -4,6 +4,7 @@ import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useGameStore } from '@/store/gameStore';
 import { getAmericanoLeaderboard } from '@/lib/americano';
+import { markCompleted } from '@/lib/matchTiming';
 import CourtCard from '@/components/CourtCard';
 import ScoreInput from '@/components/ScoreInput';
 import type { AmericanoTournament, AmericanoGame } from '@/types';
@@ -79,6 +80,7 @@ export default function AmericanoGrossLivePage() {
               game.status === 'pending'
                 ? ('in_progress' as const)
                 : game.status,
+            startedAt: game.startedAt ?? new Date().toISOString(),
           };
         });
         return { ...t, games: updatedGames };
@@ -94,7 +96,7 @@ export default function AmericanoGrossLivePage() {
         const t = g as AmericanoTournament;
         const updatedGames = t.games.map((game) => {
           if (game.id !== gameId) return game;
-          return { ...game, status: 'completed' as const };
+          return markCompleted({ ...game, status: 'completed' as const });
         });
         return { ...t, games: updatedGames };
       });
@@ -108,7 +110,7 @@ export default function AmericanoGrossLivePage() {
     updateGame(id, (g) => {
       const t = g as AmericanoTournament;
       const updatedGames = t.games.map((game) =>
-        game.status !== 'completed' ? { ...game, status: 'completed' as const } : game
+        game.status !== 'completed' ? markCompleted({ ...game, status: 'completed' as const }) : game
       );
       return { ...t, games: updatedGames, status: 'completed' as const };
     });

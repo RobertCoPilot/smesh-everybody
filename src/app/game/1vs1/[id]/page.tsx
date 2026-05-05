@@ -13,6 +13,7 @@ import {
   getSetsScore,
   formatSetScore,
 } from '@/lib/scoring';
+import { markCompleted, markStarted } from '@/lib/matchTiming';
 import { PadelBuilder } from '@/components/padel-builder/PadelBuilder';
 import { createPadelPlayer } from '@/components/padel-builder/playerFactory';
 import type { Match1vs1, SetScore } from '@/types';
@@ -53,7 +54,7 @@ export default function Match1vs1Page() {
     (team: 1 | 2) => {
       if (!match || match.status === 'completed') return;
       updateGame(match.id, (game) => {
-        const m = { ...game } as Match1vs1;
+        let m = markStarted({ ...game } as Match1vs1);
         const sets = m.sets.map((s) => ({ ...s, tiebreak: s.tiebreak ? { ...s.tiebreak } : undefined }));
         const lastSet = { ...sets[sets.length - 1] };
         if (lastSet.tiebreak) lastSet.tiebreak = { ...lastSet.tiebreak };
@@ -72,6 +73,7 @@ export default function Match1vs1Page() {
           if (matchWinner) {
             m.winner = matchWinner;
             m.status = 'completed';
+            m = markCompleted(m);
           } else {
             m.sets = [...sets, { team1Games: 0, team2Games: 0 }];
           }
@@ -86,7 +88,7 @@ export default function Match1vs1Page() {
     (team: 1 | 2) => {
       if (!match || match.status === 'completed') return;
       updateGame(match.id, (game) => {
-        const m = { ...game } as Match1vs1;
+        let m = markStarted({ ...game } as Match1vs1);
         const sets = m.sets.map((s) => ({ ...s, tiebreak: s.tiebreak ? { ...s.tiebreak } : undefined }));
         const lastSet = { ...sets[sets.length - 1] };
 
@@ -123,6 +125,7 @@ export default function Match1vs1Page() {
           if (matchWinner) {
             m.winner = matchWinner;
             m.status = 'completed';
+            m = markCompleted(m);
           } else {
             m.sets = [...sets, { team1Games: 0, team2Games: 0 }];
           }
@@ -136,7 +139,7 @@ export default function Match1vs1Page() {
   const handleFinishEarly = useCallback(() => {
     if (!match || match.status === 'completed') return;
     updateGame(match.id, (game) => {
-      const m = { ...game } as Match1vs1;
+      let m = markStarted({ ...game } as Match1vs1);
       const [s1, s2] = getSetsScore(m.sets);
       // Determine winner: whoever has more sets, or if tied, whoever leads in current set games
       let winner: 1 | 2;
@@ -150,6 +153,7 @@ export default function Match1vs1Page() {
       }
       m.winner = winner;
       m.status = 'completed';
+      m = markCompleted(m);
       return m;
     });
   }, [match, updateGame]);
@@ -284,7 +288,7 @@ export default function Match1vs1Page() {
                 <button
                   onClick={() => {
                     updateGame(match.id, (game) => {
-                      const m = { ...game } as Match1vs1;
+                      const m = markStarted({ ...game } as Match1vs1);
                       const sets = m.sets.map((s) => ({ ...s, tiebreak: s.tiebreak ? { ...s.tiebreak } : undefined }));
                       const lastSet = { ...sets[sets.length - 1] };
                       lastSet.tiebreak = { team1Points: 0, team2Points: 0 };

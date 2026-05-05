@@ -31,6 +31,7 @@ export interface Player {
   peakElo?: number;
   allTimeBestElo?: number;
   eloTier?: EloTier;
+  experience?: number;
 }
 
 export interface SetScore {
@@ -49,6 +50,9 @@ export interface Match1vs1 {
   sets: SetScore[];
   winner: 1 | 2 | null;
   status: 'in_progress' | 'completed';
+  startedAt?: string;
+  completedAt?: string;
+  durationSeconds?: number;
   matchTracking?: MatchTracking;
 }
 
@@ -62,6 +66,9 @@ export interface Match2vs2 {
   sets: SetScore[];
   winner: 1 | 2 | null;
   status: 'in_progress' | 'completed';
+  startedAt?: string;
+  completedAt?: string;
+  durationSeconds?: number;
   matchTracking?: MatchTracking;
 }
 
@@ -81,6 +88,9 @@ export interface TournamentMatch {
   sets: SetScore[];
   winnerId: string | null;
   status: 'pending' | 'in_progress' | 'completed';
+  startedAt?: string;
+  completedAt?: string;
+  durationSeconds?: number;
   court?: number;
 }
 
@@ -106,6 +116,9 @@ export interface AmericanoGame {
   team1Score: number;
   team2Score: number;
   status: 'pending' | 'in_progress' | 'completed';
+  startedAt?: string;
+  completedAt?: string;
+  durationSeconds?: number;
 }
 
 export interface AmericanoTournament {
