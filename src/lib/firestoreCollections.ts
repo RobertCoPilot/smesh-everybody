@@ -10,4 +10,9 @@ export const firestoreCollections = {
   rivalrySummaries: `${collectionPrefix}rivalrySummaries`,
   playerArchetypes: `${collectionPrefix}playerArchetypes`,
   teamBalancePreviews: `${collectionPrefix}teamBalancePreviews`,
+  rewardWallets: `${collectionPrefix}rewardWallets`,
+  rewardTransactions: `${collectionPrefix}rewardTransactions`,
+  cosmeticInventory: `${collectionPrefix}cosmeticInventory`,
+  equippedCosmetics: `${collectionPrefix}equippedCosmetics`,
+  packOpenings: `${collectionPrefix}packOpenings`,
 } as const;

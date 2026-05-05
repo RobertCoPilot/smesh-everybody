@@ -6,6 +6,7 @@ import { PadelPlayerCard } from '@/components/padel-builder/PadelPlayerCard';
 import { createPadelPlayer } from '@/components/padel-builder/playerFactory';
 import { derivePhase2Engagement, type Phase2EngagementSummary } from '@/lib/phase2Engagement';
 import { derivePhase3SocialStats } from '@/lib/phase3SocialStats';
+import { DEFAULT_COSMETICS, deriveCardEffectState, deriveRewardWalletsFromMatches } from '@/lib/phase4Rewards';
 import { useGameStore } from '@/store/gameStore';
 
 export default function PlayersPage() {
@@ -57,6 +58,11 @@ export default function PlayersPage() {
   const phase3SocialStats = useMemo(() => {
     if (!hydrated) return null;
     return derivePhase3SocialStats(players, games);
+  }, [hydrated, players, games]);
+
+  const rewardWallets = useMemo(() => {
+    if (!hydrated) return new Map();
+    return deriveRewardWalletsFromMatches(players, games);
   }, [hydrated, players, games]);
 
   const handleAdd = () => {
@@ -171,11 +177,20 @@ export default function PlayersPage() {
             const streakLabel = streak?.kind === 'win' ? `W${streak.count}` : streak?.kind === 'loss' ? `L${streak.count}` : '—';
             const topAwards = engagement?.awards.earned.slice(-3).reverse() ?? [];
             const cardPlayer = createPadelPlayer(player.id, player.name, 'left', `${player.id}-profile-card`, player.currentElo);
+            const wallet = rewardWallets.get(player.id);
             const archetype = phase3SocialStats?.archetypes.get(player.id);
             const bestDuo = [...(phase3SocialStats?.chemistry.values() ?? [])]
               .filter((duo) => duo.players.includes(player.id))
               .sort((a, b) => b.chemistryScore - a.chemistryScore)[0];
             const duoTitle = bestDuo ? phase3SocialStats?.duoTitles.get(bestDuo.pairKey) : null;
+            const defaultFrame = DEFAULT_COSMETICS.find((cosmetic) => cosmetic.id === 'frame-clay-common');
+            cardPlayer.equippedCosmetic = defaultFrame;
+            cardPlayer.cardEffect = deriveCardEffectState({
+              streakKind: streak?.kind,
+              streakCount: streak?.count,
+              chemistryScore: bestDuo?.chemistryScore,
+              rarity: defaultFrame?.rarity,
+            });
 
             return (
               <div
@@ -200,6 +215,7 @@ export default function PlayersPage() {
                       <span className="pill bg-theme-soft app-text-muted">{engagement?.activity.status ?? 'unranked'} · {engagement?.activity.confidence ?? 0}%</span>
                       {archetype && <span className="pill bg-theme-soft app-text-muted">{archetype.primary}</span>}
                       {duoTitle && <span className="pill bg-theme-soft app-text-muted">{duoTitle.title}</span>}
+                      <span className="pill bg-theme-soft app-text-muted">🪙 {wallet?.balance ?? 0}</span>
                     </div>
                   </div>
 

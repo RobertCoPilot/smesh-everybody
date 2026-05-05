@@ -39,6 +39,8 @@ export function PadelPlayerCard({ player, selected = false, emptyLabel = 'Slot',
   const variant = player.cardVariant ?? player.eloTier ?? 'silver';
   const tierLabel = getTierLabel(variant);
   const sideLabel = player.preferredSide === 'both' ? 'B' : player.preferredSide === 'right' ? 'R' : 'L';
+  const cosmeticClass = player.equippedCosmetic?.cardClassName ?? '';
+  const effectClass = [player.cardEffect?.glowClassName, player.cardEffect?.borderClassName].filter(Boolean).join(' ');
 
   return (
     <div className="relative h-full w-full">
@@ -51,9 +53,17 @@ export function PadelPlayerCard({ player, selected = false, emptyLabel = 'Slot',
         </div>
       )}
 
-      <div className={`relative h-full min-h-[9rem] overflow-hidden border bg-gradient-to-br ${getTierCardClassName(variant)} ${getTierBorderClassName(variant)} p-2 shadow-[0_18px_35px_rgba(0,0,0,0.38)]`}>
+      <div className={`relative h-full min-h-[9rem] overflow-hidden border bg-gradient-to-br ${getTierCardClassName(variant)} ${getTierBorderClassName(variant)} ${cosmeticClass} ${effectClass} p-2 shadow-[0_18px_35px_rgba(0,0,0,0.38)]`}>
         <div className="absolute inset-[3px] border border-theme" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_10%,rgba(255,255,255,0.5),transparent_38%),linear-gradient(135deg,rgba(255,255,255,0.18),transparent_42%)]" />
+        {player.cardEffect?.flairLabel && (
+          <div className="absolute right-1 top-1 z-20 rounded-full bg-black/55 px-1.5 py-0.5 text-[0.48rem] font-black uppercase tracking-wider text-white">
+            {player.cardEffect.flairLabel}
+          </div>
+        )}
+        {player.equippedCosmetic?.label && (
+          <div className="absolute bottom-1 right-1 z-20 text-sm drop-shadow">{player.equippedCosmetic.label}</div>
+        )}
 
         <div className="relative z-10 grid h-full grid-rows-[auto_1fr_auto] gap-1">
           <div className="flex items-start justify-between">
