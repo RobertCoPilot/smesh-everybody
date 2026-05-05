@@ -4,9 +4,9 @@ import { useMemo, useState, useSyncExternalStore } from 'react';
 import { format } from 'date-fns';
 import { PadelPlayerCard } from '@/components/padel-builder/PadelPlayerCard';
 import { createPadelPlayer } from '@/components/padel-builder/playerFactory';
-import { derivePhase2Engagement, type Phase2EngagementSummary } from '@/lib/phase2Engagement';
-import { derivePhase3SocialStats } from '@/lib/phase3SocialStats';
-import { DEFAULT_COSMETICS, deriveCardEffectState, deriveRewardWalletsFromMatches } from '@/lib/phase4Rewards';
+import { derivePhase2Engagement, type Phase2EngagementSummary } from '@/lib/engagement';
+import { derivePhase3SocialStats } from '@/lib/socialStats';
+import { DEFAULT_COSMETICS, deriveCardEffectState, deriveRewardWalletsFromMatches } from '@/lib/rewards';
 import { useGameStore } from '@/store/gameStore';
 
 export default function PlayersPage() {
@@ -50,12 +50,12 @@ export default function PlayersPage() {
     return players.filter((p) => p.name.toLowerCase().includes(q));
   }, [hydrated, players, search]);
 
-  const phase2Engagement = useMemo<Map<string, Phase2EngagementSummary>>(() => {
+  const engagementByPlayer = useMemo<Map<string, Phase2EngagementSummary>>(() => {
     if (!hydrated) return new Map<string, Phase2EngagementSummary>();
     return derivePhase2Engagement(players, games);
   }, [hydrated, players, games]);
 
-  const phase3SocialStats = useMemo(() => {
+  const socialStats = useMemo(() => {
     if (!hydrated) return null;
     return derivePhase3SocialStats(players, games);
   }, [hydrated, players, games]);
@@ -175,17 +175,17 @@ export default function PlayersPage() {
             const stats = getPlayerWins(player.id);
             const canDelete = !isPlayerInGames.has(player.id);
             const totalWins = stats.onevoneWins + stats.twovstwoWins + stats.tournamentWins + stats.americanoWins;
-            const engagement = phase2Engagement.get(player.id);
+            const engagement = engagementByPlayer.get(player.id);
             const streak = engagement?.streaks.current;
             const streakLabel = streak?.kind === 'win' ? `W${streak.count}` : streak?.kind === 'loss' ? `L${streak.count}` : '—';
             const topAwards = engagement?.awards.earned.slice(-3).reverse() ?? [];
             const cardPlayer = createPadelPlayer(player.id, player.name, 'left', `${player.id}-profile-card`, player.currentElo);
             const wallet = persistedWallets.find((item) => item.playerId === player.id) ?? rewardWallets.get(player.id);
-            const archetype = phase3SocialStats?.archetypes.get(player.id);
-            const bestDuo = [...(phase3SocialStats?.chemistry.values() ?? [])]
+            const archetype = socialStats?.archetypes.get(player.id);
+            const bestDuo = [...(socialStats?.chemistry.values() ?? [])]
               .filter((duo) => duo.players.includes(player.id))
               .sort((a, b) => b.chemistryScore - a.chemistryScore)[0];
-            const duoTitle = bestDuo ? phase3SocialStats?.duoTitles.get(bestDuo.pairKey) : null;
+            const duoTitle = bestDuo ? socialStats?.duoTitles.get(bestDuo.pairKey) : null;
             const equipped = equippedCosmetics.find((item) => item.playerId === player.id);
             const equippedId = equipped?.frameId ?? equipped?.bannerId ?? equipped?.flairId ?? equipped?.emoteId ?? equipped?.animatedProfileId;
             const defaultFrame = DEFAULT_COSMETICS.find((cosmetic) => cosmetic.id === 'frame-clay-common');

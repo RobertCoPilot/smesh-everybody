@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { v4 as uuidv4 } from 'uuid';
 import { useGameStore } from '@/store/gameStore';
-import { deriveChemistryScoreMap, deriveTeamBalanceOptions } from '@/lib/phase3SocialStats';
+import { deriveChemistryScoreMap, deriveTeamBalanceOptions } from '@/lib/socialStats';
 import { generateTeams } from '@/lib/tournament';
 import PlayerSelector from '@/components/PlayerSelector';
 import { PadelBuilder } from '@/components/padel-builder/PadelBuilder';

@@ -1,5 +1,5 @@
 import type { PadelPosition } from '@/config/padelFormations';
-import type { CardEffectState, CosmeticDefinition } from '@/lib/phase4Rewards';
+import type { CardEffectState, CosmeticDefinition } from '@/lib/rewards';
 import type { EloTier } from '@/types';
 
 export type PadelCardVariant = EloTier;

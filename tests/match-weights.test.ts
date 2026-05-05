@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { calculateEloLeaderboard } from '../src/lib/elo';
 import { deriveWeightedMatchEvents } from '../src/lib/matchWeights';
-import { deriveChemistrySummaries, pairKey } from '../src/lib/phase3SocialStats';
+import { deriveChemistrySummaries, pairKey } from '../src/lib/socialStats';
 import type { AmericanoTournament, Match2vs2, Player } from '../src/types';
 
 const players: Player[] = [

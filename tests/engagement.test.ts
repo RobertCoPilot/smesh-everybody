@@ -6,7 +6,7 @@ import {
   calculatePrimeRating,
   calculatePlayerStreaks,
   derivePhase2Engagement,
-} from '../src/lib/phase2Engagement';
+} from '../src/lib/engagement';
 import type { GameRecord, Player } from '../src/types';
 
 const players: Player[] = [

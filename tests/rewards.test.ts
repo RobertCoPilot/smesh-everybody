@@ -10,7 +10,7 @@ import {
   equipOwnedCosmetic,
   openCosmeticPack,
   purchaseCosmetic,
-} from '../src/lib/phase4Rewards';
+} from '../src/lib/rewards';
 import type { AmericanoTournament, Match2vs2, Player } from '../src/types';
 
 const players: Player[] = [

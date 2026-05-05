@@ -5,7 +5,7 @@ import { getEloTier } from '@/lib/eloTiers';
 import { firestoreCollections } from '@/lib/firestoreCollections';
 import { db } from '@/lib/firebase';
 import { finalizeMatchTracking } from '@/lib/matchTracking';
-import type { EquippedCosmetics, PackOpeningResult, PlayerCosmeticInventoryItem, RewardWallet } from '@/lib/phase4Rewards';
+import type { EquippedCosmetics, PackOpeningResult, PlayerCosmeticInventoryItem, RewardWallet } from '@/lib/rewards';
 import type {
   Player,
   Match1vs1,

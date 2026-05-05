@@ -12,7 +12,7 @@ import {
   purchaseCosmetic,
   type CosmeticDefinition,
   type RewardWallet,
-} from '@/lib/phase4Rewards';
+} from '@/lib/rewards';
 
 function rarityClass(rarity: CosmeticDefinition['rarity']): string {
   if (rarity === 'legendary') return 'border-orange-400/60 bg-orange-500/10 app-text-accent';

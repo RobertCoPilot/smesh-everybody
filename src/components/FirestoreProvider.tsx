@@ -5,7 +5,7 @@ import { collection, onSnapshot } from 'firebase/firestore';
 import { firestoreCollections } from '@/lib/firestoreCollections';
 import { db } from '@/lib/firebase';
 import { useGameStore } from '@/store/gameStore';
-import type { EquippedCosmetics, PackOpeningResult, PlayerCosmeticInventoryItem, RewardWallet } from '@/lib/phase4Rewards';
+import type { EquippedCosmetics, PackOpeningResult, PlayerCosmeticInventoryItem, RewardWallet } from '@/lib/rewards';
 import type { Player, GameRecord } from '@/types';
 
 export default function FirestoreProvider({ children }: { children: ReactNode }) {
