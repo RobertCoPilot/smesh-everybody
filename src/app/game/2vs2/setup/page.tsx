@@ -135,10 +135,12 @@ export default function Setup2vs2Page() {
   const handleStartMatch = () => {
     if (!finalTeam1 || !finalTeam2) return;
 
+    const now = new Date().toISOString();
     const match: Match2vs2 = {
       id: uuidv4(),
       type: '2vs2',
-      date: new Date().toISOString(),
+      date: now,
+      startedAt: now,
       team1: finalTeam1,
       team2: finalTeam2,
       setsToWin,

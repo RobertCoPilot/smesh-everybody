@@ -38,6 +38,8 @@ interface EloRow {
   confidence: number;
   currentStreak: number;
   matchesPlayed: number;
+  weightedMatchesPlayed: number;
+  experience: number;
   wins: number;
   winPct: number;
 }
@@ -87,7 +89,9 @@ const ELO_COLS: { key: SortKey<EloRow>; label: string; short: string }[] = [
   { key: 'primeElo', label: 'Prime ELO', short: 'Prime' },
   { key: 'confidence', label: 'Aktivität', short: 'Akt' },
   { key: 'currentStreak', label: 'Streak', short: 'Str' },
-  { key: 'matchesPlayed', label: 'ELO Matches', short: 'Sp' },
+  { key: 'matchesPlayed', label: 'ELO Events', short: 'Sp' },
+  { key: 'weightedMatchesPlayed', label: 'Gewichtete Matches', short: 'WSp' },
+  { key: 'experience', label: 'Erfahrung', short: 'XP' },
   { key: 'wins', label: 'Siege', short: 'S' },
   { key: 'winPct', label: 'Sieg-%', short: 'S%' },
 ];
@@ -202,6 +206,8 @@ export default function RankingsPage() {
         confidence: phase2?.activity.confidence ?? 0,
         currentStreak: streak?.kind === 'loss' ? -(streak.count) : streak?.count ?? 0,
         matchesPlayed: row.matchesPlayed,
+        weightedMatchesPlayed: row.weightedMatchesPlayed,
+        experience: row.experience,
         wins: row.wins,
         winPct: row.winPct,
       };
@@ -263,7 +269,7 @@ export default function RankingsPage() {
         <div className="animate-fade-in-up">
           <div className="glass-card-static rounded-2xl p-3 mb-4">
             <p className="text-xs app-text-muted leading-relaxed">
-              ELO wird live aus abgeschlossenen 1vs1- und 2vs2-Spielen berechnet. Prime, Streaks und Aktivitäts-Vertrauen sind abgeleitete Phase-2-Werte; alte Match-History bleibt unverändert.
+              ELO und XP werden live aus allen abgeschlossenen Formaten berechnet. Volle 2vs2-Matches zählen stärker als kurze Americano-Spiele; Dauer, Score-Differenz, Score-Volumen und Gegnerstärke fließen in das Gewicht ein.
             </p>
           </div>
           <SortPills cols={ELO_COLS} activeKey={eloSort} setKey={setEloSort} />

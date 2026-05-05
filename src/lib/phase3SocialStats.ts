@@ -1,4 +1,5 @@
 import { calculateEloLeaderboard, DEFAULT_ELO } from './elo';
+import { deriveWeightedMatchEvents } from './matchWeights';
 import { calculateActivityStatus, calculatePlayerStreaks, getPlayerCompetitiveResults } from './phase2Engagement';
 import type { AmericanoTournament, GameRecord, Match1vs1, Match2vs2, Player, SetScore, Tournament } from '@/types';
 
@@ -9,6 +10,7 @@ export interface DuoChemistrySummary {
   pairKey: string;
   players: [string, string];
   matchesPlayed: number;
+  weightedMatchesPlayed: number;
   wins: number;
   losses: number;
   winRate: number;
@@ -158,14 +160,15 @@ function linkStrength(score: number): DuoChemistrySummary['linkStrength'] {
 
 export function deriveChemistrySummaries(games: GameRecord[]): Map<string, DuoChemistrySummary> {
   const summaries = new Map<string, DuoChemistrySummary>();
-  for (const match of completedTeamMatches(games)) {
-    for (const [team, won] of [[match.team1, match.winner === 1], [match.team2, match.winner === 2]] as const) {
+  for (const event of deriveWeightedMatchEvents(games)) {
+    for (const [team, won] of [[event.team1, event.winner === 1], [event.team2, event.winner === 2]] as const) {
       if (team.length !== 2) continue;
       const key = pairKey(team);
       const existing = summaries.get(key) ?? {
         pairKey: key,
         players: [...team].sort() as [string, string],
         matchesPlayed: 0,
+        weightedMatchesPlayed: 0,
         wins: 0,
         losses: 0,
         winRate: 0,
@@ -176,20 +179,20 @@ export function deriveChemistrySummaries(games: GameRecord[]): Map<string, DuoCh
         chemistryScore: 0,
         linkStrength: 'untested' as const,
       };
-      const teamIsOne = pairKey(team) === pairKey(match.team1);
-      const pointsFor = match.sets.reduce((sum, set) => sum + (teamIsOne ? set.team1Games : set.team2Games), 0);
-      const pointsAgainst = match.sets.reduce((sum, set) => sum + (teamIsOne ? set.team2Games : set.team1Games), 0);
+      const pointsFor = won ? event.scoreForWinner : event.scoreForLoser;
+      const pointsAgainst = won ? event.scoreForLoser : event.scoreForWinner;
       const diff = pointsFor - pointsAgainst;
       existing.matchesPlayed += 1;
+      existing.weightedMatchesPlayed += event.finalWeight;
       existing.wins += won ? 1 : 0;
       existing.losses += won ? 0 : 1;
       existing.pointsFor += pointsFor;
       existing.pointsAgainst += pointsAgainst;
-      existing.scoreDifferential += diff;
-      existing.recentResults.push({ gameId: match.id, date: match.date, won, scoreDifferential: diff });
+      existing.scoreDifferential += diff * event.finalWeight;
+      existing.recentResults.push({ gameId: event.id, date: event.playedAt, won, scoreDifferential: diff });
       existing.recentResults = existing.recentResults.slice(-5);
       existing.winRate = existing.matchesPlayed > 0 ? existing.wins / existing.matchesPlayed : 0;
-      const volume = Math.min(existing.matchesPlayed, 10) * 4;
+      const volume = Math.min(existing.weightedMatchesPlayed, 10) * 4;
       const performance = (existing.winRate - 0.5) * 45;
       const margin = clamp(existing.scoreDifferential, -30, 30) * 0.8;
       existing.chemistryScore = Math.round(clamp(45 + volume + performance + margin, 0, 100));
