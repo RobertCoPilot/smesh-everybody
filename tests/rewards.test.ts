@@ -75,7 +75,7 @@ test('senior user flow: match rewards create auditable wallet transactions and n
     amount: -1,
     sourceId: 'anything',
     createdAt: '2026-05-03T00:00:00.000Z',
-  }), /cannot go negative/);
+  }), /ins Minus/);
 });
 
 test('senior user flow: only owned cosmetics can be equipped and purchases are auditable', () => {
@@ -88,7 +88,7 @@ test('senior user flow: only owned cosmetics can be equipped and purchases are a
     equipped: { playerId: 'alice' },
     inventory: [],
     cosmetic: frame,
-  }), /not owned/);
+  }), /eigene Kosmetik/);
 
   const purchased = purchaseCosmetic({ wallet, inventory: [], cosmetic: frame, now: '2026-05-03T00:00:00.000Z' });
   const equipped = equipOwnedCosmetic({
@@ -130,7 +130,7 @@ test('senior user flow: pack openings are cosmetic-only, seeded, persisted atomi
     wallet: first.wallet,
     inventory: first.inventory,
     openingId: 'opening-1',
-  }), /already been processed/);
+  }), /bereits verarbeitet/);
 });
 
 test('card effects are state-driven and respect reduced motion', () => {

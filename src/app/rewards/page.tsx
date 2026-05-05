@@ -102,8 +102,8 @@ export default function RewardsPage() {
     <div className="p-4 pt-6 pb-24 animate-fade-in">
       <div className="mb-6">
         <p className="text-xs font-black uppercase tracking-[0.22em] app-text-accent">Phase 4</p>
-        <h1 className="text-3xl font-bold gradient-text">Rewards</h1>
-        <p className="mt-2 text-sm app-text-muted">Coins entstehen nur durch Match-History. Packs und Cosmetics sind rein kosmetisch.</p>
+        <h1 className="text-3xl font-bold gradient-text">Belohnungen</h1>
+        <p className="mt-2 text-sm app-text-muted">Münzen entstehen nur durch Match-Historie. Packs und Kosmetik sind rein optisch.</p>
       </div>
 
       <div className="glass-card-static rounded-2xl p-4 mb-5">
@@ -120,7 +120,7 @@ export default function RewardsPage() {
         <div className="mt-4 grid grid-cols-3 gap-3 text-center">
           <div className="rounded-xl bg-theme-soft p-3">
             <p className="text-xl font-black app-text-primary">🪙 {wallet?.balance ?? 0}</p>
-            <p className="text-[0.65rem] app-text-muted uppercase">Coins</p>
+            <p className="text-[0.65rem] app-text-muted uppercase">Münzen</p>
           </div>
           <div className="rounded-xl bg-theme-soft p-3">
             <p className="text-xl font-black app-text-primary">{wallet?.transactions.length ?? 0}</p>
@@ -128,7 +128,7 @@ export default function RewardsPage() {
           </div>
           <div className="rounded-xl bg-theme-soft p-3">
             <p className="text-xl font-black app-text-primary">{inventory.length}</p>
-            <p className="text-[0.65rem] app-text-muted uppercase">Owned</p>
+            <p className="text-[0.65rem] app-text-muted uppercase">Besitz</p>
           </div>
         </div>
       </div>
@@ -138,8 +138,8 @@ export default function RewardsPage() {
       <section className="mb-6 glass-card-static rounded-2xl p-4">
         <div className="mb-3 flex items-center justify-between gap-3">
           <div>
-            <h2 className="text-lg font-bold app-text-primary">Pack Opening</h2>
-            <p className="text-xs app-text-muted">{DEFAULT_COSMETIC_PACK.slots} kosmetische Rewards · replay-safe via Opening-ID</p>
+            <h2 className="text-lg font-bold app-text-primary">Pack öffnen</h2>
+            <p className="text-xs app-text-muted">{DEFAULT_COSMETIC_PACK.slots} kosmetische Belohnungen · wiederholungssicher über Öffnungs-ID</p>
           </div>
           <button onClick={handleOpenPack} disabled={!wallet || wallet.balance < DEFAULT_COSMETIC_PACK.cost} className="btn-primary px-4 py-2 text-sm disabled:opacity-40">
             {DEFAULT_COSMETIC_PACK.cost} 🪙
@@ -158,7 +158,7 @@ export default function RewardsPage() {
       </section>
 
       <section className="mb-6">
-        <h2 className="mb-3 text-lg font-bold app-text-primary">Cosmetic Shop</h2>
+        <h2 className="mb-3 text-lg font-bold app-text-primary">Kosmetik-Shop</h2>
         <div className="grid grid-cols-2 gap-3">
           {DEFAULT_COSMETICS.map((cosmetic) => {
             const owned = inventory.some((item) => item.cosmeticId === cosmetic.id);
@@ -174,7 +174,7 @@ export default function RewardsPage() {
                     disabled={isEquipped}
                     className="mt-3 w-full rounded-xl border border-theme-weak bg-theme-soft px-3 py-2 text-xs font-bold app-text-primary disabled:opacity-40"
                   >
-                    {isEquipped ? 'Equipped' : 'Equip'}
+                    {isEquipped ? 'Ausgerüstet' : 'Ausrüsten'}
                   </button>
                 ) : (
                   <button
@@ -192,7 +192,7 @@ export default function RewardsPage() {
       </section>
 
       <section className="glass-card-static rounded-2xl p-4">
-        <h2 className="mb-3 text-lg font-bold app-text-primary">Audit Trail</h2>
+        <h2 className="mb-3 text-lg font-bold app-text-primary">Transaktionsverlauf</h2>
         <div className="space-y-2">
           {(wallet?.transactions.slice().reverse() ?? []).slice(0, 8).map((tx) => (
             <div key={tx.id} className="flex items-center justify-between gap-3 rounded-xl bg-theme-soft p-3 text-xs">
@@ -200,7 +200,7 @@ export default function RewardsPage() {
               <span className={tx.amount >= 0 ? 'app-text-accent font-bold' : 'app-text-primary font-bold'}>{tx.amount > 0 ? '+' : ''}{tx.amount}</span>
             </div>
           ))}
-          {wallet?.transactions.length === 0 && <p className="text-sm app-text-faint">Noch keine Match-Rewards.</p>}
+          {wallet?.transactions.length === 0 && <p className="text-sm app-text-faint">Noch keine Match-Belohnungen.</p>}
         </div>
       </section>
     </div>

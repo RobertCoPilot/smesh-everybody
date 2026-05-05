@@ -8,7 +8,8 @@ const navItems = [
   { href: '/new-game', label: 'Spielen', icon: PlusIcon },
   { href: '/history', label: 'Verlauf', icon: ClockIcon },
   { href: '/rankings', label: 'Rangliste', icon: TrophyIcon },
-  { href: '/rewards', label: 'Rewards', icon: GiftIcon },
+  { href: '/rewards', label: 'Belohnung', icon: GiftIcon },
+  { href: '/seasons', label: 'Saison', icon: CalendarIcon },
   { href: '/players', label: 'Spieler', icon: UsersIcon },
 ];
 
@@ -100,6 +101,21 @@ function TrophyIcon({ className, filled }: { className?: string; filled?: boolea
   return (
     <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
       <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 007.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M18.75 4.236c.982.143 1.954.317 2.916.52A6.003 6.003 0 0116.27 9.728M18.75 4.236V4.5c0 2.108-.966 3.99-2.48 5.228m0 0a6.023 6.023 0 01-2.27.308m2.27-.308v.5c0 .621-.504 1.125-1.125 1.125h-.872" />
+    </svg>
+  );
+}
+
+function CalendarIcon({ className, filled }: { className?: string; filled?: boolean }) {
+  if (filled) {
+    return (
+      <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+        <path d="M6.75 2.25A.75.75 0 017.5 3v1.5h9V3A.75.75 0 0118 3v1.5h.75A2.25 2.25 0 0121 6.75v11.5a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 18.25V6.75A2.25 2.25 0 015.25 4.5H6V3a.75.75 0 01.75-.75zM4.5 9v9.25c0 .414.336.75.75.75h13.5a.75.75 0 00.75-.75V9h-15z" />
+      </svg>
+    );
+  }
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3.75 8.25h16.5m-15 12h13.5A1.5 1.5 0 0020.25 18.75V6.75A1.5 1.5 0 0018.75 5.25H5.25A1.5 1.5 0 003.75 6.75v12A1.5 1.5 0 005.25 20.25z" />
     </svg>
   );
 }

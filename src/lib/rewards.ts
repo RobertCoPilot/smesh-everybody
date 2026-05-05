@@ -101,17 +101,17 @@ export interface CardEffectState {
 }
 
 export const DEFAULT_COSMETICS: CosmeticDefinition[] = [
-  { id: 'frame-clay-common', name: 'Clay Frame', type: 'frame', rarity: 'common', price: 60, cardClassName: 'ring-2 ring-orange-300/70' },
-  { id: 'frame-neon-rare', name: 'Neon Frame', type: 'frame', rarity: 'rare', price: 140, cardClassName: 'ring-2 ring-cyan-300/80' },
-  { id: 'flair-hot-epic', name: 'Hot Streak Sparks', type: 'flair', rarity: 'epic', price: 260, cardClassName: 'after:absolute after:inset-0 after:bg-[radial-gradient(circle_at_50%_0%,rgba(250,82,15,.28),transparent_45%)]' },
-  { id: 'banner-golden-legendary', name: 'Golden Hour Banner', type: 'banner', rarity: 'legendary', price: 500, cardClassName: 'shadow-[0_0_38px_rgba(250,82,15,.38)]' },
-  { id: 'emote-smash-common', name: 'Smash Emote', type: 'emote', rarity: 'common', price: 40, label: '💥' },
-  { id: 'profile-pulse-rare', name: 'Pulse Profile', type: 'animated-profile', rarity: 'rare', price: 180, cardClassName: 'motion-safe:animate-pulse' },
+  { id: 'frame-clay-common', name: 'Sandplatz-Rahmen', type: 'frame', rarity: 'common', price: 60, cardClassName: 'ring-2 ring-orange-300/70' },
+  { id: 'frame-neon-rare', name: 'Neon-Rahmen', type: 'frame', rarity: 'rare', price: 140, cardClassName: 'ring-2 ring-cyan-300/80' },
+  { id: 'flair-hot-epic', name: 'Siegesserien-Funken', type: 'flair', rarity: 'epic', price: 260, cardClassName: 'after:absolute after:inset-0 after:bg-[radial-gradient(circle_at_50%_0%,rgba(250,82,15,.28),transparent_45%)]' },
+  { id: 'banner-golden-legendary', name: 'Golden-Hour-Banner', type: 'banner', rarity: 'legendary', price: 500, cardClassName: 'shadow-[0_0_38px_rgba(250,82,15,.38)]' },
+  { id: 'emote-smash-common', name: 'Smash-Emote', type: 'emote', rarity: 'common', price: 40, label: '💥' },
+  { id: 'profile-pulse-rare', name: 'Puls-Profil', type: 'animated-profile', rarity: 'rare', price: 180, cardClassName: 'motion-safe:animate-pulse' },
 ];
 
 export const DEFAULT_COSMETIC_PACK: CosmeticPackDefinition = {
   id: 'starter-cosmetic-pack',
-  name: 'Starter Cosmetic Pack',
+  name: 'Starter-Kosmetikpack',
   cost: 120,
   slots: 3,
   odds: [
@@ -134,10 +134,10 @@ export function applyRewardTransaction(
   wallet: RewardWallet,
   transaction: Omit<RewardTransaction, 'id' | 'balanceAfter' | 'currency'> & { id?: string },
 ): RewardWallet {
-  if (transaction.playerId !== wallet.playerId) throw new Error('Transaction player does not match wallet.');
+  if (transaction.playerId !== wallet.playerId) throw new Error('Transaktion passt nicht zum Wallet-Spieler.');
   if (wallet.transactions.some((entry) => entry.id === transaction.id)) return wallet;
   const nextBalance = wallet.balance + transaction.amount;
-  if (nextBalance < 0) throw new Error('Reward wallet balance cannot go negative.');
+  if (nextBalance < 0) throw new Error('Reward-Wallet darf nicht ins Minus gehen.');
   const fullTransaction: RewardTransaction = {
     ...transaction,
     id: transaction.id ?? transactionId(transaction.playerId, transaction.sourceId, transaction.reason, transaction.amount),
@@ -222,8 +222,8 @@ export function equipOwnedCosmetic({
   inventory: PlayerCosmeticInventoryItem[];
   cosmetic: CosmeticDefinition;
 }): EquippedCosmetics {
-  if (equipped.playerId !== playerId) throw new Error('Equipped cosmetics player mismatch.');
-  if (!inventoryOwns(inventory, playerId, cosmetic.id)) throw new Error('Cannot equip cosmetic that is not owned.');
+  if (equipped.playerId !== playerId) throw new Error('Ausgerüstete Kosmetik passt nicht zum Spieler.');
+  if (!inventoryOwns(inventory, playerId, cosmetic.id)) throw new Error('Nur eigene Kosmetik kann ausgerüstet werden.');
   return { ...equipped, [equipKeyForType(cosmetic.type)]: cosmetic.id };
 }
 
@@ -268,7 +268,7 @@ export function openCosmeticPack({
   now?: string;
 }): PackOpeningResult {
   if (wallet.transactions.some((entry) => entry.sourceId === openingId && entry.reason === 'pack-purchase')) {
-    throw new Error('Pack opening has already been processed.');
+    throw new Error('Pack-Öffnung wurde bereits verarbeitet.');
   }
   const random = seededRandom(`${wallet.playerId}:${openingId}`);
   const nextWallet = applyRewardTransaction(wallet, {
@@ -316,7 +316,7 @@ export function deriveCardEffectState({
   return {
     intensity,
     animated: !reducedMotion && intensity >= 3,
-    flairLabel: intensity >= 4 ? 'Walkout' : streakIntensity >= 3 ? 'On Fire' : chemistryIntensity >= 3 ? 'Duo Glow' : null,
+    flairLabel: intensity >= 4 ? 'Walkout' : streakIntensity >= 3 ? 'Heißlauf' : chemistryIntensity >= 3 ? 'Duo-Glanz' : null,
     glowClassName: intensity >= 4 ? 'shadow-[0_0_42px_rgba(250,82,15,0.55)]' : intensity >= 3 ? 'shadow-[0_0_30px_rgba(59,130,246,0.42)]' : '',
     borderClassName: intensity >= 4 ? 'motion-safe:animate-pulse ring-2 ring-orange-300/80' : intensity >= 3 ? 'ring-2 ring-sky-300/70' : '',
   };

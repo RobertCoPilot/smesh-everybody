@@ -199,7 +199,7 @@ export function calculateAwardProgress(
   if (results[0]) earned.set('first-match', award('first-match', 'Debüt', 'Erstes gewertetes Match gespielt.', results[0], 'milestone'));
   if (wins[0]) earned.set('first-win', award('first-win', 'Erster Sieg', 'Das erste Match gewonnen.', wins[0], 'milestone'));
   if (wins[2]) earned.set('hat-trick', award('hat-trick', 'Hat-trick', 'Drei Siege gesammelt.', wins[2], 'streak'));
-  if (streaks.bestWinStreak >= 5 && wins[4]) earned.set('on-fire', award('on-fire', 'On Fire', 'Fünf Siege in Folge.', wins[4], 'streak'));
+  if (streaks.bestWinStreak >= 5 && wins[4]) earned.set('on-fire', award('on-fire', 'Heißlauf', 'Fünf Siege in Folge.', wins[4], 'streak'));
   if (comeback) earned.set('comeback-kid', award('comeback-kid', 'Comeback Kid', 'Nach verlorenem ersten Satz gewonnen.', comeback, 'streak'));
   if (doubles) earned.set('doubles-debut', award('doubles-debut', 'Team Player', 'Erstes 2vs2-Match absolviert.', doubles, 'milestone'));
   if (results.length >= 10) earned.set('regular', award('regular', 'Stammgast', 'Zehn gewertete Matches gespielt.', results[9], 'activity'));
@@ -208,7 +208,7 @@ export function calculateAwardProgress(
     earned: [...earned.values()].sort((a, b) => new Date(a.earnedAt).getTime() - new Date(b.earnedAt).getTime()),
     next: [
       { id: 'hat-trick', name: 'Hat-trick', progress: Math.min(wins.length, 3), target: 3 },
-      { id: 'on-fire', name: 'On Fire', progress: Math.min(streaks.bestWinStreak, 5), target: 5 },
+      { id: 'on-fire', name: 'Heißlauf', progress: Math.min(streaks.bestWinStreak, 5), target: 5 },
       { id: 'regular', name: 'Stammgast', progress: Math.min(results.length, 10), target: 10 },
     ].filter((item) => !earned.has(item.id)),
   };
@@ -261,7 +261,7 @@ export function calculatePrimeRating(
     seasonSnapshots,
     primeCard: {
       rating: Math.max(1, Math.round(primeElo / 10)),
-      title: bestSeason ? `Prime ${bestSeason.label}` : 'All-time Prime',
+      title: bestSeason ? `Prime ${bestSeason.label}` : 'All-Time-Prime',
     },
   };
 }
