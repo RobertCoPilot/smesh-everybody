@@ -11,9 +11,10 @@ interface PadelCourtProps {
   onRemovePlayer: (position: PadelPosition) => void;
   onDropPlayer?: (position: PadelPosition, playerId: string) => void;
   scoreLabel?: string;
+  chemistryScores?: Record<string, number>;
 }
 
-export function PadelCourt({ formation, players, selectedSlot, onSelectSlot, onRemovePlayer, onDropPlayer, scoreLabel }: PadelCourtProps) {
+export function PadelCourt({ formation, players, selectedSlot, onSelectSlot, onRemovePlayer, onDropPlayer, scoreLabel, chemistryScores }: PadelCourtProps) {
   const config = PADEL_FORMATIONS[formation];
 
   return (
@@ -37,7 +38,7 @@ export function PadelCourt({ formation, players, selectedSlot, onSelectSlot, onR
         <div className="absolute left-[18%] top-0 z-10 h-full w-px bg-white/25" />
         <div className="absolute right-[18%] top-0 z-10 h-full w-px bg-white/25" />
 
-        <ChemistryLines players={players} />
+        <ChemistryLines players={players} chemistryScores={chemistryScores} />
 
         {config.activeSlots.map((slot) => {
           const anchor = config.slotAnchors[slot];

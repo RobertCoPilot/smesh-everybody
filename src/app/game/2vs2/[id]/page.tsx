@@ -13,6 +13,7 @@ import {
   getSetsScore,
   formatSetScore,
 } from '@/lib/scoring';
+import { deriveChemistrySummaries } from '@/lib/phase3SocialStats';
 import { PadelBuilder } from '@/components/padel-builder/PadelBuilder';
 import { createPadelPlayer } from '@/components/padel-builder/playerFactory';
 import type { Match2vs2, SetScore } from '@/types';
@@ -20,7 +21,7 @@ import type { Match2vs2, SetScore } from '@/types';
 export default function Match2vs2Page() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
-  const { getGame, getPlayer, updateGame } = useGameStore();
+  const { games, getGame, getPlayer, updateGame } = useGameStore();
 
   const [hydrated, setHydrated] = useState(false);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
@@ -205,6 +206,8 @@ export default function Match2vs2Page() {
   const team1Right = createPadelPlayer(match.team1[1], team1RightPlayer?.name ?? 'Unbekannt', 'right', `${match.team1[1]}-right`, team1RightPlayer?.currentElo);
   const team2Left = createPadelPlayer(match.team2[0], team2LeftPlayer?.name ?? 'Unbekannt', 'left2', `${match.team2[0]}-left2`, team2LeftPlayer?.currentElo);
   const team2Right = createPadelPlayer(match.team2[1], team2RightPlayer?.name ?? 'Unbekannt', 'right2', `${match.team2[1]}-right2`, team2RightPlayer?.currentElo);
+  const chemistry = deriveChemistrySummaries(games);
+  const chemistryScores = Object.fromEntries([...chemistry.values()].map((duo) => [duo.pairKey, duo.chemistryScore]));
 
   return (
     <div className="min-h-screen app-text-primary px-4 py-6 pb-24 animate-fade-in">
@@ -238,6 +241,7 @@ export default function Match2vs2Page() {
             right2: team2Right,
           }}
           scoreLabel={`${team1SetsWon} - ${team2SetsWon}`}
+          chemistryScores={chemistryScores}
         />
       </div>
 

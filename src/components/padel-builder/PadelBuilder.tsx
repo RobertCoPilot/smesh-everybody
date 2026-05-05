@@ -13,6 +13,7 @@ interface PadelBuilderProps {
   players: PadelPlayer[];
   initialPlacements: PlacedPadelPlayers;
   scoreLabel?: string;
+  chemistryScores?: Record<string, number>;
   readOnly?: boolean;
   onLineupChange?: (lineup: { formation: FormationId; placements: PlacedPadelPlayers }) => void;
 }
@@ -34,6 +35,7 @@ export function PadelBuilder({
   players,
   initialPlacements,
   scoreLabel,
+  chemistryScores,
   readOnly = false,
   onLineupChange,
 }: PadelBuilderProps) {
@@ -121,6 +123,7 @@ export function PadelBuilder({
         onRemovePlayer={handleRemovePlayer}
         onDropPlayer={handleDropPlayer}
         scoreLabel={scoreLabel}
+        chemistryScores={chemistryScores}
       />
 
       {!readOnly && (
