@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useSyncExternalStore } from 'react';
 import { calculateEloLeaderboard, getTierLabel } from '@/lib/elo';
+import { derivePhase2Engagement } from '@/lib/phase2Engagement';
 import { useGameStore } from '@/store/gameStore';
 
 type CategoryKey = 'overall' | 'elo' | 'americano' | 'normal';
@@ -33,6 +34,9 @@ interface EloRow {
   name: string;
   currentElo: number;
   peakElo: number;
+  primeElo: number;
+  confidence: number;
+  currentStreak: number;
   matchesPlayed: number;
   wins: number;
   winPct: number;
@@ -80,6 +84,9 @@ const AMERICANO_COLS: { key: SortKey<AmericanoRow>; label: string; short: string
 const ELO_COLS: { key: SortKey<EloRow>; label: string; short: string }[] = [
   { key: 'currentElo', label: 'Aktuelles ELO', short: 'ELO' },
   { key: 'peakElo', label: 'Peak ELO', short: 'Peak' },
+  { key: 'primeElo', label: 'Prime ELO', short: 'Prime' },
+  { key: 'confidence', label: 'Aktivität', short: 'Akt' },
+  { key: 'currentStreak', label: 'Streak', short: 'Str' },
   { key: 'matchesPlayed', label: 'ELO Matches', short: 'Sp' },
   { key: 'wins', label: 'Siege', short: 'S' },
   { key: 'winPct', label: 'Sieg-%', short: 'S%' },
@@ -180,15 +187,25 @@ export default function RankingsPage() {
   }, [allStats]);
 
   const eloRows = useMemo<EloRow[]>(() => {
-    return calculateEloLeaderboard(players, games).map((row) => ({
-      playerId: row.playerId,
-      name: `${row.name} · ${getTierLabel(row.tier)}`,
-      currentElo: row.currentElo,
-      peakElo: row.peakElo,
-      matchesPlayed: row.matchesPlayed,
-      wins: row.wins,
-      winPct: row.winPct,
-    }));
+    const engagement = derivePhase2Engagement(players, games);
+    return calculateEloLeaderboard(players, games).map((row) => {
+      const phase2 = engagement.get(row.playerId);
+      const streak = phase2?.streaks.current;
+      const streakPrefix = streak?.kind === 'win' ? 'W' : streak?.kind === 'loss' ? 'L' : '—';
+      const activityLabel = phase2?.activity.status === 'rusty' ? 'Rusty' : phase2?.activity.status === 'inactive' ? 'Inactive' : 'Active';
+      return {
+        playerId: row.playerId,
+        name: `${row.name} · ${getTierLabel(row.tier)} · ${activityLabel} · ${streakPrefix}${streak?.count ?? 0}`,
+        currentElo: row.currentElo,
+        peakElo: row.peakElo,
+        primeElo: phase2?.prime.primeElo ?? row.peakElo,
+        confidence: phase2?.activity.confidence ?? 0,
+        currentStreak: streak?.kind === 'loss' ? -(streak.count) : streak?.count ?? 0,
+        matchesPlayed: row.matchesPlayed,
+        wins: row.wins,
+        winPct: row.winPct,
+      };
+    });
   }, [players, games]);
 
   const sortedOverall = useMemo(() => sortRows(overallRows, overallSort), [overallRows, overallSort]);
@@ -246,7 +263,7 @@ export default function RankingsPage() {
         <div className="animate-fade-in-up">
           <div className="glass-card-static rounded-2xl p-3 mb-4">
             <p className="text-xs app-text-muted leading-relaxed">
-              ELO wird live aus abgeschlossenen 1vs1- und 2vs2-Spielen berechnet. Alte Match-History bleibt unverändert.
+              ELO wird live aus abgeschlossenen 1vs1- und 2vs2-Spielen berechnet. Prime, Streaks und Aktivitäts-Vertrauen sind abgeleitete Phase-2-Werte; alte Match-History bleibt unverändert.
             </p>
           </div>
           <SortPills cols={ELO_COLS} activeKey={eloSort} setKey={setEloSort} />

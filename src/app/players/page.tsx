@@ -4,6 +4,7 @@ import { useMemo, useState, useSyncExternalStore } from 'react';
 import { format } from 'date-fns';
 import { PadelPlayerCard } from '@/components/padel-builder/PadelPlayerCard';
 import { createPadelPlayer } from '@/components/padel-builder/playerFactory';
+import { derivePhase2Engagement, type Phase2EngagementSummary } from '@/lib/phase2Engagement';
 import { useGameStore } from '@/store/gameStore';
 
 export default function PlayersPage() {
@@ -46,6 +47,11 @@ export default function PlayersPage() {
     if (!q) return players;
     return players.filter((p) => p.name.toLowerCase().includes(q));
   }, [hydrated, players, search]);
+
+  const phase2Engagement = useMemo<Map<string, Phase2EngagementSummary>>(() => {
+    if (!hydrated) return new Map<string, Phase2EngagementSummary>();
+    return derivePhase2Engagement(players, games);
+  }, [hydrated, players, games]);
 
   const handleAdd = () => {
     const trimmed = newName.trim();
@@ -153,7 +159,11 @@ export default function PlayersPage() {
           {filteredPlayers.map((player) => {
             const stats = getPlayerWins(player.id);
             const canDelete = !isPlayerInGames.has(player.id);
-            const totalWins = stats.twovstwoWins + stats.tournamentWins + stats.americanoWins;
+            const totalWins = stats.onevoneWins + stats.twovstwoWins + stats.tournamentWins + stats.americanoWins;
+            const engagement = phase2Engagement.get(player.id);
+            const streak = engagement?.streaks.current;
+            const streakLabel = streak?.kind === 'win' ? `W${streak.count}` : streak?.kind === 'loss' ? `L${streak.count}` : '—';
+            const topAwards = engagement?.awards.earned.slice(-3).reverse() ?? [];
             const cardPlayer = createPadelPlayer(player.id, player.name, 'left', `${player.id}-profile-card`, player.currentElo);
 
             return (
@@ -173,6 +183,11 @@ export default function PlayersPage() {
                     <p className="text-xs app-text-faint">
                       Dabei seit {format(new Date(player.createdAt), 'MMM d, yyyy')}
                     </p>
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      <span className="pill bg-theme-soft app-text-muted">Prime {Math.round(engagement?.prime.primeElo ?? player.peakElo ?? player.currentElo ?? 1000)}</span>
+                      <span className="pill bg-theme-soft app-text-muted">{streakLabel} Streak</span>
+                      <span className="pill bg-theme-soft app-text-muted">{engagement?.activity.status ?? 'unranked'} · {engagement?.activity.confidence ?? 0}%</span>
+                    </div>
                   </div>
 
                   {/* Delete button */}
@@ -207,7 +222,21 @@ export default function PlayersPage() {
                     <p className="text-lg font-bold app-text-accent">{totalWins}</p>
                     <p className="text-xs app-text-subtle">Siege</p>
                   </div>
+                  <div className="text-center flex-1">
+                    <p className="text-lg font-bold app-text-primary">{engagement?.awards.earned.length ?? 0}</p>
+                    <p className="text-xs app-text-subtle">Awards</p>
+                  </div>
                 </div>
+
+                {topAwards.length > 0 && (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {topAwards.map((award) => (
+                      <span key={award.id} className="rounded-full border border-theme-weak bg-theme-soft px-2.5 py-1 text-[0.68rem] font-semibold app-text-muted" title={award.description}>
+                        🏅 {award.name}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
             );
           })}
