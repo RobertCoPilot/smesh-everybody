@@ -8,6 +8,7 @@ const navItems = [
   { href: '/new-game', label: 'Spielen', icon: PlusIcon },
   { href: '/history', label: 'Verlauf', icon: ClockIcon },
   { href: '/rankings', label: 'Rangliste', icon: TrophyIcon },
+  { href: '/rewards', label: 'Rewards', icon: GiftIcon },
   { href: '/players', label: 'Spieler', icon: UsersIcon },
 ];
 
@@ -99,6 +100,22 @@ function TrophyIcon({ className, filled }: { className?: string; filled?: boolea
   return (
     <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
       <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 007.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M18.75 4.236c.982.143 1.954.317 2.916.52A6.003 6.003 0 0116.27 9.728M18.75 4.236V4.5c0 2.108-.966 3.99-2.48 5.228m0 0a6.023 6.023 0 01-2.27.308m2.27-.308v.5c0 .621-.504 1.125-1.125 1.125h-.872" />
+    </svg>
+  );
+}
+
+function GiftIcon({ className, filled }: { className?: string; filled?: boolean }) {
+  if (filled) {
+    return (
+      <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+        <path d="M11.25 2.25a2.25 2.25 0 00-2.25 2.25c0 .47.144.907.39 1.27A2.25 2.25 0 006.75 3.75 2.25 2.25 0 004.5 6c0 .87.494 1.624 1.216 2H4.5A1.5 1.5 0 003 9.5v2A1.5 1.5 0 004.5 13H11V8H8.25a3.75 3.75 0 003-5.75zM12.75 8v5h6.75a1.5 1.5 0 001.5-1.5v-2A1.5 1.5 0 0019.5 8h-1.216A2.25 2.25 0 0019.5 6a2.25 2.25 0 00-2.25-2.25 2.25 2.25 0 00-2.64 2.02A2.25 2.25 0 0015 4.5a2.25 2.25 0 00-2.25-2.25V8z" />
+        <path d="M4.5 14.5V19.5A2.5 2.5 0 007 22h4v-7.5H4.5zM13 22h4a2.5 2.5 0 002.5-2.5v-5H13V22z" />
+      </svg>
+    );
+  }
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M21 11.25v8.25A2.25 2.25 0 0118.75 21H5.25A2.25 2.25 0 013 18.75v-7.5m18 0H3m18 0A2.25 2.25 0 0018.75 9H5.25A2.25 2.25 0 003 11.25m18 0v-1.5A2.25 2.25 0 0018.75 7.5H5.25A2.25 2.25 0 003 9.75v1.5m9-3.75V21m0-13.5H8.625A2.625 2.625 0 116 4.875C6 3.425 7.175 2.25 8.625 2.25 11.25 2.25 12 7.5 12 7.5zm0 0h3.375A2.625 2.625 0 1018 4.875c0-1.45-1.175-2.625-2.625-2.625C12.75 2.25 12 7.5 12 7.5z" />
     </svg>
   );
 }

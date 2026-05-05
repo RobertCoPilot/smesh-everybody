@@ -1,4 +1,5 @@
 import type { PadelPosition } from '@/config/padelFormations';
+import type { CardEffectState, CosmeticDefinition } from '@/lib/rewards';
 import type { EloTier } from '@/types';
 
 export type PadelCardVariant = EloTier;
@@ -26,6 +27,8 @@ export interface PadelPlayer {
   cardVariant?: PadelCardVariant;
   eloTier?: EloTier;
   currentElo?: number;
+  equippedCosmetic?: CosmeticDefinition;
+  cardEffect?: CardEffectState;
 }
 
 export type PlacedPadelPlayers = Partial<Record<PadelPosition, PadelPlayer>>;

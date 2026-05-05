@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useSyncExternalStore } from 'react';
 import { calculateEloLeaderboard, getTierLabel } from '@/lib/elo';
-import { derivePhase2Engagement } from '@/lib/phase2Engagement';
+import { derivePhase2Engagement } from '@/lib/engagement';
 import { useGameStore } from '@/store/gameStore';
 
 type CategoryKey = 'overall' | 'elo' | 'americano' | 'normal';
@@ -193,17 +193,17 @@ export default function RankingsPage() {
   const eloRows = useMemo<EloRow[]>(() => {
     const engagement = derivePhase2Engagement(players, games);
     return calculateEloLeaderboard(players, games).map((row) => {
-      const phase2 = engagement.get(row.playerId);
-      const streak = phase2?.streaks.current;
+      const playerEngagement = engagement.get(row.playerId);
+      const streak = playerEngagement?.streaks.current;
       const streakPrefix = streak?.kind === 'win' ? 'W' : streak?.kind === 'loss' ? 'L' : '—';
-      const activityLabel = phase2?.activity.status === 'rusty' ? 'Rusty' : phase2?.activity.status === 'inactive' ? 'Inactive' : 'Active';
+      const activityLabel = playerEngagement?.activity.status === 'rusty' ? 'Rusty' : playerEngagement?.activity.status === 'inactive' ? 'Inactive' : 'Active';
       return {
         playerId: row.playerId,
         name: `${row.name} · ${getTierLabel(row.tier)} · ${activityLabel} · ${streakPrefix}${streak?.count ?? 0}`,
         currentElo: row.currentElo,
         peakElo: row.peakElo,
-        primeElo: phase2?.prime.primeElo ?? row.peakElo,
-        confidence: phase2?.activity.confidence ?? 0,
+        primeElo: playerEngagement?.prime.primeElo ?? row.peakElo,
+        confidence: playerEngagement?.activity.confidence ?? 0,
         currentStreak: streak?.kind === 'loss' ? -(streak.count) : streak?.count ?? 0,
         matchesPlayed: row.matchesPlayed,
         weightedMatchesPlayed: row.weightedMatchesPlayed,

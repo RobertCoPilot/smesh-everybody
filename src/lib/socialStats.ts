@@ -1,6 +1,6 @@
 import { calculateEloLeaderboard, DEFAULT_ELO } from './elo';
 import { deriveWeightedMatchEvents } from './matchWeights';
-import { calculateActivityStatus, calculatePlayerStreaks, getPlayerCompetitiveResults } from './phase2Engagement';
+import { calculateActivityStatus, calculatePlayerStreaks, getPlayerCompetitiveResults } from './engagement';
 import type { AmericanoTournament, GameRecord, Match1vs1, Match2vs2, Player, SetScore, Tournament } from '@/types';
 
 export type PairEntityType = 'player' | 'duo';

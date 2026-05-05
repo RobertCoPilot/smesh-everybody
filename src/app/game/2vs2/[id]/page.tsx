@@ -14,7 +14,7 @@ import {
   formatSetScore,
 } from '@/lib/scoring';
 import { markCompleted, markStarted } from '@/lib/matchTiming';
-import { deriveChemistryScoreMap } from '@/lib/phase3SocialStats';
+import { deriveChemistryScoreMap } from '@/lib/socialStats';
 import { PadelBuilder } from '@/components/padel-builder/PadelBuilder';
 import { createPadelPlayer } from '@/components/padel-builder/playerFactory';
 import type { Match2vs2, SetScore } from '@/types';

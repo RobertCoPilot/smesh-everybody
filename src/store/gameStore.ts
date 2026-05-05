@@ -5,6 +5,7 @@ import { getEloTier } from '@/lib/eloTiers';
 import { firestoreCollections } from '@/lib/firestoreCollections';
 import { db } from '@/lib/firebase';
 import { finalizeMatchTracking } from '@/lib/matchTracking';
+import type { EquippedCosmetics, PackOpeningResult, PlayerCosmeticInventoryItem, RewardWallet } from '@/lib/rewards';
 import type {
   Player,
   Match1vs1,
@@ -41,10 +42,18 @@ function playersWithHistoricalElo(players: Player[], games: GameRecord[], exclud
 interface GameStore {
   players: Player[];
   games: GameRecord[];
+  rewardWallets: RewardWallet[];
+  cosmeticInventory: PlayerCosmeticInventoryItem[];
+  equippedCosmetics: EquippedCosmetics[];
+  packOpenings: PackOpeningResult[];
 
   // Internal setters (used by FirestoreProvider)
   _setPlayers: (players: Player[]) => void;
   _setGames: (games: GameRecord[]) => void;
+  _setRewardWallets: (wallets: RewardWallet[]) => void;
+  _setCosmeticInventory: (items: PlayerCosmeticInventoryItem[]) => void;
+  _setEquippedCosmetics: (items: EquippedCosmetics[]) => void;
+  _setPackOpenings: (items: PackOpeningResult[]) => void;
 
   // Player actions
   addPlayer: (name: string) => Player;
@@ -56,6 +65,12 @@ interface GameStore {
   updateGame: (id: string, updater: (game: GameRecord) => GameRecord) => void;
   removeGame: (id: string) => void;
   getGame: (id: string) => GameRecord | undefined;
+
+  // Rewards actions
+  saveRewardWallet: (wallet: RewardWallet) => void;
+  saveCosmeticInventoryItems: (items: PlayerCosmeticInventoryItem[]) => void;
+  saveEquippedCosmetics: (item: EquippedCosmetics) => void;
+  savePackOpening: (opening: PackOpeningResult) => void;
 
   // Ranking helpers
   getPlayerWins: (playerId: string) => {
@@ -78,9 +93,17 @@ interface GameStore {
 export const useGameStore = create<GameStore>()((set, get) => ({
   players: [],
   games: [],
+  rewardWallets: [],
+  cosmeticInventory: [],
+  equippedCosmetics: [],
+  packOpenings: [],
 
   _setPlayers: (players) => set((state) => ({ players: playersWithHistoricalElo(players, state.games) })),
   _setGames: (games) => set((state) => ({ games, players: playersWithHistoricalElo(state.players, games) })),
+  _setRewardWallets: (rewardWallets) => set({ rewardWallets }),
+  _setCosmeticInventory: (cosmeticInventory) => set({ cosmeticInventory }),
+  _setEquippedCosmetics: (equippedCosmetics) => set({ equippedCosmetics }),
+  _setPackOpenings: (packOpenings) => set({ packOpenings }),
 
   addPlayer: (name: string) => {
     const player: Player = {
@@ -143,6 +166,31 @@ export const useGameStore = create<GameStore>()((set, get) => ({
 
   getGame: (id: string) => {
     return get().games.find((g) => g.id === id);
+  },
+
+  saveRewardWallet: (wallet) => {
+    set((state) => ({ rewardWallets: [...state.rewardWallets.filter((item) => item.playerId !== wallet.playerId), wallet] }));
+    setDoc(doc(db, firestoreCollections.rewardWallets, wallet.playerId), clean(wallet)).catch(console.error);
+  },
+
+  saveCosmeticInventoryItems: (items) => {
+    set((state) => {
+      const keys = new Set(items.map((item) => `${item.playerId}:${item.cosmeticId}`));
+      return { cosmeticInventory: [...state.cosmeticInventory.filter((item) => !keys.has(`${item.playerId}:${item.cosmeticId}`)), ...items] };
+    });
+    for (const item of items) {
+      setDoc(doc(db, firestoreCollections.cosmeticInventory, `${item.playerId}_${item.cosmeticId}`), clean(item)).catch(console.error);
+    }
+  },
+
+  saveEquippedCosmetics: (item) => {
+    set((state) => ({ equippedCosmetics: [...state.equippedCosmetics.filter((entry) => entry.playerId !== item.playerId), item] }));
+    setDoc(doc(db, firestoreCollections.equippedCosmetics, item.playerId), clean(item)).catch(console.error);
+  },
+
+  savePackOpening: (opening) => {
+    set((state) => ({ packOpenings: [...state.packOpenings.filter((entry) => entry.openingId !== opening.openingId), opening] }));
+    setDoc(doc(db, firestoreCollections.packOpenings, opening.openingId), clean(opening)).catch(console.error);
   },
 
       getPlayerWins: (playerId: string) => {

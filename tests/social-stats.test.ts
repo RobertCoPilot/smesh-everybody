@@ -9,7 +9,7 @@ import {
   deriveRivalries,
   deriveTeamBalanceOptions,
   pairKey,
-} from '../src/lib/phase3SocialStats';
+} from '../src/lib/socialStats';
 import type { GameRecord, Match1vs1, Match2vs2, Player } from '../src/types';
 
 const players: Player[] = [
