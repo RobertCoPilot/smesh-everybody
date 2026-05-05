@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   deriveArchetypes,
+  deriveChemistryScoreMap,
   deriveChemistrySummaries,
   deriveDuoTitles,
   derivePhase3SocialStats,
@@ -54,16 +55,34 @@ const rivalryGames: GameRecord[] = [
 ];
 
 test('chemistry system tracks duo volume, win rate, differential and link strength', () => {
-  const chemistry = deriveChemistrySummaries(rivalryGames);
+  const americanoHistory: GameRecord = {
+    id: 'americano-history',
+    type: 'americano-klein',
+    date: '2026-02-06T10:00:00.000Z',
+    players: ['alice', 'bob', 'cara', 'dan'],
+    games: [{ id: 'a1', round: 1, court: 1, team1: ['alice', 'bob'], team2: ['cara', 'dan'], team1Score: 21, team2Score: 17, status: 'completed' }],
+    pointsToWin: 21,
+    courts: 1,
+    currentRound: 1,
+    status: 'completed',
+  };
+  const chemistry = deriveChemistrySummaries([...rivalryGames, americanoHistory]);
   const aliceBob = chemistry.get(pairKey(['bob', 'alice']));
   const caraDan = chemistry.get(pairKey(['cara', 'dan']));
 
-  assert.equal(aliceBob?.matchesPlayed, 4);
-  assert.equal(aliceBob?.wins, 3);
-  assert.equal(aliceBob?.winRate, 0.75);
+  assert.equal(aliceBob?.matchesPlayed, 5);
+  assert.equal(aliceBob?.wins, 4);
+  assert.equal(aliceBob?.winRate, 0.8);
   assert.ok((aliceBob?.scoreDifferential ?? 0) > 0);
   assert.match(aliceBob?.linkStrength ?? '', /solid|strong|elite/);
-  assert.equal(caraDan?.losses, 3);
+  assert.equal(caraDan?.losses, 4);
+});
+
+test('chemistry score map gives current teammates a non-zero provisional score without direct duo history', () => {
+  const scores = deriveChemistryScoreMap(rivalryGames, [['alice', 'dan']]);
+
+  assert.ok(scores[pairKey(['alice', 'bob'])] > 0);
+  assert.ok(scores[pairKey(['alice', 'dan'])] >= 20);
 });
 
 test('dynamic duo titles are deterministic and playful for active pairs', () => {

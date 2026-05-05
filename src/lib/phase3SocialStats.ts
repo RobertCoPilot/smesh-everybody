@@ -1,6 +1,6 @@
 import { calculateEloLeaderboard, DEFAULT_ELO } from './elo';
 import { calculateActivityStatus, calculatePlayerStreaks, getPlayerCompetitiveResults } from './phase2Engagement';
-import type { GameRecord, Match1vs1, Match2vs2, Player, SetScore, Tournament } from '@/types';
+import type { AmericanoTournament, GameRecord, Match1vs1, Match2vs2, Player, SetScore, Tournament } from '@/types';
 
 export type PairEntityType = 'player' | 'duo';
 export type ArchetypeId = 'grinder' | 'clutcher' | 'choker' | 'coin-flip' | 'front-runner' | 'team-anchor' | 'rookie';
@@ -100,6 +100,9 @@ function completedTeamMatches(games: GameRecord[]): TeamMatch[] {
     if (game.type === '2vs2-tournament') {
       collectTournamentMatches(game).forEach((match) => matches.push(match));
     }
+    if (game.type === 'americano-klein' || game.type === 'americano-gross') {
+      collectAmericanoMatches(game).forEach((match) => matches.push(match));
+    }
   }
   return matches.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 }
@@ -117,6 +120,21 @@ function collectTournamentMatches(tournament: Tournament): TeamMatch[] {
       team2: [...team2.players],
       winner: match.winnerId === match.team1Id ? 1 as const : 2 as const,
       sets: match.sets,
+    }];
+  });
+}
+
+function collectAmericanoMatches(tournament: AmericanoTournament): TeamMatch[] {
+  return tournament.games.flatMap((game) => {
+    if (game.status !== 'completed') return [];
+    const winner = game.team1Score >= game.team2Score ? 1 as const : 2 as const;
+    return [{
+      id: `${tournament.id}:${game.id}`,
+      date: tournament.date,
+      team1: [...game.team1],
+      team2: [...game.team2],
+      winner,
+      sets: [{ team1Games: game.team1Score, team2Games: game.team2Score }],
     }];
   });
 }
@@ -180,6 +198,36 @@ export function deriveChemistrySummaries(games: GameRecord[]): Map<string, DuoCh
     }
   }
   return summaries;
+}
+
+export function deriveChemistryScoreMap(games: GameRecord[], pairs: Array<[string, string]> = []): Record<string, number> {
+  const chemistry = deriveChemistrySummaries(games);
+  const scores = Object.fromEntries([...chemistry.values()].map((duo) => [duo.pairKey, duo.chemistryScore]));
+  for (const pair of pairs) {
+    const key = pairKey(pair);
+    if (scores[key] !== undefined) continue;
+    scores[key] = deriveProvisionalChemistryScore(pair, games);
+  }
+  return scores;
+}
+
+function deriveProvisionalChemistryScore(pair: [string, string], games: GameRecord[]): number {
+  const [a, b] = pair;
+  const aResults = getPlayerCompetitiveResults(a, games);
+  const bResults = getPlayerCompetitiveResults(b, games);
+  const sharedOpponents = new Set<string>();
+  for (const game of games) {
+    if ((game.type !== '1vs1' && game.type !== '2vs2') || game.status !== 'completed') continue;
+    const participants = game.type === '1vs1' ? [game.player1, game.player2] : [...game.team1, ...game.team2];
+    if (participants.includes(a) && !participants.includes(b)) participants.filter((id) => id !== a).forEach((id) => sharedOpponents.add(id));
+    if (participants.includes(b) && !participants.includes(a)) participants.filter((id) => id !== b).forEach((id) => sharedOpponents.add(id));
+  }
+  const aWinRate = aResults.length ? aResults.filter((result) => result.won).length / aResults.length : 0.5;
+  const bWinRate = bResults.length ? bResults.filter((result) => result.won).length / bResults.length : 0.5;
+  const experience = Math.min(aResults.length + bResults.length, 20) * 0.8;
+  const form = ((aWinRate + bWinRate) / 2 - 0.5) * 28;
+  const commonContext = Math.min(sharedOpponents.size, 6) * 2;
+  return Math.round(clamp(35 + experience + form + commonContext, 20, 65));
 }
 
 export function deriveDuoTitles(chemistry: Map<string, DuoChemistrySummary>, players: Player[] = []): Map<string, DuoTitle> {

@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { v4 as uuidv4 } from 'uuid';
 import { useGameStore } from '@/store/gameStore';
-import { deriveChemistrySummaries, deriveTeamBalanceOptions } from '@/lib/phase3SocialStats';
+import { deriveChemistryScoreMap, deriveTeamBalanceOptions } from '@/lib/phase3SocialStats';
 import { generateTeams } from '@/lib/tournament';
 import PlayerSelector from '@/components/PlayerSelector';
 import { PadelBuilder } from '@/components/padel-builder/PadelBuilder';
@@ -127,8 +127,10 @@ export default function Setup2vs2Page() {
   const previewTeam1Right = finalTeam1 ? createPreviewCard(finalTeam1[1], 'right') : null;
   const previewTeam2Left = finalTeam2 ? createPreviewCard(finalTeam2[0], 'left2') : null;
   const previewTeam2Right = finalTeam2 ? createPreviewCard(finalTeam2[1], 'right2') : null;
-  const chemistry = deriveChemistrySummaries(games);
-  const chemistryScores = Object.fromEntries([...chemistry.values()].map((duo) => [duo.pairKey, duo.chemistryScore]));
+  const chemistryScores = deriveChemistryScoreMap(games, [
+    ...(finalTeam1 ? [finalTeam1] : []),
+    ...(finalTeam2 ? [finalTeam2] : []),
+  ]);
 
   const handleStartMatch = () => {
     if (!finalTeam1 || !finalTeam2) return;
