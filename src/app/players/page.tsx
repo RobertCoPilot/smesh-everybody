@@ -5,6 +5,7 @@ import { format } from 'date-fns';
 import { PadelPlayerCard } from '@/components/padel-builder/PadelPlayerCard';
 import { createPadelPlayer } from '@/components/padel-builder/playerFactory';
 import { derivePhase2Engagement, type Phase2EngagementSummary } from '@/lib/phase2Engagement';
+import { derivePhase3SocialStats } from '@/lib/phase3SocialStats';
 import { useGameStore } from '@/store/gameStore';
 
 export default function PlayersPage() {
@@ -51,6 +52,11 @@ export default function PlayersPage() {
   const phase2Engagement = useMemo<Map<string, Phase2EngagementSummary>>(() => {
     if (!hydrated) return new Map<string, Phase2EngagementSummary>();
     return derivePhase2Engagement(players, games);
+  }, [hydrated, players, games]);
+
+  const phase3SocialStats = useMemo(() => {
+    if (!hydrated) return null;
+    return derivePhase3SocialStats(players, games);
   }, [hydrated, players, games]);
 
   const handleAdd = () => {
@@ -165,6 +171,11 @@ export default function PlayersPage() {
             const streakLabel = streak?.kind === 'win' ? `W${streak.count}` : streak?.kind === 'loss' ? `L${streak.count}` : '—';
             const topAwards = engagement?.awards.earned.slice(-3).reverse() ?? [];
             const cardPlayer = createPadelPlayer(player.id, player.name, 'left', `${player.id}-profile-card`, player.currentElo);
+            const archetype = phase3SocialStats?.archetypes.get(player.id);
+            const bestDuo = [...(phase3SocialStats?.chemistry.values() ?? [])]
+              .filter((duo) => duo.players.includes(player.id))
+              .sort((a, b) => b.chemistryScore - a.chemistryScore)[0];
+            const duoTitle = bestDuo ? phase3SocialStats?.duoTitles.get(bestDuo.pairKey) : null;
 
             return (
               <div
@@ -187,6 +198,8 @@ export default function PlayersPage() {
                       <span className="pill bg-theme-soft app-text-muted">Prime {Math.round(engagement?.prime.primeElo ?? player.peakElo ?? player.currentElo ?? 1000)}</span>
                       <span className="pill bg-theme-soft app-text-muted">{streakLabel} Streak</span>
                       <span className="pill bg-theme-soft app-text-muted">{engagement?.activity.status ?? 'unranked'} · {engagement?.activity.confidence ?? 0}%</span>
+                      {archetype && <span className="pill bg-theme-soft app-text-muted">{archetype.primary}</span>}
+                      {duoTitle && <span className="pill bg-theme-soft app-text-muted">{duoTitle.title}</span>}
                     </div>
                   </div>
 

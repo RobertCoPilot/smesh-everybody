@@ -4,6 +4,7 @@ import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { v4 as uuidv4 } from 'uuid';
 import { useGameStore } from '@/store/gameStore';
+import { deriveTeamBalanceOptions } from '@/lib/phase3SocialStats';
 import { generateTeams } from '@/lib/tournament';
 import PlayerSelector from '@/components/PlayerSelector';
 import { PadelBuilder } from '@/components/padel-builder/PadelBuilder';
@@ -14,7 +15,7 @@ type TeamMode = 'manual' | 'random' | 'skill-based';
 
 export default function Setup2vs2Page() {
   const router = useRouter();
-  const { getPlayer, getPlayerWins, addGame } = useGameStore();
+  const { players, games, getPlayer, addGame } = useGameStore();
 
   const [step, setStep] = useState(0);
   const [selectedPlayers, setSelectedPlayers] = useState<string[]>([]);
@@ -24,6 +25,7 @@ export default function Setup2vs2Page() {
   const [manualTeam1, setManualTeam1] = useState<string[]>([]);
   const [manualTeam2, setManualTeam2] = useState<string[]>([]);
   const [setsToWin, setSetsToWin] = useState(2);
+  const [balanceExplanation, setBalanceExplanation] = useState('');
 
   const playerName = useCallback(
     (id: string) => getPlayer(id)?.name ?? 'Unbekannt',
@@ -35,6 +37,7 @@ export default function Setup2vs2Page() {
     setManualPool([...playerIds]);
     setManualTeam1([]);
     setManualTeam2([]);
+    setBalanceExplanation('');
   };
 
   const handlePlayersChange = (playerIds: string[]) => {
@@ -53,12 +56,13 @@ export default function Setup2vs2Page() {
   };
 
   const handleGenerateSkillBased = () => {
-    const rankings: Record<string, number> = {};
-    for (const id of selectedPlayers) {
-      rankings[id] = getPlayerWins(id).twovstwoWins;
-    }
-    const result = generateTeams(selectedPlayers, 'skill-based', undefined, rankings);
-    setTeams(result);
+    const [best] = deriveTeamBalanceOptions(players, games, selectedPlayers);
+    if (!best) return;
+    setTeams([
+      { id: 'team-1', players: best.teams[0], seed: 1 },
+      { id: 'team-2', players: best.teams[1], seed: 2 },
+    ]);
+    setBalanceExplanation(`Balance ${best.balanceScore}/100 · ${best.explanation}`);
   };
 
   const handleManualAssign = (playerId: string) => {
@@ -369,8 +373,13 @@ export default function Setup2vs2Page() {
                 ⚖️ Ausgeglichene Teams erstellen
               </button>
               <p className="text-xs app-text-muted text-center">
-                Paart stärksten mit schwächstem Spieler für ausgeglichene Matches
+                Nutzt Phase-3 Team Balancer: ELO, Duo-Chemie und Aktivität – ohne Spieler zu verändern.
               </p>
+              {balanceExplanation && (
+                <p className="glass-card-static rounded-2xl p-3 text-xs app-text-muted text-center">
+                  {balanceExplanation}
+                </p>
+              )}
               {teams.length === 2 && <TeamsPreview teams={teams} playerName={playerName} />}
             </div>
           )}
