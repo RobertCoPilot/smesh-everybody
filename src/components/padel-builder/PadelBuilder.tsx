@@ -130,8 +130,8 @@ export function PadelBuilder({
         <div className="builder-pool border p-3 shadow-[0_18px_45px_rgba(0,0,0,0.25)]">
           <div className="mb-3 flex items-center justify-between gap-3">
             <div>
-              <p className="text-xs font-black uppercase tracking-[0.2em] app-text-secondary">Player Pool</p>
-              <p className="text-[0.7rem] app-text-subtle">Select a slot and tap, or drag a card onto the court.</p>
+              <p className="text-xs font-black uppercase tracking-[0.2em] app-text-secondary">Spielerpool</p>
+              <p className="text-[0.7rem] app-text-subtle">Slot auswählen und tippen oder Karte auf den Court ziehen.</p>
             </div>
             {selectedSlot && (
               <span className="builder-slot-badge px-2 py-1 text-[0.62rem] font-black uppercase tracking-widest">
@@ -157,7 +157,7 @@ export function PadelBuilder({
             </div>
           ) : (
             <div className="border border-dashed border-theme py-6 text-center text-xs uppercase tracking-[0.18em] app-text-subtle">
-              All cards are on court
+              Alle Karten sind auf dem Court
             </div>
           )}
         </div>

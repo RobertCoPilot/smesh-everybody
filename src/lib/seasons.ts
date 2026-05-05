@@ -107,10 +107,10 @@ export interface WallOfShameRecord {
 }
 
 export const DEFAULT_WEEKLY_CHALLENGES: ChallengeTemplate[] = [
-  { id: 'weekly-match-volume', title: 'Court Regular', description: 'Play 3 weighted matches this week.', metric: 'matches-played', target: 3, xpReward: 120, coinReward: 40 },
-  { id: 'weekly-close-call', title: 'Nerve Check', description: 'Play 2 close matches.', metric: 'close-matches', target: 2, xpReward: 100, coinReward: 35 },
-  { id: 'weekly-americano-grind', title: 'Americano Engine', description: 'Complete 5 Americano games.', metric: 'americano-games', target: 5, xpReward: 90, coinReward: 30 },
-  { id: 'weekly-duo-wins', title: 'Duo Shift', description: 'Win twice as a 2-player team.', metric: 'duo-wins', target: 2, xpReward: 130, coinReward: 45, cosmeticRewardId: 'emote-smash-common' },
+  { id: 'weekly-match-volume', title: 'Stammgast am Court', description: 'Spiele diese Woche 3 gewichtete Matches.', metric: 'matches-played', target: 3, xpReward: 120, coinReward: 40 },
+  { id: 'weekly-close-call', title: 'Nervenprobe', description: 'Spiele 2 enge Matches.', metric: 'close-matches', target: 2, xpReward: 100, coinReward: 35 },
+  { id: 'weekly-americano-grind', title: 'Americano-Motor', description: 'Schließe 5 Americano-Spiele ab.', metric: 'americano-games', target: 5, xpReward: 90, coinReward: 30 },
+  { id: 'weekly-duo-wins', title: 'Duo-Schicht', description: 'Gewinne zweimal als Zweierteam.', metric: 'duo-wins', target: 2, xpReward: 130, coinReward: 45, cosmeticRewardId: 'emote-smash-common' },
 ];
 
 export const DEFAULT_SEASON_PASS_LEVELS: SeasonLevelReward[] = [
@@ -232,29 +232,29 @@ export function generateSeasonAwards(players: Player[], games: GameRecord[], sea
   const topClose = [...closeWins].sort((a, b) => b[1] - a[1])[0];
   const rows: SeasonAwardRecord[] = [];
   const mvp = leaderboard[0];
-  if (mvp) rows.push({ id: `${season.id}:mvp`, seasonId: season.id, awardId: 'mvp', title: 'Season MVP', subjectIds: [mvp.playerId], score: mvp.currentElo, copy: 'Led the season table with scoreboard authority.', immutable: true });
-  if (chemistry[0]) rows.push({ id: `${season.id}:best-duo`, seasonId: season.id, awardId: 'best-duo', title: 'Best Duo', subjectIds: chemistry[0].players, score: chemistry[0].chemistryScore, copy: 'The partnership that made the court feel smaller.', immutable: true });
-  if (topClose) rows.push({ id: `${season.id}:clutch-player`, seasonId: season.id, awardId: 'clutch-player', title: 'Clutch Player', subjectIds: [topClose[0]], score: topClose[1], copy: 'Stayed calm when the set got spicy.', immutable: true });
+  if (mvp) rows.push({ id: `${season.id}:mvp`, seasonId: season.id, awardId: 'mvp', title: 'Saison-MVP', subjectIds: [mvp.playerId], score: mvp.currentElo, copy: 'Führte die Saisonwertung mit echter Scoreboard-Autorität an.', immutable: true });
+  if (chemistry[0]) rows.push({ id: `${season.id}:best-duo`, seasonId: season.id, awardId: 'best-duo', title: 'Bestes Duo', subjectIds: chemistry[0].players, score: chemistry[0].chemistryScore, copy: 'Die Partnerschaft, durch die der Court kleiner wirkte.', immutable: true });
+  if (topClose) rows.push({ id: `${season.id}:clutch-player`, seasonId: season.id, awardId: 'clutch-player', title: 'Clutch-Spieler', subjectIds: [topClose[0]], score: topClose[1], copy: 'Blieb ruhig, wenn der Satz richtig heiß wurde.', immutable: true });
   const improved = leaderboard.sort((a, b) => (b.peakElo - 1000) - (a.peakElo - 1000))[0];
-  if (improved) rows.push({ id: `${season.id}:most-improved`, seasonId: season.id, awardId: 'most-improved', title: 'Most Improved', subjectIds: [improved.playerId], score: improved.peakElo - 1000, copy: 'Biggest climb without needing a hype reel.', immutable: true });
+  if (improved) rows.push({ id: `${season.id}:most-improved`, seasonId: season.id, awardId: 'most-improved', title: 'Größter Sprung', subjectIds: [improved.playerId], score: improved.peakElo - 1000, copy: 'Der stärkste Aufstieg ganz ohne Hype-Video.', immutable: true });
   const regular = leaderboard.sort((a, b) => b.weightedMatchesPlayed - a.weightedMatchesPlayed)[0];
-  if (regular) rows.push({ id: `${season.id}:steady-presence`, seasonId: season.id, awardId: 'steady-presence', title: 'Steady Presence', subjectIds: [regular.playerId], score: regular.weightedMatchesPlayed, copy: 'Always in the mix, always ready for one more.', immutable: true });
+  if (regular) rows.push({ id: `${season.id}:steady-presence`, seasonId: season.id, awardId: 'steady-presence', title: 'Dauerbrenner', subjectIds: [regular.playerId], score: regular.weightedMatchesPlayed, copy: 'Immer dabei, immer bereit für noch ein Match.', immutable: true });
   return rows;
 }
 
 export function generateHallOfFame(players: Player[], games: GameRecord[], seasons: SeasonWindow[], recordedAt = new Date().toISOString()): HallOfFameRecord[] {
   const records: HallOfFameRecord[] = [];
   const allTime = calculateEloLeaderboard(players, games)[0];
-  if (allTime) records.push({ id: `all-time:highest-elo:${allTime.playerId}`, category: 'highest-elo', subjectIds: [allTime.playerId], value: allTime.peakElo, label: 'Highest ELO', recordedAt, immutable: true });
+  if (allTime) records.push({ id: `all-time:highest-elo:${allTime.playerId}`, category: 'highest-elo', subjectIds: [allTime.playerId], value: allTime.peakElo, label: 'Höchstes ELO', recordedAt, immutable: true });
   const duo = [...deriveChemistrySummaries(games).values()].sort((a, b) => b.chemistryScore - a.chemistryScore)[0];
-  if (duo) records.push({ id: `all-time:best-duo:${duo.pairKey}`, category: 'best-duo', subjectIds: duo.players, value: duo.chemistryScore, label: 'Best Duo Chemistry', recordedAt, immutable: true });
+  if (duo) records.push({ id: `all-time:best-duo:${duo.pairKey}`, category: 'best-duo', subjectIds: duo.players, value: duo.chemistryScore, label: 'Beste Duo-Chemie', recordedAt, immutable: true });
   for (const player of players) {
     const streak = calculatePlayerStreaks(player.id, games).bestWinStreak;
-    if (streak > 0) records.push({ id: `all-time:longest-streak:${player.id}`, category: 'longest-streak', subjectIds: [player.id], value: streak, label: 'Longest Win Streak', recordedAt, immutable: true });
+    if (streak > 0) records.push({ id: `all-time:longest-streak:${player.id}`, category: 'longest-streak', subjectIds: [player.id], value: streak, label: 'Längste Siegesserie', recordedAt, immutable: true });
   }
   for (const season of seasons) {
     const leader = calculateEloLeaderboard(players, games.filter((game) => inWindow(game.date, season)))[0];
-    if (leader) records.push({ id: `${season.id}:legendary-season:${leader.playerId}`, category: 'legendary-season', seasonId: season.id, subjectIds: [leader.playerId], value: leader.currentElo, label: `${season.label} Leader`, recordedAt, immutable: true });
+    if (leader) records.push({ id: `${season.id}:legendary-season:${leader.playerId}`, category: 'legendary-season', seasonId: season.id, subjectIds: [leader.playerId], value: leader.currentElo, label: `${season.label} Spitzenreiter`, recordedAt, immutable: true });
   }
   return records.sort((a, b) => b.value - a.value);
 }
@@ -269,9 +269,9 @@ export function generateWallOfShame(players: Player[], games: GameRecord[], seas
   }
   const rows: WallOfShameRecord[] = [];
   const closeLoss = [...closeLosses].sort((a, b) => b[1] - a[1])[0];
-  if (closeLoss) rows.push(shameRecord(season.id, 'almost-comeback', [closeLoss[0]], closeLoss[1], 'Almost Comeback Merchant', 'So close the highlight reel already had music.', hiddenAwardIds));
+  if (closeLoss) rows.push(shameRecord(season.id, 'almost-comeback', [closeLoss[0]], closeLoss[1], 'Fast-Comeback-Künstler', 'So knapp, dass das Highlight-Video schon Musik hatte.', hiddenAwardIds));
   const tough = losingStreaks.sort((a, b) => b.losses - a.losses)[0];
-  if (tough && tough.losses > 0) rows.push(shameRecord(season.id, 'tough-week', [tough.playerId], tough.losses, 'Character Building Week', 'A heroic amount of learning opportunities.', hiddenAwardIds));
+  if (tough && tough.losses > 0) rows.push(shameRecord(season.id, 'tough-week', [tough.playerId], tough.losses, 'Charakterbildungs-Woche', 'Eine heldenhafte Menge an Lernmomenten.', hiddenAwardIds));
   return rows;
 }
 

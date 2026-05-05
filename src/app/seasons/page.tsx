@@ -44,13 +44,13 @@ export default function SeasonsPage() {
   return (
     <div className="p-4 pt-6 pb-24 animate-fade-in">
       <div className="mb-6">
-        <p className="text-xs font-black uppercase tracking-[0.22em] app-text-accent">Recurring Content</p>
-        <h1 className="text-3xl font-bold gradient-text">Seasons</h1>
-        <p className="mt-2 text-sm app-text-muted">{season.label} · Challenges, Pass, Awards, Hall of Fame und sichere Spaß-Awards.</p>
+        <p className="text-xs font-black uppercase tracking-[0.22em] app-text-accent">Wiederkehrende Inhalte</p>
+        <h1 className="text-3xl font-bold gradient-text">Saisons</h1>
+        <p className="mt-2 text-sm app-text-muted">{season.label} · Herausforderungen, Saisonpass, Auszeichnungen, Ruhmeshalle und sichere Spaß-Auszeichnungen.</p>
       </div>
 
       <section className="mb-6 glass-card-static rounded-2xl p-4">
-        <h2 className="mb-3 text-lg font-bold app-text-primary">Weekly Challenges</h2>
+        <h2 className="mb-3 text-lg font-bold app-text-primary">Wöchentliche Herausforderungen</h2>
         <div className="space-y-3">
           {challenges.map((challenge) => {
             const rows = [...challengeProgress.values()].flat().filter((row) => row.challengeId === challenge.id);
@@ -72,19 +72,19 @@ export default function SeasonsPage() {
       </section>
 
       <section className="mb-6 glass-card-static rounded-2xl p-4">
-        <h2 className="mb-3 text-lg font-bold app-text-primary">Season Pass</h2>
+        <h2 className="mb-3 text-lg font-bold app-text-primary">Saisonpass</h2>
         <div className="space-y-2">
           {passRows.sort((a, b) => b.xp - a.xp).slice(0, 8).map((row) => (
             <div key={row.playerId} className="flex items-center justify-between rounded-xl bg-theme-soft p-3 text-sm">
               <span className="font-bold app-text-primary">{playerName(row.playerId)}</span>
-              <span className="app-text-muted">Level {row.level} · {row.xp} XP · {row.claimableRewards.length} claimable</span>
+              <span className="app-text-muted">Level {row.level} · {row.xp} XP · {row.claimableRewards.length} abholbar</span>
             </div>
           ))}
         </div>
       </section>
 
       <section className="mb-6">
-        <h2 className="mb-3 text-lg font-bold app-text-primary">Season Awards</h2>
+        <h2 className="mb-3 text-lg font-bold app-text-primary">Saison-Auszeichnungen</h2>
         <div className="grid grid-cols-1 gap-3">
           {awards.map((award) => (
             <div key={award.id} className="glass-card-static rounded-2xl p-4">
@@ -93,12 +93,12 @@ export default function SeasonsPage() {
               <p className="text-sm app-text-muted">{award.copy}</p>
             </div>
           ))}
-          {awards.length === 0 && <p className="text-sm app-text-faint">Noch nicht genug Season-Daten.</p>}
+          {awards.length === 0 && <p className="text-sm app-text-faint">Noch nicht genug Saison-Daten.</p>}
         </div>
       </section>
 
       <section className="mb-6 glass-card-static rounded-2xl p-4">
-        <h2 className="mb-3 text-lg font-bold app-text-primary">Hall of Fame</h2>
+        <h2 className="mb-3 text-lg font-bold app-text-primary">Ruhmeshalle</h2>
         <div className="space-y-2">
           {fame.map((record) => (
             <div key={record.id} className="flex items-center justify-between rounded-xl bg-theme-soft p-3 text-sm">
@@ -110,8 +110,8 @@ export default function SeasonsPage() {
       </section>
 
       <section className="glass-card-static rounded-2xl p-4">
-        <h2 className="mb-3 text-lg font-bold app-text-primary">Wall of Shame</h2>
-        <p className="mb-3 text-xs app-text-muted">Playful, measurable and hideable. No toxic copy.</p>
+        <h2 className="mb-3 text-lg font-bold app-text-primary">Wand der Lernmomente</h2>
+        <p className="mb-3 text-xs app-text-muted">Spielerisch, messbar und ausblendbar. Keine toxischen Texte.</p>
         <div className="space-y-2">
           {shame.map((record) => (
             <div key={record.id} className="rounded-xl bg-theme-soft p-3 text-sm">

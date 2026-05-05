@@ -8,7 +8,7 @@ const navItems = [
   { href: '/new-game', label: 'Spielen', icon: PlusIcon },
   { href: '/history', label: 'Verlauf', icon: ClockIcon },
   { href: '/rankings', label: 'Rangliste', icon: TrophyIcon },
-  { href: '/rewards', label: 'Rewards', icon: GiftIcon },
+  { href: '/rewards', label: 'Belohnung', icon: GiftIcon },
   { href: '/seasons', label: 'Saison', icon: CalendarIcon },
   { href: '/players', label: 'Spieler', icon: UsersIcon },
 ];
