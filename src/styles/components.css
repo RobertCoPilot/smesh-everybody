@@ -120,7 +120,7 @@
 .app-text-primary { color: rgba(31,31,31,0.9); }
 .app-text-secondary { color: rgba(31,31,31,0.68); }
 .app-text-muted { color: rgba(31,31,31,0.52); }
-.app-text-subtle { color: rgba(31,31,31,0.34); }
+.app-text-subtle { color: rgb(65, 188, 192); }
 .app-text-faint { color: rgba(31,31,31,0.24); }
 .app-text-accent { color: var(--league-accent); }
 .app-text-on-dark { color: rgba(255,250,235,0.92); }
@@ -171,6 +171,126 @@
   background: rgba(8,18,38,0.72);
   color: rgba(255,250,235,0.94);
   backdrop-filter: blur(12px);
+}
+
+/* ===== Minimal padel court ===== */
+.padel-court-shell {
+  padding: 0.75rem;
+  background: #0026ff;
+  border: 1px solid rgba(0, 38, 255, 0.24);
+  border-radius: 1rem;
+  box-shadow: 0 18px 50px rgba(0, 38, 255, 0.18);
+}
+
+.padel-court {
+  position: relative;
+  min-height: 31rem;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border: 3px solid #ffffff;
+  border-radius: 0.7rem;
+  background: #0026ff;
+}
+
+.padel-court::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.08), transparent 36%, rgba(0,0,0,0.08));
+  pointer-events: none;
+}
+
+.padel-court::after {
+  content: '';
+  position: absolute;
+  inset: 0.75rem;
+  border: 1px solid rgba(255, 217, 0, 0.55);
+  border-radius: 0.45rem;
+  pointer-events: none;
+}
+
+.padel-court-line {
+  position: absolute;
+  z-index: 10;
+  background: #ffffff;
+  opacity: 0.92;
+}
+
+.padel-court-line.net {
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 4px;
+  transform: translateY(-50%);
+}
+
+.padel-court-line.center {
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  transform: translateX(-50%);
+  opacity: 0.72;
+}
+
+.padel-court-line.service-top,
+.padel-court-line.service-bottom {
+  left: 0;
+  right: 0;
+  height: 2px;
+  opacity: 0.72;
+}
+
+.padel-court-line.service-top { top: 25%; }
+.padel-court-line.service-bottom { bottom: 25%; }
+
+.padel-court-line.side-left,
+.padel-court-line.side-right {
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  opacity: 0.42;
+}
+
+.padel-court-line.side-left { left: 18%; }
+.padel-court-line.side-right { right: 18%; }
+
+.padel-court-hud {
+  position: absolute;
+  z-index: 30;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 0.65rem;
+  background: rgba(0, 18, 112, 0.72);
+  color: #ffffff;
+  box-shadow: none;
+}
+
+.padel-court-hud p {
+  margin: 0 0 0.15rem;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 0.55rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.padel-court-hud strong {
+  display: block;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.padel-court-hud-formation {
+  left: 0.75rem;
+  bottom: 0.75rem;
+  text-align: left;
+}
+
+.padel-court-hud-score {
+  top: 0.75rem;
+  right: 0.75rem;
+  text-align: right;
 }
 
 
